@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Test Triaging Agent — Mukesh Rajput</title>
+  <meta name="description" content="How a 5-step AI pipeline classifies every CI failure automatically — product bug vs automation issue — with adversarial review between Claude Opus and Sonnet." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      color: #0f172a;
+      background: #fff;
+      line-height: 1.75;
+      overflow-x: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+
+    /* ── Nav ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      background: rgba(15,23,42,0.85);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+    .nav-inner {
+      max-width: 1080px; margin: 0 auto; padding: 0 2rem;
+      height: 62px; display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-logo {
+      font-size: 1rem; font-weight: 900; letter-spacing: 0.06em; color: #fff;
+    }
+    .logo-dot { color: #10b981; }
+    .nav-back {
+      display: flex; align-items: center; gap: 0.5rem;
+      font-size: 0.82rem; font-weight: 500; color: rgba(255,255,255,0.6);
+      transition: color 0.2s;
+    }
+    .nav-back:hover { color: #10b981; }
+    .nav-back svg { flex-shrink: 0; }
+    .nav-right { display: flex; align-items: center; gap: 0.6rem; }
+    .nav-sep { color: rgba(255,255,255,0.2); font-size: 0.85rem; }
+
+    /* ── Feature nav ── */
+    .feature-nav {
+      background: #fff;
+      border-bottom: 1px solid #e2e8f0;
+      padding: 0 2rem;
+      position: sticky; top: 62px; z-index: 100;
+      overflow-x: auto;
+    }
+    .feature-nav-inner {
+      max-width: 1080px; margin: 0 auto;
+      display: flex; align-items: center; gap: 0.5rem;
+      padding: 0.75rem 0; white-space: nowrap;
+      justify-content: center;
+    }
+    .feature-nav-label {
+      font-size: 0.72rem; font-weight: 700; color: #94a3b8;
+      text-transform: uppercase; letter-spacing: 0.07em;
+      margin-right: 0.5rem; flex-shrink: 0;
+    }
+    .feat-pill {
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      padding: 0.3rem 0.85rem; border-radius: 100px;
+      font-size: 0.77rem; font-weight: 600;
+      border: 1px solid #e2e8f0; color: #64748b;
+      background: #f8fafc; transition: all 0.18s;
+      text-decoration: none; flex-shrink: 0;
+    }
+    .feat-pill:hover { border-color: #10b981; color: #10b981; background: #f0fdf4; }
+    .feat-pill.active { background: #10b981; border-color: #10b981; color: #fff; }
+    .feat-pill .feat-num { font-size: 0.68rem; font-weight: 800; opacity: 0.75; }
+
+    /* ── Hero ── */
+    .article-hero {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 55%, #0f2027 100%);
+      padding: 5rem 2rem 5rem;
+      position: relative; overflow: hidden;
+    }
+    .hero-orb {
+      position: absolute; border-radius: 50%; filter: blur(80px); pointer-events: none;
+    }
+    .orb-1 {
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(16,185,129,0.2) 0%, transparent 70%);
+      top: -120px; right: -100px;
+    }
+    .orb-2 {
+      width: 380px; height: 380px;
+      background: radial-gradient(circle, rgba(99,102,241,0.18) 0%, transparent 70%);
+      bottom: -60px; left: -80px;
+    }
+    .hero-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+    .hero-content {
+      max-width: 820px; margin: 0 auto; position: relative; z-index: 1;
+    }
+    .article-tag {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.28);
+      color: #34d399; padding: 0.3rem 0.9rem; border-radius: 100px;
+      font-size: 0.78rem; font-weight: 600; letter-spacing: 0.04em;
+      text-transform: uppercase; margin-bottom: 1.5rem;
+    }
+    .article-hero h1 {
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 800; color: #fff; line-height: 1.2;
+      letter-spacing: -0.02em; margin-bottom: 1.2rem;
+    }
+    .grad-text {
+      background: linear-gradient(135deg, #10b981, #34d399, #6366f1);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .article-meta {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 1.2rem;
+      font-size: 0.84rem; color: rgba(255,255,255,0.5); margin-bottom: 2rem;
+    }
+    .meta-item { display: flex; align-items: center; gap: 0.35rem; }
+    .meta-dot { width: 3px; height: 3px; background: rgba(255,255,255,0.25); border-radius: 50%; }
+    .hero-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .hero-chip {
+      background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.65); padding: 0.25rem 0.75rem;
+      border-radius: 100px; font-size: 0.75rem; font-weight: 500;
+    }
+
+    /* ── Layout ── */
+    .article-layout {
+      max-width: 1080px; margin: 0 auto; padding: 4rem 2rem 6rem;
+      display: grid; grid-template-columns: 1fr 260px; gap: 4rem; align-items: start;
+    }
+    @media (max-width: 900px) {
+      .article-layout { grid-template-columns: 1fr; }
+      .toc-sidebar { display: none; }
+    }
+
+    /* ── Article body ── */
+    .article-body { min-width: 0; }
+    .article-body p { font-size: 1.02rem; color: #334155; margin-bottom: 1.3rem; line-height: 1.8; }
+    .article-body h2 {
+      font-size: 1.45rem; font-weight: 800; color: #0f172a;
+      margin: 3rem 0 1rem; letter-spacing: -0.02em; line-height: 1.25;
+      padding-top: 1rem;
+    }
+    .article-body h3 {
+      font-size: 1.1rem; font-weight: 700; color: #0f172a;
+      margin: 2rem 0 0.6rem; letter-spacing: -0.01em;
+    }
+    .article-body ul, .article-body ol {
+      padding-left: 1.4rem; margin-bottom: 1.3rem;
+    }
+    .article-body li {
+      font-size: 1rem; color: #334155; margin-bottom: 0.45rem; line-height: 1.7;
+    }
+    .article-body strong { color: #0f172a; font-weight: 700; }
+    .article-body hr { border: none; border-top: 1px solid #e2e8f0; margin: 2.5rem 0; }
+
+    /* ── Intro callout ── */
+    .intro-callout {
+      background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
+      border-left: 3px solid #10b981;
+      padding: 1.2rem 1.5rem; border-radius: 0 8px 8px 0;
+      margin-bottom: 2rem;
+    }
+    .intro-callout p { color: #166534; margin: 0; font-size: 1rem; }
+
+    /* ── Screenshots ── */
+    .screenshot-block { margin: 2rem 0 2.5rem; }
+    .screenshot-block img {
+      width: 100%; border-radius: 10px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+      display: block; cursor: zoom-in;
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+    .screenshot-block img:hover {
+      box-shadow: 0 8px 40px rgba(0,0,0,0.14);
+      transform: translateY(-2px);
+    }
+    .screenshot-caption {
+      font-size: 0.82rem; color: #94a3b8; margin-top: 0.65rem;
+      text-align: center; font-style: italic; line-height: 1.5;
+    }
+
+    /* ── Pipeline steps ── */
+    .pipeline {
+      display: flex; flex-direction: column; gap: 0; margin: 1.5rem 0 2rem;
+    }
+    .pipe-step {
+      display: flex; gap: 1.2rem; position: relative; padding-bottom: 1.8rem;
+    }
+    .pipe-step:last-child { padding-bottom: 0; }
+    .pipe-left { display: flex; flex-direction: column; align-items: center; }
+    .pipe-num {
+      width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: #fff; font-size: 0.78rem; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .pipe-line {
+      flex: 1; width: 2px; background: linear-gradient(to bottom, #d1fae5, transparent);
+      margin-top: 4px;
+    }
+    .pipe-step:last-child .pipe-line { display: none; }
+    .pipe-body { flex: 1; padding-top: 0.2rem; }
+    .pipe-title {
+      font-weight: 700; color: #0f172a; font-size: 0.97rem;
+      display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.35rem;
+    }
+    .pipe-time {
+      font-size: 0.72rem; font-weight: 600; color: #10b981;
+      background: #f0fdf4; border: 1px solid #bbf7d0;
+      padding: 0.1rem 0.5rem; border-radius: 100px;
+    }
+    .pipe-body p { font-size: 0.93rem; color: #475569; margin: 0 0 0.5rem; }
+    .pipe-body ul { padding-left: 1.2rem; margin: 0.4rem 0 0; }
+    .pipe-body li { font-size: 0.9rem; color: #475569; margin-bottom: 0.3rem; }
+
+    /* ── Classification pills ── */
+    .class-pills { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.75rem 0 0.5rem; }
+    .class-pill {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      padding: 0.3rem 0.8rem; border-radius: 100px;
+      font-size: 0.78rem; font-weight: 700;
+    }
+    .pill-bug { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+    .pill-auto { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
+    .pill-high { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+    .pill-med { background: #fefce8; color: #854d0e; border: 1px solid #fde68a; }
+    .pill-low { background: #f8fafc; color: #64748b; border: 1px solid #e2e8f0; }
+
+    /* ── Metric cards ── */
+    .metrics-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 1rem; margin: 1.5rem 0 2rem;
+    }
+    .metric-card {
+      background: #f8fafc; border: 1px solid #e2e8f0;
+      border-radius: 10px; padding: 1.2rem 1.4rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .metric-card:hover { border-color: #10b981; box-shadow: 0 4px 16px rgba(16,185,129,0.1); }
+    .metric-val { font-size: 1.5rem; font-weight: 800; color: #0f172a; line-height: 1; margin-bottom: 0.3rem; }
+    .metric-label { font-size: 0.8rem; color: #64748b; font-weight: 500; }
+    .metric-card.green .metric-val { color: #059669; }
+
+    /* ── Key insight box ── */
+    .insight-box {
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      border-radius: 12px; padding: 2rem;
+      margin: 2rem 0;
+      border: 1px solid rgba(16,185,129,0.2);
+    }
+    .insight-box h3 { color: #34d399; margin-bottom: 0.8rem; font-size: 1rem; }
+    .insight-box p { color: #94a3b8; font-size: 0.95rem; margin: 0; line-height: 1.7; }
+    .insight-box strong { color: #e2e8f0; }
+
+    /* ── Qualifies table ── */
+    .qualify-grid {
+      display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem;
+      margin: 1.2rem 0 1.8rem;
+    }
+    @media (max-width: 600px) { .qualify-grid { grid-template-columns: 1fr; } }
+    .qualify-card {
+      background: #f0fdf4; border: 1.5px solid #bbf7d0;
+      border-radius: 10px; padding: 1rem 1.2rem; text-align: center;
+    }
+    .qualify-label { font-size: 0.72rem; color: #64748b; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.3rem; }
+    .qualify-val { font-size: 1rem; font-weight: 800; color: #059669; }
+
+    /* ── Lessons ── */
+    .lesson { margin-bottom: 1.8rem; }
+    .lesson-title {
+      font-weight: 700; color: #0f172a; font-size: 1rem; margin-bottom: 0.4rem;
+      display: flex; align-items: flex-start; gap: 0.5rem;
+    }
+    .lesson-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 0.05rem; }
+    .lesson p { color: #475569; font-size: 0.95rem; margin: 0 0 0 1.6rem; }
+
+    /* ── Tech stack ── */
+    .tech-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;
+      margin: 1.2rem 0;
+    }
+    .tech-row {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 0.5rem 0.75rem; background: #f8fafc;
+      border: 1px solid #e2e8f0; border-radius: 6px;
+      font-size: 0.83rem;
+    }
+    .tech-label { color: #64748b; font-weight: 500; min-width: 80px; }
+    .tech-val { color: #0f172a; font-weight: 600; }
+    @media (max-width: 600px) { .tech-grid { grid-template-columns: 1fr; } }
+
+    /* ── Closing CTA ── */
+    .article-cta {
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      border-radius: 14px; padding: 2.5rem; margin: 3rem 0 1rem;
+      text-align: center; border: 1px solid rgba(16,185,129,0.15);
+    }
+    .article-cta h3 { color: #fff; font-size: 1.25rem; font-weight: 800; margin-bottom: 0.6rem; }
+    .article-cta p { color: #94a3b8; margin-bottom: 1.5rem; font-size: 0.95rem; }
+    .cta-buttons { display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.45rem;
+      padding: 0.65rem 1.4rem; border-radius: 8px;
+      font-size: 0.88rem; font-weight: 600; transition: all 0.2s; cursor: pointer;
+      text-decoration: none;
+    }
+    .btn-primary { background: #10b981; color: #fff; }
+    .btn-primary:hover { background: #059669; transform: translateY(-1px); }
+    .btn-ghost {
+      background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.8);
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+    .btn-ghost:hover { background: rgba(255,255,255,0.12); color: #fff; }
+
+    /* ── Sidebar TOC ── */
+    .toc-sidebar {
+      position: sticky; top: 116px;
+      background: #f8fafc; border: 1px solid #e2e8f0;
+      border-radius: 10px; padding: 1.4rem; font-size: 0.83rem;
+    }
+    .toc-title {
+      font-weight: 700; color: #0f172a; font-size: 0.75rem;
+      text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 1rem;
+    }
+    .toc-list { list-style: none; padding: 0; }
+    .toc-list li { margin-bottom: 0.1rem; }
+    .toc-list a {
+      display: block; padding: 0.35rem 0.6rem; border-radius: 5px;
+      color: #64748b; transition: all 0.15s; line-height: 1.4;
+    }
+    .toc-list a:hover { background: #e2e8f0; color: #0f172a; }
+    .toc-list a.active { background: #f0fdf4; color: #10b981; font-weight: 600; }
+    .toc-sep { height: 1px; background: #e2e8f0; margin: 0.75rem 0; }
+    .toc-author {
+      display: flex; align-items: center; gap: 0.6rem; margin-top: 1rem;
+      padding-top: 1rem; border-top: 1px solid #e2e8f0;
+    }
+    .toc-author-name { font-weight: 700; color: #0f172a; font-size: 0.82rem; }
+    .toc-author-title { font-size: 0.75rem; color: #94a3b8; }
+
+    /* ── Tags ── */
+    .article-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 2rem 0 0; }
+    .tag {
+      background: #f1f5f9; color: #475569;
+      padding: 0.3rem 0.8rem; border-radius: 100px;
+      font-size: 0.78rem; font-weight: 500;
+    }
+
+    /* ── Footer ── */
+    footer {
+      background: #0f172a; color: rgba(255,255,255,0.4);
+      text-align: center; padding: 2rem;
+      font-size: 0.82rem;
+    }
+    footer a { color: #10b981; }
+
+    /* ── Image modal ── */
+    .img-modal {
+      display: none; position: fixed; inset: 0; z-index: 1000;
+      background: rgba(0,0,0,0.85); backdrop-filter: blur(6px);
+      align-items: center; justify-content: center; padding: 2rem;
+    }
+    .img-modal.open { display: flex; }
+    .img-modal img {
+      max-width: 90vw; max-height: 88vh; border-radius: 10px;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.5);
+    }
+    .img-modal-close {
+      position: fixed; top: 1.5rem; right: 1.5rem;
+      background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15);
+      color: #fff; width: 38px; height: 38px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 1.1rem; transition: background 0.2s;
+    }
+    .img-modal-close:hover { background: rgba(255,255,255,0.2); }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">Mukesh<span class="logo-dot">.</span></a>
+    <div class="nav-right">
+      <a href="index.html#ai" class="nav-back">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        Portfolio
+      </a>
+      <span class="nav-sep">/</span>
+      <a href="ai-agent-network.html" class="nav-back">Overview</a>
+    </div>
+  </div>
+</nav>
+
+<!-- FEATURE NAV -->
+<div class="feature-nav">
+  <div class="feature-nav-inner">
+    <span class="feature-nav-label">Features</span>
+    <a href="ai-agent-network.html" class="feat-pill">
+      <span class="feat-num">↗</span> Overview
+    </a>
+    <a href="feature-test-generation.html" class="feat-pill">
+      <span class="feat-num">01</span> Test Generation
+    </a>
+    <a href="feature-test-authoring.html" class="feat-pill">
+      <span class="feat-num">02</span> Test Authoring Agent
+    </a>
+    <a href="feature-test-triaging.html" class="feat-pill active">
+      <span class="feat-num">03</span> Test Triaging Agent
+    </a>
+    <a href="feature-test-healing.html" class="feat-pill">
+      <span class="feat-num">04</span> Test Healing Agent
+    </a>
+    <a href="feature-rag-chat.html" class="feat-pill">
+      <span class="feat-num">05</span> Talk to Tests
+    </a>
+  </div>
+</div>
+
+<!-- HERO -->
+<header class="article-hero">
+  <div class="hero-orb orb-1"></div>
+  <div class="hero-orb orb-2"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+    <div class="article-tag">🔍 Feature 3 of 5</div>
+    <h1>The Test Triaging Agent: <span class="grad-text">AI Classifies Every CI Failure Automatically</span></h1>
+    <div class="article-meta">
+      <span class="meta-item">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        10 min read
+      </span>
+      <span class="meta-dot"></span>
+      <span class="meta-item">Mukesh Rajput</span>
+      <span class="meta-dot"></span>
+      <span class="meta-item">May 2026</span>
+    </div>
+    <div class="hero-chips">
+      <span class="hero-chip">Claude Opus</span>
+      <span class="hero-chip">Claude Sonnet</span>
+      <span class="hero-chip">MySQL</span>
+      <span class="hero-chip">Adversarial Review</span>
+      <span class="hero-chip">Flaky Detection</span>
+    </div>
+  </div>
+</header>
+
+<!-- MAIN CONTENT -->
+<div class="article-layout">
+
+  <!-- ARTICLE -->
+  <article class="article-body">
+
+    <div class="intro-callout">
+      <p>After a CI run with 30 failing tests, someone has to figure out which are product bugs, which are automation issues, and which are flaky. That triage typically takes 1–2 hours per CI cycle and requires someone who knows both the product and the automation framework. The triaging agent does it in minutes — with a built-in adversarial review step between two AI models.</p>
+    </div>
+
+    <!-- THE PROBLEM -->
+    <h2 id="problem">The Problem</h2>
+
+    <p>CI runs fail. That's expected. What isn't expected is how long it takes to understand <em>why</em> they failed — and what to do about each one.</p>
+
+    <p>A typical post-CI triage session looks like: open the HTML report, click into each failure one by one, read the stack trace, check the error message, decide if this is a real product regression or a stale locator, check if this test has been flaky recently, write a summary for the dev team, and try to remember which failures you already looked at. Multiplied by 30 failing tests, that's a morning gone.</p>
+
+    <p>The triaging agent replaces this manual process. It runs a 5-step pipeline that scouts unanalysed builds, collects failure data with flakiness history, classifies each failure with Claude Opus, submits that classification to a Claude Sonnet adversarial review, and ships a full HTML report to Slack — all without human involvement.</p>
+
+    <div class="metrics-grid">
+      <div class="metric-card green">
+        <div class="metric-val">~8 min</div>
+        <div class="metric-label">Avg. agent run time for 30 failures</div>
+      </div>
+      <div class="metric-card green">
+        <div class="metric-val">5 steps</div>
+        <div class="metric-label">Scout → Collect → Classify → Review → Ship</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-val">2 LLMs</div>
+        <div class="metric-label">Claude Opus classifies · Claude Sonnet reviews</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-val">10×</div>
+        <div class="metric-label">Failures batched per Opus call</div>
+      </div>
+    </div>
+
+    <!-- THE 5-STEP PIPELINE -->
+    <h2 id="pipeline">The 5-Step Pipeline</h2>
+
+    <div class="pipeline">
+      <div class="pipe-step">
+        <div class="pipe-left">
+          <div class="pipe-num">01</div>
+          <div class="pipe-line"></div>
+        </div>
+        <div class="pipe-body">
+          <div class="pipe-title">Scout <span class="pipe-time">01_scout.py</span></div>
+          <p><code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">01_scout.py</code> queries MySQL for build tags that have failures not yet analysed. It scores each candidate by <strong>failure count × recency</strong> and picks the highest-priority unanalysed build. This step is lightweight — pure database queries, no AI. The agent only moves to the next step when it finds a build worth analysing.</p>
+        </div>
+      </div>
+
+      <div class="pipe-step">
+        <div class="pipe-left">
+          <div class="pipe-num">02</div>
+          <div class="pipe-line"></div>
+        </div>
+        <div class="pipe-body">
+          <div class="pipe-title">Collect <span class="pipe-time">02_collect.py</span></div>
+          <p><code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">02_collect.py</code> pulls all test failures for the selected build. For each failure it:</p>
+          <ul>
+            <li>Fetches the complete stack trace and error message from MySQL</li>
+            <li>Parses the HTML test report (BeautifulSoup) for screenshots and additional context</li>
+            <li>Checks the last N runs to detect flaky tests — a test that passed in 3 of the last 5 runs is flaky, not a real failure</li>
+            <li>Computes failure trends — is this test getting worse over time?</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="pipe-step">
+        <div class="pipe-left">
+          <div class="pipe-num">03</div>
+          <div class="pipe-line"></div>
+        </div>
+        <div class="pipe-body">
+          <div class="pipe-title">Classify — Claude Opus <span class="pipe-time">03_classify.py</span></div>
+          <p><code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">03_classify.py</code> batches failures in groups of 10 and calls Claude Opus for each batch. The prompt includes the test name, full stack trace, error message, flakiness data, and trend history. Claude classifies each failure as one of two types:</p>
+
+          <div class="class-pills">
+            <span class="class-pill pill-bug">PRODUCT_BUG</span>
+            <span class="class-pill pill-auto">AUTOMATION_ISSUE</span>
+          </div>
+
+          <p style="margin-top:0.75rem;"><strong>PRODUCT_BUG</strong> — the application behaviour changed: assertion on business logic failed, API returned unexpected status, UI element content changed. <strong>AUTOMATION_ISSUE</strong> — the test code is wrong: element not found (stale locator), timeout (timing issue), wrong selector, bad assertion logic.</p>
+
+          <p>It also assigns a <strong>confidence level</strong>:</p>
+          <div class="class-pills">
+            <span class="class-pill pill-high">HIGH</span>
+            <span class="class-pill pill-med">MEDIUM</span>
+            <span class="class-pill pill-low">LOW</span>
+          </div>
+
+          <p style="margin-top:0.75rem;">And a <strong>root cause category</strong>: <code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">ELEMENT_NOT_FOUND</code>, <code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">TIMING</code>, <code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">ASSERTION_FAILURE</code>, <code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">ENV_ISSUE</code>, <code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">DATA_ISSUE</code>, <code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">NETWORK_ERROR</code>, <code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">UNKNOWN</code>.</p>
+        </div>
+      </div>
+
+      <div class="pipe-step">
+        <div class="pipe-left">
+          <div class="pipe-num">04</div>
+          <div class="pipe-line"></div>
+        </div>
+        <div class="pipe-body">
+          <div class="pipe-title">Adversarial Review — Claude Sonnet <span class="pipe-time">04_review.py</span></div>
+          <p>This is the key quality gate. <code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">04_review.py</code> sends the classifier's output to a second Claude instance — Sonnet — acting as an independent reviewer.</p>
+          <p>The reviewer challenges each classification it disagrees with and provides alternative reasoning. The classifier can rebut or concede. Up to <strong>2 debate rounds per failure</strong>. The final verdict is written to a <code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">.verdict</code> file. When two models disagree — that's a signal. Low-confidence disagreements are escalated to humans in the final report.</p>
+        </div>
+      </div>
+
+      <div class="pipe-step">
+        <div class="pipe-left">
+          <div class="pipe-num">05</div>
+          <div class="pipe-line"></div>
+        </div>
+        <div class="pipe-body">
+          <div class="pipe-title">Ship <span class="pipe-time">05_ship.py</span></div>
+          <p><code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">05_ship.py</code> generates a full HTML report, posts it to Slack (<code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">#qa-reports</code> or <code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">#qa-critical</code> depending on failure severity), and writes handoff JSON to <code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">agents/test-healing-agent/queue/</code> for failures that qualify for auto-healing.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="insight-box">
+      <h3>Why two models?</h3>
+      <p>A single model classifying CI failures will make confident mistakes. The error patterns are subtle — a test that fails because of a UI change can <em>look</em> like a product bug if you only read the assertion failure. Running a second model as an independent reviewer with structured debate rounds catches these misclassifications before they reach the report. <strong>The disagreement itself is signal worth surfacing to engineers.</strong></p>
+    </div>
+
+    <!-- THE REPORT -->
+    <h2 id="report">The Report</h2>
+
+    <div class="screenshot-block">
+      <img src="images/sample_report.png" alt="AI-Generated Automation Report" onclick="openModal(this)" />
+      <div class="screenshot-caption">An AI-Generated Automation Report — executive summary with pass rate, failure breakdown by category (product bug vs automation issue), failures by root cause, all flaky tests with historical run patterns, and known failures. Each section is AI-generated from the classified data.</div>
+    </div>
+
+    <p>The HTML report is generated by <code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">05_ship.py</code> and includes every section an engineer needs to act on a CI run without looking at raw logs:</p>
+
+    <ul>
+      <li><strong>Executive summary</strong> — overall pass rate, total failures, breakdown into automation issues vs product bugs. The top-line numbers a manager can read in 10 seconds.</li>
+      <li><strong>Failure breakdown by category</strong> — donut chart of root cause distribution across the whole build. Useful for spotting patterns: if 80% of failures are <code>ELEMENT_NOT_FOUND</code>, there was probably a UI refresh.</li>
+      <li><strong>Failures by root cause category</strong> — grouped failures with stack traces and AI reasoning for each classification. Engineers can see <em>why</em> the model made each call.</li>
+      <li><strong>Flaky test matrix</strong> — test name plus pass/fail pattern across the last 10 runs, visualised as coloured dots. Instant visibility into which tests can't be trusted.</li>
+      <li><strong>Known failures</strong> — tests that have been failing consistently across multiple builds, flagged as pre-existing rather than new regressions.</li>
+    </ul>
+
+    <!-- WHAT QUALIFIES FOR AUTO-HEALING -->
+    <h2 id="auto-healing">What Qualifies for Auto-Healing</h2>
+
+    <p>Only failures meeting all three criteria are handed to the healing agent. This conservative filter ensures the healing agent only attempts fixes where it has a high probability of success.</p>
+
+    <div class="qualify-grid">
+      <div class="qualify-card">
+        <div class="qualify-label">Classification</div>
+        <div class="qualify-val">AUTOMATION_ISSUE</div>
+      </div>
+      <div class="qualify-card">
+        <div class="qualify-label">Confidence</div>
+        <div class="qualify-val">HIGH only</div>
+      </div>
+      <div class="qualify-card">
+        <div class="qualify-label">Root cause</div>
+        <div class="qualify-val">ELEMENT_NOT_FOUND</div>
+      </div>
+    </div>
+
+    <p>Failures that don't qualify still appear in the report — they just don't get auto-fixed. <strong>TIMING</strong> and <strong>ASSERTION_FAILURE</strong> issues require human judgement about whether the timeout should be increased or the assertion logic revisited. <strong>PRODUCT_BUG</strong> failures are routed to the dev team with the full AI reasoning attached.</p>
+
+    <div class="insight-box">
+      <h3>The handoff to healing</h3>
+      <p>Qualifying failures are written to <code style="background:#1e293b;padding:0.1rem 0.4rem;border-radius:4px;font-size:0.85rem;color:#34d399;">agents/test-healing-agent/queue/&lt;build-tag&gt;.json</code>. This JSON file contains the failing test class name, method name, error message, and the AI classification reasoning. The healing agent reads this file and processes each failure in sequence — no human in the loop between triage and the first fix attempt.</p>
+    </div>
+
+    <!-- CTA -->
+    <div class="article-cta">
+      <h3>Next: The Test Healing Agent</h3>
+      <p>See how the agent takes the triaging output, finds the broken locator in the page object, fixes it, verifies with Maven, and raises a GitHub PR — autonomously.</p>
+      <div class="cta-buttons">
+        <a href="feature-test-healing.html" class="btn btn-primary">
+          Feature 4 — Test Healing
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+        <a href="feature-test-authoring.html" class="btn btn-ghost">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+          Feature 2 — Test Authoring
+        </a>
+        <a href="ai-agent-network.html" class="btn btn-ghost">
+          Back to Overview
+        </a>
+      </div>
+    </div>
+
+    <div class="article-tags">
+      <span class="tag">#ClaudeOpus</span>
+      <span class="tag">#ClaudeSonnet</span>
+      <span class="tag">#AIAgents</span>
+      <span class="tag">#QAAutomation</span>
+      <span class="tag">#CITriage</span>
+      <span class="tag">#FlakyTests</span>
+      <span class="tag">#AdversarialReview</span>
+      <span class="tag">#MySQL</span>
+    </div>
+
+  </article>
+
+  <!-- TOC SIDEBAR -->
+  <aside class="toc-sidebar">
+    <div class="toc-title">On this page</div>
+    <ul class="toc-list">
+      <li><a href="#problem">The Problem</a></li>
+      <li><a href="#pipeline">The 5-Step Pipeline</a></li>
+      <li><a href="#report">The Report</a></li>
+      <li><a href="#auto-healing">What Qualifies for Auto-Healing</a></li>
+    </ul>
+    <div class="toc-sep"></div>
+    <div class="toc-author">
+      <div>
+        <div class="toc-author-name">Mukesh Rajput</div>
+        <div class="toc-author-title">QA Director · Aspire · AI Builder</div>
+      </div>
+    </div>
+  </aside>
+
+</div><!-- end article-layout -->
+
+<!-- IMAGE MODAL -->
+<div class="img-modal" id="imgModal" onclick="closeModal()">
+  <div class="img-modal-close" onclick="closeModal()">✕</div>
+  <img id="modalImg" src="" alt="" onclick="event.stopPropagation()" />
+</div>
+
+<footer>
+  <p>Built by <a href="index.html">Mukesh Rajput</a> · AI Test Studio · QA Agent Network · Jarvis</p>
+</footer>
+
+<script>
+  // Active TOC highlight
+  const sections = document.querySelectorAll('h2[id]');
+  const tocLinks = document.querySelectorAll('.toc-list a');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        tocLinks.forEach(l => l.classList.remove('active'));
+        const active = document.querySelector(`.toc-list a[href="#${e.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  sections.forEach(s => obs.observe(s));
+
+  // Image modal
+  function openModal(img) {
+    document.getElementById('modalImg').src = img.src;
+    document.getElementById('imgModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal() {
+    document.getElementById('imgModal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+</script>
+</body>
+</html>

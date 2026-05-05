@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Agent Network for QA — Mukesh Rajput</title>
+  <meta name="description" content="How three repositories work together to generate, execute, triage, and self-heal automated tests using Claude AI." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      color: #0f172a;
+      background: #fff;
+      line-height: 1.75;
+      overflow-x: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+
+    /* ── Nav ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      background: rgba(15,23,42,0.85);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+    .nav-inner {
+      max-width: 1080px; margin: 0 auto; padding: 0 2rem;
+      height: 62px; display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-logo {
+      font-size: 1rem; font-weight: 900; letter-spacing: 0.06em; color: #fff;
+    }
+    .logo-dot { color: #10b981; }
+    .nav-back {
+      display: flex; align-items: center; gap: 0.5rem;
+      font-size: 0.82rem; font-weight: 500; color: rgba(255,255,255,0.6);
+      transition: color 0.2s;
+    }
+    .nav-back:hover { color: #10b981; }
+    .nav-back svg { flex-shrink: 0; }
+    .nav-right { display: flex; align-items: center; gap: 1.5rem; }
+    .nav-share {
+      font-size: 0.82rem; font-weight: 500; color: rgba(255,255,255,0.6);
+      display: flex; align-items: center; gap: 0.4rem; cursor: pointer;
+      transition: color 0.2s;
+    }
+    .nav-share:hover { color: #fff; }
+
+    /* ── Hero ── */
+    .article-hero {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 55%, #0f2027 100%);
+      padding: 8rem 2rem 5rem;
+      position: relative; overflow: hidden;
+    }
+    .hero-orb {
+      position: absolute; border-radius: 50%; filter: blur(80px); pointer-events: none;
+    }
+    .orb-1 {
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(16,185,129,0.2) 0%, transparent 70%);
+      top: -120px; right: -100px;
+    }
+    .orb-2 {
+      width: 380px; height: 380px;
+      background: radial-gradient(circle, rgba(99,102,241,0.18) 0%, transparent 70%);
+      bottom: -60px; left: -80px;
+    }
+    .hero-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+    .hero-content {
+      max-width: 820px; margin: 0 auto; position: relative; z-index: 1;
+    }
+    .article-tag {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.28);
+      color: #34d399; padding: 0.3rem 0.9rem; border-radius: 100px;
+      font-size: 0.78rem; font-weight: 600; letter-spacing: 0.04em;
+      text-transform: uppercase; margin-bottom: 1.5rem;
+    }
+    .article-hero h1 {
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 800; color: #fff; line-height: 1.2;
+      letter-spacing: -0.02em; margin-bottom: 1.2rem;
+    }
+    .grad-text {
+      background: linear-gradient(135deg, #10b981, #34d399, #6366f1);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .article-meta {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 1.2rem;
+      font-size: 0.84rem; color: rgba(255,255,255,0.5); margin-bottom: 2rem;
+    }
+    .meta-item { display: flex; align-items: center; gap: 0.35rem; }
+    .meta-dot { width: 3px; height: 3px; background: rgba(255,255,255,0.25); border-radius: 50%; }
+    .hero-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .hero-chip {
+      background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.65); padding: 0.25rem 0.75rem;
+      border-radius: 100px; font-size: 0.75rem; font-weight: 500;
+    }
+
+    /* ── Layout ── */
+    .article-layout {
+      max-width: 1080px; margin: 0 auto; padding: 4rem 2rem 6rem;
+      display: grid; grid-template-columns: 1fr 260px; gap: 4rem; align-items: start;
+    }
+    @media (max-width: 900px) {
+      .article-layout { grid-template-columns: 1fr; }
+      .toc-sidebar { display: none; }
+    }
+
+    /* ── Article body ── */
+    .article-body { min-width: 0; }
+    .article-body p { font-size: 1.02rem; color: #334155; margin-bottom: 1.3rem; line-height: 1.8; }
+    .article-body h2 {
+      font-size: 1.45rem; font-weight: 800; color: #0f172a;
+      margin: 3rem 0 1rem; letter-spacing: -0.02em; line-height: 1.25;
+      padding-top: 1rem;
+    }
+    .article-body h3 {
+      font-size: 1.1rem; font-weight: 700; color: #0f172a;
+      margin: 2rem 0 0.6rem; letter-spacing: -0.01em;
+    }
+    .article-body ul, .article-body ol {
+      padding-left: 1.4rem; margin-bottom: 1.3rem;
+    }
+    .article-body li {
+      font-size: 1rem; color: #334155; margin-bottom: 0.45rem; line-height: 1.7;
+    }
+    .article-body strong { color: #0f172a; font-weight: 700; }
+    .article-body hr { border: none; border-top: 1px solid #e2e8f0; margin: 2.5rem 0; }
+
+    /* ── Section divider ── */
+    .section-number {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      font-size: 0.75rem; font-weight: 700; color: #10b981;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      margin-bottom: 0.4rem;
+    }
+    .section-number::after {
+      content: ''; flex: 1; height: 1px; background: #10b981; opacity: 0.3; width: 24px;
+    }
+
+    /* ── Intro callout ── */
+    .intro-callout {
+      background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
+      border-left: 3px solid #10b981;
+      padding: 1.2rem 1.5rem; border-radius: 0 8px 8px 0;
+      margin-bottom: 2rem;
+    }
+    .intro-callout p { color: #166534; margin: 0; font-size: 1rem; }
+
+    /* ── Repo overview table ── */
+    .repo-table {
+      width: 100%; border-collapse: collapse;
+      margin: 1.5rem 0 2rem; font-size: 0.9rem;
+    }
+    .repo-table th {
+      text-align: left; padding: 0.6rem 1rem;
+      background: #f8fafc; color: #64748b;
+      font-size: 0.75rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      border-bottom: 2px solid #e2e8f0;
+    }
+    .repo-table td {
+      padding: 0.75rem 1rem; border-bottom: 1px solid #f1f5f9;
+      color: #334155; vertical-align: top;
+    }
+    .repo-table tr:last-child td { border-bottom: none; }
+    .repo-table tr:hover td { background: #f8fafc; }
+    .repo-name { font-weight: 700; color: #0f172a; }
+    .repo-tag {
+      display: inline-block; background: #f0fdf4; color: #166534;
+      border: 1px solid #bbf7d0; padding: 0.1rem 0.5rem;
+      border-radius: 4px; font-size: 0.75rem; font-weight: 600;
+    }
+
+    /* ── Screenshots ── */
+    .screenshot-block { margin: 2rem 0 2.5rem; }
+    .screenshot-block img {
+      width: 100%; border-radius: 10px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+      display: block; cursor: zoom-in;
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+    .screenshot-block img:hover {
+      box-shadow: 0 8px 40px rgba(0,0,0,0.14);
+      transform: translateY(-2px);
+    }
+    .screenshot-caption {
+      font-size: 0.82rem; color: #94a3b8; margin-top: 0.65rem;
+      text-align: center; font-style: italic; line-height: 1.5;
+    }
+
+    /* ── Pipeline steps ── */
+    .pipeline {
+      display: flex; flex-direction: column; gap: 0; margin: 1.5rem 0 2rem;
+    }
+    .pipe-step {
+      display: flex; gap: 1.2rem; position: relative; padding-bottom: 1.5rem;
+    }
+    .pipe-step:last-child { padding-bottom: 0; }
+    .pipe-left { display: flex; flex-direction: column; align-items: center; }
+    .pipe-num {
+      width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: #fff; font-size: 0.78rem; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .pipe-line {
+      flex: 1; width: 2px; background: linear-gradient(to bottom, #d1fae5, transparent);
+      margin-top: 4px;
+    }
+    .pipe-step:last-child .pipe-line { display: none; }
+    .pipe-body { flex: 1; padding-top: 0.2rem; }
+    .pipe-title {
+      font-weight: 700; color: #0f172a; font-size: 0.97rem;
+      display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.35rem;
+    }
+    .pipe-time {
+      font-size: 0.72rem; font-weight: 600; color: #10b981;
+      background: #f0fdf4; border: 1px solid #bbf7d0;
+      padding: 0.1rem 0.5rem; border-radius: 100px;
+    }
+    .pipe-body p { font-size: 0.93rem; color: #475569; margin: 0; }
+
+    /* ── Metric cards ── */
+    .metrics-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 1rem; margin: 1.5rem 0 2rem;
+    }
+    .metric-card {
+      background: #f8fafc; border: 1px solid #e2e8f0;
+      border-radius: 10px; padding: 1.2rem 1.4rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .metric-card:hover { border-color: #10b981; box-shadow: 0 4px 16px rgba(16,185,129,0.1); }
+    .metric-val { font-size: 1.5rem; font-weight: 800; color: #0f172a; line-height: 1; margin-bottom: 0.3rem; }
+    .metric-label { font-size: 0.8rem; color: #64748b; font-weight: 500; }
+    .metric-card.green .metric-val { color: #059669; }
+
+    /* ── Key insight box ── */
+    .insight-box {
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      border-radius: 12px; padding: 2rem;
+      margin: 2rem 0;
+      border: 1px solid rgba(16,185,129,0.2);
+    }
+    .insight-box h3 { color: #34d399; margin-bottom: 0.8rem; font-size: 1rem; }
+    .insight-box p { color: #94a3b8; font-size: 0.95rem; margin: 0; line-height: 1.7; }
+    .insight-box strong { color: #e2e8f0; }
+
+    /* ── Lessons ── */
+    .lesson { margin-bottom: 1.8rem; }
+    .lesson-title {
+      font-weight: 700; color: #0f172a; font-size: 1rem; margin-bottom: 0.4rem;
+      display: flex; align-items: flex-start; gap: 0.5rem;
+    }
+    .lesson-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 0.05rem; }
+    .lesson p { color: #475569; font-size: 0.95rem; margin: 0 0 0 1.6rem; }
+
+    /* ── Tech stack ── */
+    .tech-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;
+      margin: 1.2rem 0;
+    }
+    .tech-row {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 0.5rem 0.75rem; background: #f8fafc;
+      border: 1px solid #e2e8f0; border-radius: 6px;
+      font-size: 0.83rem;
+    }
+    .tech-label { color: #64748b; font-weight: 500; min-width: 80px; }
+    .tech-val { color: #0f172a; font-weight: 600; }
+    @media (max-width: 600px) { .tech-grid { grid-template-columns: 1fr; } }
+
+    /* ── Architecture visual diagram ── */
+    .arch-visual {
+      background: #0f172a; border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 14px; padding: 2rem; margin: 1.5rem 0 2rem;
+    }
+    .arch-browser-wrap { display: flex; justify-content: center; margin-bottom: 0; }
+    .arch-node-browser {
+      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 8px; padding: 0.55rem 1.5rem;
+      font-size: 0.85rem; font-weight: 700; color: #e2e8f0;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .arch-arrow-center { display: flex; justify-content: center; padding: 0.5rem 0; color: #475569; }
+    .arch-middle-row { display: flex; align-items: flex-start; justify-content: center; gap: 0; }
+    .arch-box {
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px; padding: 1rem 1.2rem; min-width: 195px;
+    }
+    .arch-box.box-agents { border-color: rgba(16,185,129,0.3); }
+    .arch-box.box-jarvis { border-color: rgba(99,102,241,0.3); }
+    .arch-box-name { font-size: 0.88rem; font-weight: 800; color: #e2e8f0; margin-bottom: 0.2rem; }
+    .arch-box-meta { font-size: 0.68rem; color: #64748b; font-weight: 500; margin-bottom: 0.75rem; }
+    .arch-box-rows { display: flex; flex-direction: column; gap: 0.3rem; }
+    .arch-row-item {
+      font-size: 0.76rem; color: #94a3b8;
+      display: flex; align-items: center; gap: 0.4rem;
+    }
+    .arch-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; background: #10b981; }
+    .arch-dot.purple { background: #818cf8; }
+    .arch-row-item b { color: #818cf8; font-weight: 600; }
+    .agent-tag {
+      font-size: 0.74rem; font-weight: 600; color: #34d399;
+      background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.22);
+      border-radius: 5px; padding: 0.22rem 0.6rem; margin-bottom: 0.28rem;
+    }
+    .agent-tag:last-child { margin-bottom: 0; }
+    .arch-proxy-wrap {
+      display: flex; flex-direction: column; align-items: center;
+      padding: 0 0.75rem; padding-top: 1.1rem; gap: 0.2rem;
+    }
+    .arch-proxy-line {
+      height: 2px; width: 52px;
+      background: linear-gradient(to right, #475569, #10b981);
+    }
+    .arch-proxy-label { font-size: 0.62rem; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap; }
+    .arch-proxy-arrow { color: #10b981; font-size: 0.9rem; line-height: 1; }
+    .arch-right-col { display: flex; flex-direction: column; align-items: center; }
+    .arch-rw-wrap { display: flex; flex-direction: column; align-items: center; padding: 0.45rem 0; gap: 0.1rem; }
+    .arch-rw-label { font-size: 0.62rem; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
+    @media (max-width: 600px) {
+      .arch-middle-row { flex-direction: column; align-items: center; }
+      .arch-proxy-wrap { flex-direction: row; padding: 0.5rem 0; }
+      .arch-proxy-line { width: 24px; }
+    }
+
+    /* ── Repo cards ── */
+    .repo-cards {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 1rem; margin: 1.5rem 0 2rem;
+    }
+    @media (max-width: 680px) { .repo-cards { grid-template-columns: 1fr; } }
+    .repo-card {
+      background: #f8fafc; border: 1px solid #e2e8f0;
+      border-radius: 12px; padding: 1.4rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .repo-card:hover { border-color: #10b981; box-shadow: 0 4px 16px rgba(16,185,129,0.1); }
+    .repo-card-num {
+      font-size: 0.65rem; font-weight: 800; color: #94a3b8;
+      letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.6rem;
+    }
+    .repo-card-name { font-size: 1rem; font-weight: 800; color: #0f172a; margin-bottom: 0.4rem; }
+    .repo-card-lang {
+      display: inline-block; background: #f0fdf4; color: #166534;
+      border: 1px solid #bbf7d0; padding: 0.1rem 0.5rem;
+      border-radius: 4px; font-size: 0.72rem; font-weight: 600; margin-bottom: 0.7rem;
+    }
+    .repo-card-role { font-size: 0.84rem; color: #64748b; line-height: 1.55; }
+
+    /* ── Feature cards grid ── */
+    .features-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem; margin: 1.5rem 0 2.5rem;
+    }
+    .feature-card {
+      background: #fff; border: 1px solid #e2e8f0;
+      border-radius: 14px; overflow: hidden;
+      display: flex; flex-direction: column;
+      transition: border-color 0.22s, box-shadow 0.22s, transform 0.22s;
+      text-decoration: none;
+    }
+    .feature-card:hover {
+      border-color: #10b981;
+      box-shadow: 0 8px 32px rgba(16,185,129,0.12);
+      transform: translateY(-3px);
+    }
+    .feature-card-img {
+      width: 100%; height: 185px;
+      object-fit: cover; object-position: top;
+      display: block; border-bottom: 1px solid #f1f5f9;
+    }
+    .feature-card-body { padding: 1.3rem; flex: 1; display: flex; flex-direction: column; }
+    .feature-card-num {
+      font-size: 0.67rem; font-weight: 800; color: #10b981;
+      letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.45rem;
+    }
+    .feature-card-title {
+      font-size: 0.98rem; font-weight: 800; color: #0f172a;
+      margin-bottom: 0.55rem; line-height: 1.3;
+    }
+    .feature-card-desc {
+      font-size: 0.86rem; color: #475569; line-height: 1.6;
+      margin-bottom: 1rem; flex: 1;
+    }
+    .feature-card-stat {
+      display: inline-flex; align-items: center;
+      background: #f0fdf4; border: 1px solid #bbf7d0;
+      color: #166534; font-size: 0.77rem; font-weight: 700;
+      padding: 0.18rem 0.65rem; border-radius: 100px; margin-bottom: 1rem;
+      align-self: flex-start;
+    }
+    .feature-card-cta {
+      display: flex; align-items: center; gap: 0.35rem;
+      font-size: 0.83rem; font-weight: 600; color: #10b981;
+      border-top: 1px solid #f1f5f9; padding-top: 0.9rem; margin-top: auto;
+      transition: gap 0.18s;
+    }
+    .feature-card:hover .feature-card-cta { gap: 0.6rem; }
+
+    /* ── Lessons grid ── */
+    .lessons-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+      gap: 1.2rem; margin: 1.5rem 0 2rem;
+    }
+    .lesson-card {
+      background: #0f172a; border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 12px; padding: 1.5rem;
+      transition: border-color 0.2s;
+    }
+    .lesson-card:hover { border-color: rgba(16,185,129,0.4); }
+    .lesson-card-icon { font-size: 1.4rem; margin-bottom: 0.75rem; }
+    .lesson-card-title { font-size: 0.95rem; font-weight: 800; color: #fff; margin-bottom: 0.5rem; }
+    .lesson-card p { font-size: 0.86rem; color: #94a3b8; line-height: 1.65; margin: 0; }
+
+    /* ── Stack groups ── */
+    .stack-groups { display: flex; flex-direction: column; gap: 0.85rem; margin: 1.5rem 0 2rem; }
+    .stack-group { display: flex; align-items: flex-start; gap: 1rem; }
+    .stack-group-label {
+      font-size: 0.7rem; font-weight: 700; color: #94a3b8;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      min-width: 88px; padding-top: 0.28rem; flex-shrink: 0;
+    }
+    .stack-pills { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .stack-pill {
+      background: #f8fafc; border: 1px solid #e2e8f0;
+      color: #334155; font-size: 0.79rem; font-weight: 600;
+      padding: 0.22rem 0.7rem; border-radius: 100px;
+    }
+
+    /* ── Feature deep-dive link (kept for backward compat) ── */
+    .feature-link {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      color: #10b981; font-size: 0.88rem; font-weight: 600;
+      text-decoration: none; border-bottom: 1px solid rgba(16,185,129,0.3);
+      padding-bottom: 1px; transition: all 0.2s;
+    }
+    .feature-link:hover { color: #34d399; border-bottom-color: #34d399; }
+    .feature-link-wrap { margin: 1rem 0 2rem; }
+
+    /* ── Closing CTA ── */
+    .article-cta {
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      border-radius: 14px; padding: 2.5rem; margin: 3rem 0 1rem;
+      text-align: center; border: 1px solid rgba(16,185,129,0.15);
+    }
+    .article-cta h3 { color: #fff; font-size: 1.25rem; font-weight: 800; margin-bottom: 0.6rem; }
+    .article-cta p { color: #94a3b8; margin-bottom: 1.5rem; font-size: 0.95rem; }
+    .cta-buttons { display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.45rem;
+      padding: 0.65rem 1.4rem; border-radius: 8px;
+      font-size: 0.88rem; font-weight: 600; transition: all 0.2s; cursor: pointer;
+      text-decoration: none;
+    }
+    .btn-primary { background: #10b981; color: #fff; }
+    .btn-primary:hover { background: #059669; transform: translateY(-1px); }
+    .btn-ghost {
+      background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.8);
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+    .btn-ghost:hover { background: rgba(255,255,255,0.12); color: #fff; }
+
+    /* ── Sidebar TOC ── */
+    .toc-sidebar {
+      position: sticky; top: 82px;
+      background: #f8fafc; border: 1px solid #e2e8f0;
+      border-radius: 10px; padding: 1.4rem; font-size: 0.83rem;
+    }
+    .toc-title {
+      font-weight: 700; color: #0f172a; font-size: 0.75rem;
+      text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 1rem;
+    }
+    .toc-list { list-style: none; padding: 0; }
+    .toc-list li { margin-bottom: 0.1rem; }
+    .toc-list a {
+      display: block; padding: 0.35rem 0.6rem; border-radius: 5px;
+      color: #64748b; transition: all 0.15s; line-height: 1.4;
+    }
+    .toc-list a:hover { background: #e2e8f0; color: #0f172a; }
+    .toc-list a.active { background: #f0fdf4; color: #10b981; font-weight: 600; }
+    .toc-sep { height: 1px; background: #e2e8f0; margin: 0.75rem 0; }
+    .toc-author {
+      display: flex; align-items: center; gap: 0.6rem; margin-top: 1rem;
+      padding-top: 1rem; border-top: 1px solid #e2e8f0;
+    }
+    .toc-author-name { font-weight: 700; color: #0f172a; font-size: 0.82rem; }
+    .toc-author-title { font-size: 0.75rem; color: #94a3b8; }
+
+    /* ── Feature nav bar ── */
+    .feature-nav {
+      background: #fff;
+      border-bottom: 1px solid #e2e8f0;
+      padding: 0 2rem;
+      position: sticky; top: 62px; z-index: 100;
+      overflow-x: auto;
+    }
+    .feature-nav-inner {
+      max-width: 1080px; margin: 0 auto;
+      display: flex; align-items: center; gap: 0.5rem;
+      padding: 0.75rem 0; white-space: nowrap;
+      justify-content: center;
+    }
+    .feature-nav-label {
+      font-size: 0.72rem; font-weight: 700; color: #94a3b8;
+      text-transform: uppercase; letter-spacing: 0.07em;
+      margin-right: 0.5rem; flex-shrink: 0;
+    }
+    .feat-pill {
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      padding: 0.3rem 0.85rem; border-radius: 100px;
+      font-size: 0.77rem; font-weight: 600;
+      border: 1px solid #e2e8f0; color: #64748b;
+      background: #f8fafc; transition: all 0.18s;
+      text-decoration: none; flex-shrink: 0;
+    }
+    .feat-pill:hover { border-color: #10b981; color: #10b981; background: #f0fdf4; }
+    .feat-pill.active { background: #10b981; border-color: #10b981; color: #fff; }
+    .feat-pill .feat-num { font-size: 0.68rem; font-weight: 800; opacity: 0.75; }
+
+    /* ── Tags ── */
+    .article-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 2rem 0 0; }
+    .tag {
+      background: #f1f5f9; color: #475569;
+      padding: 0.3rem 0.8rem; border-radius: 100px;
+      font-size: 0.78rem; font-weight: 500;
+    }
+
+    /* ── Footer ── */
+    footer {
+      background: #0f172a; color: rgba(255,255,255,0.4);
+      text-align: center; padding: 2rem;
+      font-size: 0.82rem;
+    }
+    footer a { color: #10b981; }
+
+    /* ── Image modal ── */
+    .img-modal {
+      display: none; position: fixed; inset: 0; z-index: 1000;
+      background: rgba(0,0,0,0.85); backdrop-filter: blur(6px);
+      align-items: center; justify-content: center; padding: 2rem;
+    }
+    .img-modal.open { display: flex; }
+    .img-modal img {
+      max-width: 90vw; max-height: 88vh; border-radius: 10px;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.5);
+    }
+    .img-modal-close {
+      position: fixed; top: 1.5rem; right: 1.5rem;
+      background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15);
+      color: #fff; width: 38px; height: 38px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 1.1rem; transition: background 0.2s;
+    }
+    .img-modal-close:hover { background: rgba(255,255,255,0.2); }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">Mukesh<span class="logo-dot">.</span></a>
+    <div class="nav-right">
+      <a href="index.html#ai" class="nav-back">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        Back to Portfolio
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- FEATURE NAV -->
+<div class="feature-nav">
+  <div class="feature-nav-inner">
+    <span class="feature-nav-label">Features</span>
+    <a href="ai-agent-network.html" class="feat-pill active">
+      <span class="feat-num">↗</span> Overview
+    </a>
+    <a href="feature-test-generation.html" class="feat-pill">
+      <span class="feat-num">01</span> Test Generation
+    </a>
+    <a href="feature-test-authoring.html" class="feat-pill">
+      <span class="feat-num">02</span> Test Authoring Agent
+    </a>
+    <a href="feature-test-triaging.html" class="feat-pill">
+      <span class="feat-num">03</span> Test Triaging Agent
+    </a>
+    <a href="feature-test-healing.html" class="feat-pill">
+      <span class="feat-num">04</span> Test Healing Agent
+    </a>
+    <a href="feature-rag-chat.html" class="feat-pill">
+      <span class="feat-num">05</span> Talk to Tests
+    </a>
+  </div>
+</div>
+
+<!-- HERO -->
+<header class="article-hero">
+  <div class="hero-orb orb-1"></div>
+  <div class="hero-orb orb-2"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+    <div class="article-tag">⚙️ Deep Dive · AI Systems</div>
+    <h1>We Built a Network of AI Agents That <span class="grad-text">Writes, Runs, Classifies &amp; Self-Heals</span> Our Test Automation</h1>
+    <div class="article-meta">
+      <span class="meta-item">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        15 min read
+      </span>
+      <span class="meta-dot"></span>
+      <span class="meta-item">Mukesh Rajput</span>
+      <span class="meta-dot"></span>
+      <span class="meta-item">May 2026</span>
+    </div>
+    <div class="hero-chips">
+      <span class="hero-chip">Claude AI</span>
+      <span class="hero-chip">Multi-Agent Systems</span>
+      <span class="hero-chip">QA Automation</span>
+      <span class="hero-chip">Playwright MCP</span>
+      <span class="hero-chip">RAG</span>
+      <span class="hero-chip">Open Source</span>
+    </div>
+  </div>
+</header>
+
+<!-- MAIN CONTENT -->
+<div class="article-layout">
+
+  <!-- ARTICLE -->
+  <article class="article-body">
+
+    <div class="intro-callout">
+      <p>Three repositories, three AI agents, one continuous loop — generating tests from requirements, writing automation code from plain English, classifying CI failures, and fixing broken locators autonomously. Engineers review a PR at the end. They don't do all the work in the middle anymore.</p>
+    </div>
+
+    <!-- THE SYSTEM -->
+    <h2 id="system">The System at a Glance</h2>
+
+    <p>Three repos, each with a distinct responsibility. <strong>AI Test Studio</strong> is the browser interface engineers open. It proxies agent requests to <strong>QA Agent Network</strong> — the AI backbone running three independent Claude-powered agents. Both read from and write to <strong>Jarvis</strong>, the Java/Maven automation framework where all generated test code lives.</p>
+
+    <div class="repo-cards">
+      <div class="repo-card">
+        <div class="repo-card-num">Repo 01</div>
+        <div class="repo-card-name">AI Test Studio</div>
+        <span class="repo-card-lang">Python · Flask</span>
+        <div class="repo-card-role">Web UI · orchestration hub · RAG engine · TestRail &amp; Confluence sync · admin knowledge base · port 5001</div>
+      </div>
+      <div class="repo-card">
+        <div class="repo-card-num">Repo 02</div>
+        <div class="repo-card-name">QA Agent Network</div>
+        <span class="repo-card-lang">Python · Claude CLI</span>
+        <div class="repo-card-role">3 AI agents · HTTP server · Playwright MCP · SSE streaming to browser · port 8765</div>
+      </div>
+      <div class="repo-card">
+        <div class="repo-card-num">Repo 03</div>
+        <div class="repo-card-name">Jarvis</div>
+        <span class="repo-card-lang">Java · Maven</span>
+        <div class="repo-card-role">Automation framework · target repo where agents write code · Playwright · REST-Assured · Appium · TestNG</div>
+      </div>
+    </div>
+
+    <div class="arch-visual">
+
+      <!-- Browser -->
+      <div class="arch-browser-wrap">
+        <div class="arch-node-browser">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          Engineer's Browser
+        </div>
+      </div>
+
+      <!-- ↓ -->
+      <div class="arch-arrow-center">
+        <svg width="18" height="26" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 18 26"><line x1="9" y1="0" x2="9" y2="20"/><polyline points="3 14 9 20 15 14"/></svg>
+      </div>
+
+      <!-- AI Test Studio ──proxy──▶ [QA Agent Network → Jarvis] -->
+      <div class="arch-middle-row">
+
+        <!-- Left: AI Test Studio -->
+        <div class="arch-box">
+          <div class="arch-box-name">AI Test Studio</div>
+          <div class="arch-box-meta">Python · Flask · port 5001</div>
+          <div class="arch-box-rows">
+            <div class="arch-row-item"><span class="arch-dot"></span>Test Generation → <b>TestRail</b></div>
+            <div class="arch-row-item"><span class="arch-dot"></span>RAG Chat → <b>ChromaDB</b></div>
+            <div class="arch-row-item"><span class="arch-dot"></span>Admin Hub · Knowledge Base</div>
+          </div>
+        </div>
+
+        <!-- Proxy arrow -->
+        <div class="arch-proxy-wrap">
+          <div class="arch-proxy-line"></div>
+          <div class="arch-proxy-label">HTTP proxy</div>
+          <div class="arch-proxy-arrow">▶</div>
+        </div>
+
+        <!-- Right column: QA Agent Network + ↓ reads/writes + Jarvis -->
+        <div class="arch-right-col">
+          <div class="arch-box box-agents">
+            <div class="arch-box-name">QA Agent Network</div>
+            <div class="arch-box-meta">Python · Claude CLI · port 8765</div>
+            <div class="agent-tag">Test Authoring Agent</div>
+            <div class="agent-tag">Test Triaging Agent</div>
+            <div class="agent-tag">Test Healing Agent</div>
+          </div>
+
+          <div class="arch-rw-wrap">
+            <div class="arch-rw-label">reads / writes</div>
+            <svg width="18" height="26" fill="none" stroke="#475569" stroke-width="2" viewBox="0 0 18 26"><line x1="9" y1="0" x2="9" y2="20"/><polyline points="3 14 9 20 15 14"/></svg>
+          </div>
+
+          <div class="arch-box box-jarvis">
+            <div class="arch-box-name">Jarvis</div>
+            <div class="arch-box-meta">Java · Maven · TestNG</div>
+            <div class="arch-box-rows">
+              <div class="arch-row-item"><span class="arch-dot purple"></span>Playwright — UI tests</div>
+              <div class="arch-row-item"><span class="arch-dot purple"></span>REST-Assured — API tests</div>
+              <div class="arch-row-item"><span class="arch-dot purple"></span>Appium — Mobile tests</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 5 FEATURES -->
+    <h2 id="features">Five Features. One Closed Loop.</h2>
+
+    <p>Each feature is a standalone workflow. Together, the output of one stage feeds the next — closing the loop from requirements all the way to verified, self-healing automation.</p>
+
+    <div class="features-grid">
+
+      <a href="feature-test-generation.html" class="feature-card">
+        <img src="images/customer-tab-analyze.png" alt="Requirements to Tests" class="feature-card-img" />
+        <div class="feature-card-body">
+          <div class="feature-card-num">01 · Test Generation</div>
+          <div class="feature-card-title">Requirements → TestRail-Ready Test Cases</div>
+          <div class="feature-card-desc">Paste requirements or drop a Confluence URL. The AI cross-references your existing TestRail coverage and generates structured test cases only for uncovered gaps — positive, negative, and edge cases, with one-click push to TestRail.</div>
+          <div class="feature-card-stat">Under 60 seconds</div>
+          <div class="feature-card-cta">Full deep dive <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
+        </div>
+      </a>
+
+      <a href="feature-test-authoring.html" class="feature-card">
+        <img src="images/customer-tab-agents.png" alt="Test Authoring Agent" class="feature-card-img" />
+        <div class="feature-card-body">
+          <div class="feature-card-num">02 · Test Authoring Agent</div>
+          <div class="feature-card-title">Plain English → GitHub PR</div>
+          <div class="feature-card-desc">Describe what to automate. The agent parses the intent, navigates the real staging environment via Playwright MCP to confirm selectors, generates compilable Java code, runs Maven to verify it, and raises a PR. Five steps. No human in the loop until review.</div>
+          <div class="feature-card-stat">Under 10 minutes</div>
+          <div class="feature-card-cta">Full deep dive <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
+        </div>
+      </a>
+
+      <a href="feature-test-triaging.html" class="feature-card">
+        <img src="images/sample_report.png" alt="Test Triaging Agent" class="feature-card-img" />
+        <div class="feature-card-body">
+          <div class="feature-card-num">03 · Test Triaging Agent</div>
+          <div class="feature-card-title">AI Classifies Every CI Failure Automatically</div>
+          <div class="feature-card-desc">After every build, the agent scouts MySQL for unanalysed failures, classifies each one as PRODUCT BUG or AUTOMATION ISSUE using Claude Opus, then runs an adversarial review with Claude Sonnet to catch misclassifications before the report ships to Slack.</div>
+          <div class="feature-card-stat">~73% accuracy · first pass</div>
+          <div class="feature-card-cta">Full deep dive <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
+        </div>
+      </a>
+
+      <a href="feature-test-healing.html" class="feature-card">
+        <img src="images/customer-fix-broken-tests.png" alt="Test Healing Agent" class="feature-card-img" />
+        <div class="feature-card-body">
+          <div class="feature-card-num">04 · Test Healing Agent</div>
+          <div class="feature-card-title">Broken Locators Fixed, Verified, and PR'd</div>
+          <div class="feature-card-desc">Picks up HIGH-confidence ELEMENT_NOT_FOUND failures from the triaging agent, rewrites the broken page object with a corrected locator, re-runs the test via Maven to verify the fix, and raises a PR. Engineers review a diff, not a debugging session.</div>
+          <div class="feature-card-stat">Up to 5 fixes per cycle</div>
+          <div class="feature-card-cta">Full deep dive <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
+        </div>
+      </a>
+
+      <a href="feature-rag-chat.html" class="feature-card">
+        <img src="images/customer-talk-clean.png" alt="Talk to Tests" class="feature-card-img" />
+        <div class="feature-card-body">
+          <div class="feature-card-num">05 · Talk to Tests</div>
+          <div class="feature-card-title">Ask Any Question About Your Test Coverage</div>
+          <div class="feature-card-desc">A natural-language chat interface over the entire QA knowledge base — test plans, specs, runbooks, and live TestRail data all embedded in ChromaDB. Answers are grounded in your actual documentation, not generic AI knowledge.</div>
+          <div class="feature-card-stat">Instant · no manual search</div>
+          <div class="feature-card-cta">Full deep dive <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
+        </div>
+      </a>
+
+    </div>
+
+    <!-- CLOSED LOOP -->
+    <div class="insight-box">
+      <h3>The Closed Loop</h3>
+      <p><strong style="color:#10b981">CI runs</strong> → failures to MySQL → <strong style="color:#10b981">Triaging Agent</strong> classifies → <strong style="color:#10b981">Healing Agent</strong> fixes Automation Issues → PR raised → engineer merges → <strong style="color:#10b981">next CI run passes</strong></p>
+    </div>
+
+    <!-- METRICS -->
+    <h2 id="metrics">Real Numbers From Production</h2>
+
+    <div class="metrics-grid">
+      <div class="metric-card green">
+        <div class="metric-val">&lt; 60s</div>
+        <div class="metric-label">Requirements → TestRail-ready test cases</div>
+      </div>
+      <div class="metric-card green">
+        <div class="metric-val">&lt; 10 min</div>
+        <div class="metric-label">Plain English → reviewed GitHub PR</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-val">~73%</div>
+        <div class="metric-label">CI failure classification accuracy (first pass)</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-val">15–20</div>
+        <div class="metric-label">Flaky tests detected per build (typical)</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-val">Up to 5</div>
+        <div class="metric-label">Broken locators auto-fixed and verified per cycle</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-val">2–3 days</div>
+        <div class="metric-label">Saved per automation task vs. manual authoring</div>
+      </div>
+    </div>
+
+    <!-- KEY INSIGHT -->
+    <h2 id="claude-md">The Key Design Insight: CLAUDE.md</h2>
+
+    <p>Every AI agent reads one file before doing anything: <code>Jarvis/CLAUDE.md</code> — a plain-text conventions file defining every naming rule, class pattern, and DO/DON'T for the Java framework.</p>
+
+    <div class="insight-box">
+      <h3>Why this matters</h3>
+      <p>Change the framework → update <strong>CLAUDE.md</strong> → every agent adapts on the next run. No prompt engineering buried in Python scripts. The conventions live in the repo, version-controlled and reviewable alongside the code itself.</p>
+    </div>
+
+    <!-- LESSONS -->
+    <h2 id="lessons">What We Learned Building This</h2>
+
+    <div class="lessons-grid">
+      <div class="lesson-card">
+        <div class="lesson-card-icon">📄</div>
+        <div class="lesson-card-title">CLAUDE.md beats any prompt</div>
+        <p>A well-maintained conventions file in the target repo is what keeps all agent output aligned with your codebase. Invest here before you invest anywhere else in prompt engineering.</p>
+      </div>
+      <div class="lesson-card">
+        <div class="lesson-card-icon">⚔️</div>
+        <div class="lesson-card-title">Adversarial review matters at scale</div>
+        <p>A single model classifying 50 CI failures will make confident mistakes. Running a second model as an independent reviewer with structured debate rounds catches those mistakes before they reach the report.</p>
+      </div>
+      <div class="lesson-card">
+        <div class="lesson-card-icon">🔔</div>
+        <div class="lesson-card-title">Fail noisily, not silently</div>
+        <p>When the healing agent can't fix a test, it still raises a PR with a NEEDS-REVIEW verdict — full context of what failed, what Claude tried, and why. Engineers fix it in minutes instead of starting blind.</p>
+      </div>
+      <div class="lesson-card">
+        <div class="lesson-card-icon">🎭</div>
+        <div class="lesson-card-title">Playwright MCP is underrated</div>
+        <p>Confirming selectors against the real staging environment before generating code eliminates an entire class of first-run failures. The extra 2–3 minutes upfront saves 10+ minutes of debugging downstream.</p>
+      </div>
+    </div>
+
+    <!-- TECH STACK -->
+    <h2 id="stack">Tech Stack</h2>
+
+    <div class="stack-groups">
+      <div class="stack-group">
+        <div class="stack-group-label">AI / Models</div>
+        <div class="stack-pills">
+          <span class="stack-pill">Claude Opus 4.6</span>
+          <span class="stack-pill">Claude Sonnet 4.6</span>
+          <span class="stack-pill">OpenAI</span>
+          <span class="stack-pill">Gemini</span>
+          <span class="stack-pill">Ollama</span>
+        </div>
+      </div>
+      <div class="stack-group">
+        <div class="stack-group-label">RAG / Vector</div>
+        <div class="stack-pills">
+          <span class="stack-pill">ChromaDB</span>
+          <span class="stack-pill">LangChain</span>
+        </div>
+      </div>
+      <div class="stack-group">
+        <div class="stack-group-label">Browser</div>
+        <div class="stack-pills">
+          <span class="stack-pill">Playwright MCP</span>
+          <span class="stack-pill">Playwright Java</span>
+        </div>
+      </div>
+      <div class="stack-group">
+        <div class="stack-group-label">Test Layer</div>
+        <div class="stack-pills">
+          <span class="stack-pill">REST-Assured</span>
+          <span class="stack-pill">Appium</span>
+          <span class="stack-pill">BrowserStack</span>
+          <span class="stack-pill">Maven</span>
+          <span class="stack-pill">TestNG</span>
+        </div>
+      </div>
+      <div class="stack-group">
+        <div class="stack-group-label">Infrastructure</div>
+        <div class="stack-pills">
+          <span class="stack-pill">Flask 3.0</span>
+          <span class="stack-pill">Server-Sent Events</span>
+          <span class="stack-pill">MySQL</span>
+          <span class="stack-pill">GitHub CLI</span>
+          <span class="stack-pill">Slack Bot API</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="article-cta">
+      <h3>Explore each feature in depth</h3>
+      <p>All three repos are open source. Each feature has a full deep-dive page covering the implementation, pipeline steps, screenshots, and design decisions.</p>
+      <div class="cta-buttons">
+        <a href="index.html#ai" class="btn btn-primary">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+          Back to Portfolio
+        </a>
+        <a href="https://github.com/msr5464" target="_blank" class="btn btn-ghost">
+          <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
+          GitHub
+        </a>
+        <a href="https://linkedin.com/in/mukesh-rajput" target="_blank" class="btn btn-ghost">
+          <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+          LinkedIn
+        </a>
+      </div>
+    </div>
+
+    <div class="article-tags">
+      <span class="tag">#QAAutomation</span>
+      <span class="tag">#AIAgents</span>
+      <span class="tag">#TestAutomation</span>
+      <span class="tag">#Claude</span>
+      <span class="tag">#Anthropic</span>
+      <span class="tag">#PlaywrightMCP</span>
+      <span class="tag">#RAG</span>
+      <span class="tag">#OpenSource</span>
+      <span class="tag">#DevOps</span>
+    </div>
+
+  </article>
+
+  <!-- TOC SIDEBAR -->
+  <aside class="toc-sidebar">
+    <div class="toc-title">On this page</div>
+    <ul class="toc-list">
+      <li><a href="#system">System at a Glance</a></li>
+      <li><a href="#features">Five Features</a></li>
+      <li><a href="#metrics">Real Numbers</a></li>
+      <li><a href="#claude-md">CLAUDE.md Insight</a></li>
+      <li><a href="#lessons">Lessons Learned</a></li>
+      <li><a href="#stack">Tech Stack</a></li>
+    </ul>
+    <div class="toc-sep"></div>
+    <div class="toc-author">
+      <div>
+        <div class="toc-author-name">Mukesh Rajput</div>
+        <div class="toc-author-title">QA Director · Aspire · AI Builder</div>
+      </div>
+    </div>
+  </aside>
+
+</div><!-- end article-layout -->
+
+<!-- IMAGE MODAL -->
+<div class="img-modal" id="imgModal" onclick="closeModal()">
+  <div class="img-modal-close" onclick="closeModal()">✕</div>
+  <img id="modalImg" src="" alt="" onclick="event.stopPropagation()" />
+</div>
+
+<footer>
+  <p>Built by <a href="index.html">Mukesh Rajput</a> · AI Test Studio · QA Agent Network · Jarvis</p>
+</footer>
+
+<script>
+  // Active TOC highlight
+  const sections = document.querySelectorAll('h2[id]');
+  const tocLinks = document.querySelectorAll('.toc-list a');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        tocLinks.forEach(l => l.classList.remove('active'));
+        const active = document.querySelector(`.toc-list a[href="#${e.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  sections.forEach(s => obs.observe(s));
+
+  // Image modal
+  function openModal(img) {
+    document.getElementById('modalImg').src = img.src;
+    document.getElementById('imgModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal() {
+    document.getElementById('imgModal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+</script>
+</body>
+</html>

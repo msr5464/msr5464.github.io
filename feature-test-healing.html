@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Test Healing Agent — Mukesh Rajput</title>
+  <meta name="description" content="How the healing agent takes broken locator failures from the triaging pipeline, fixes them with Claude Opus, verifies with Maven, and raises a GitHub PR — autonomously." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      color: #0f172a;
+      background: #fff;
+      line-height: 1.75;
+      overflow-x: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+
+    /* ── Nav ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      background: rgba(15,23,42,0.85);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+    .nav-inner {
+      max-width: 1080px; margin: 0 auto; padding: 0 2rem;
+      height: 62px; display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-logo {
+      font-size: 1rem; font-weight: 900; letter-spacing: 0.06em; color: #fff;
+    }
+    .logo-dot { color: #10b981; }
+    .nav-back {
+      display: flex; align-items: center; gap: 0.5rem;
+      font-size: 0.82rem; font-weight: 500; color: rgba(255,255,255,0.6);
+      transition: color 0.2s;
+    }
+    .nav-back:hover { color: #10b981; }
+    .nav-back svg { flex-shrink: 0; }
+    .nav-right { display: flex; align-items: center; gap: 0.6rem; }
+    .nav-sep { color: rgba(255,255,255,0.2); font-size: 0.85rem; }
+
+    /* ── Feature nav ── */
+    .feature-nav {
+      background: #fff;
+      border-bottom: 1px solid #e2e8f0;
+      padding: 0 2rem;
+      position: sticky; top: 62px; z-index: 100;
+      overflow-x: auto;
+    }
+    .feature-nav-inner {
+      max-width: 1080px; margin: 0 auto;
+      display: flex; align-items: center; gap: 0.5rem;
+      padding: 0.75rem 0; white-space: nowrap;
+      justify-content: center;
+    }
+    .feature-nav-label {
+      font-size: 0.72rem; font-weight: 700; color: #94a3b8;
+      text-transform: uppercase; letter-spacing: 0.07em;
+      margin-right: 0.5rem; flex-shrink: 0;
+    }
+    .feat-pill {
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      padding: 0.3rem 0.85rem; border-radius: 100px;
+      font-size: 0.77rem; font-weight: 600;
+      border: 1px solid #e2e8f0; color: #64748b;
+      background: #f8fafc; transition: all 0.18s;
+      text-decoration: none; flex-shrink: 0;
+    }
+    .feat-pill:hover { border-color: #10b981; color: #10b981; background: #f0fdf4; }
+    .feat-pill.active { background: #10b981; border-color: #10b981; color: #fff; }
+    .feat-pill .feat-num { font-size: 0.68rem; font-weight: 800; opacity: 0.75; }
+
+    /* ── Hero ── */
+    .article-hero {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 55%, #0f2027 100%);
+      padding: 5rem 2rem 5rem;
+      position: relative; overflow: hidden;
+    }
+    .hero-orb {
+      position: absolute; border-radius: 50%; filter: blur(80px); pointer-events: none;
+    }
+    .orb-1 {
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(16,185,129,0.2) 0%, transparent 70%);
+      top: -120px; right: -100px;
+    }
+    .orb-2 {
+      width: 380px; height: 380px;
+      background: radial-gradient(circle, rgba(99,102,241,0.18) 0%, transparent 70%);
+      bottom: -60px; left: -80px;
+    }
+    .hero-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+    .hero-content {
+      max-width: 820px; margin: 0 auto; position: relative; z-index: 1;
+    }
+    .article-tag {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.28);
+      color: #34d399; padding: 0.3rem 0.9rem; border-radius: 100px;
+      font-size: 0.78rem; font-weight: 600; letter-spacing: 0.04em;
+      text-transform: uppercase; margin-bottom: 1.5rem;
+    }
+    .article-hero h1 {
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 800; color: #fff; line-height: 1.2;
+      letter-spacing: -0.02em; margin-bottom: 1.2rem;
+    }
+    .grad-text {
+      background: linear-gradient(135deg, #10b981, #34d399, #6366f1);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .article-meta {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 1.2rem;
+      font-size: 0.84rem; color: rgba(255,255,255,0.5); margin-bottom: 2rem;
+    }
+    .meta-item { display: flex; align-items: center; gap: 0.35rem; }
+    .meta-dot { width: 3px; height: 3px; background: rgba(255,255,255,0.25); border-radius: 50%; }
+    .hero-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .hero-chip {
+      background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.65); padding: 0.25rem 0.75rem;
+      border-radius: 100px; font-size: 0.75rem; font-weight: 500;
+    }
+
+    /* ── Layout ── */
+    .article-layout {
+      max-width: 1080px; margin: 0 auto; padding: 4rem 2rem 6rem;
+      display: grid; grid-template-columns: 1fr 260px; gap: 4rem; align-items: start;
+    }
+    @media (max-width: 900px) {
+      .article-layout { grid-template-columns: 1fr; }
+      .toc-sidebar { display: none; }
+    }
+
+    /* ── Article body ── */
+    .article-body { min-width: 0; }
+    .article-body p { font-size: 1.02rem; color: #334155; margin-bottom: 1.3rem; line-height: 1.8; }
+    .article-body h2 {
+      font-size: 1.45rem; font-weight: 800; color: #0f172a;
+      margin: 3rem 0 1rem; letter-spacing: -0.02em; line-height: 1.25;
+      padding-top: 1rem;
+    }
+    .article-body h3 {
+      font-size: 1.1rem; font-weight: 700; color: #0f172a;
+      margin: 2rem 0 0.6rem; letter-spacing: -0.01em;
+    }
+    .article-body ul, .article-body ol {
+      padding-left: 1.4rem; margin-bottom: 1.3rem;
+    }
+    .article-body li {
+      font-size: 1rem; color: #334155; margin-bottom: 0.45rem; line-height: 1.7;
+    }
+    .article-body strong { color: #0f172a; font-weight: 700; }
+    .article-body hr { border: none; border-top: 1px solid #e2e8f0; margin: 2.5rem 0; }
+
+    /* ── Intro callout ── */
+    .intro-callout {
+      background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
+      border-left: 3px solid #10b981;
+      padding: 1.2rem 1.5rem; border-radius: 0 8px 8px 0;
+      margin-bottom: 2rem;
+    }
+    .intro-callout p { color: #166534; margin: 0; font-size: 1rem; }
+
+    /* ── Screenshots ── */
+    .screenshot-block { margin: 2rem 0 2.5rem; }
+    .screenshot-block img {
+      width: 100%; border-radius: 10px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+      display: block; cursor: zoom-in;
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+    .screenshot-block img:hover {
+      box-shadow: 0 8px 40px rgba(0,0,0,0.14);
+      transform: translateY(-2px);
+    }
+    .screenshot-caption {
+      font-size: 0.82rem; color: #94a3b8; margin-top: 0.65rem;
+      text-align: center; font-style: italic; line-height: 1.5;
+    }
+
+    /* ── Pipeline steps ── */
+    .pipeline {
+      display: flex; flex-direction: column; gap: 0; margin: 1.5rem 0 2rem;
+    }
+    .pipe-step {
+      display: flex; gap: 1.2rem; position: relative; padding-bottom: 1.8rem;
+    }
+    .pipe-step:last-child { padding-bottom: 0; }
+    .pipe-left { display: flex; flex-direction: column; align-items: center; }
+    .pipe-num {
+      width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: #fff; font-size: 0.78rem; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .pipe-line {
+      flex: 1; width: 2px; background: linear-gradient(to bottom, #d1fae5, transparent);
+      margin-top: 4px;
+    }
+    .pipe-step:last-child .pipe-line { display: none; }
+    .pipe-body { flex: 1; padding-top: 0.2rem; }
+    .pipe-title {
+      font-weight: 700; color: #0f172a; font-size: 0.97rem;
+      display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.35rem;
+      flex-wrap: wrap;
+    }
+    .pipe-time {
+      font-size: 0.72rem; font-weight: 600; color: #10b981;
+      background: #f0fdf4; border: 1px solid #bbf7d0;
+      padding: 0.1rem 0.5rem; border-radius: 100px;
+    }
+    .pipe-body p { font-size: 0.93rem; color: #475569; margin: 0 0 0.5rem; }
+    .pipe-body ul { padding-left: 1.2rem; margin: 0.4rem 0 0; }
+    .pipe-body li { font-size: 0.9rem; color: #475569; margin-bottom: 0.3rem; }
+
+    /* ── Metric cards ── */
+    .metrics-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 1rem; margin: 1.5rem 0 2rem;
+    }
+    .metric-card {
+      background: #f8fafc; border: 1px solid #e2e8f0;
+      border-radius: 10px; padding: 1.2rem 1.4rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .metric-card:hover { border-color: #10b981; box-shadow: 0 4px 16px rgba(16,185,129,0.1); }
+    .metric-val { font-size: 1.5rem; font-weight: 800; color: #0f172a; line-height: 1; margin-bottom: 0.3rem; }
+    .metric-label { font-size: 0.8rem; color: #64748b; font-weight: 500; }
+    .metric-card.green .metric-val { color: #059669; }
+
+    /* ── Key insight box ── */
+    .insight-box {
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      border-radius: 12px; padding: 2rem;
+      margin: 2rem 0;
+      border: 1px solid rgba(16,185,129,0.2);
+    }
+    .insight-box h3 { color: #34d399; margin-bottom: 0.8rem; font-size: 1rem; }
+    .insight-box p { color: #94a3b8; font-size: 0.95rem; margin: 0 0 0.6rem; line-height: 1.7; }
+    .insight-box p:last-child { margin-bottom: 0; }
+    .insight-box strong { color: #e2e8f0; }
+
+    /* ── Closed loop chain ── */
+    .loop-chain {
+      display: flex; flex-wrap: wrap; align-items: center;
+      gap: 0.4rem; margin: 1rem 0;
+    }
+    .loop-node {
+      background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.25);
+      color: #e2e8f0; padding: 0.4rem 0.85rem; border-radius: 6px;
+      font-size: 0.8rem; font-weight: 600; line-height: 1.3; text-align: center;
+    }
+    .loop-arrow {
+      color: #34d399; font-size: 1rem; font-weight: 700; flex-shrink: 0;
+    }
+
+    /* ── Guardrails list ── */
+    .guardrails { list-style: none; padding: 0; margin: 1rem 0 1.5rem; }
+    .guardrails li {
+      display: flex; align-items: flex-start; gap: 0.75rem;
+      padding: 0.75rem 1rem; border-radius: 8px;
+      background: #f8fafc; border: 1px solid #e2e8f0;
+      margin-bottom: 0.5rem; font-size: 0.95rem; color: #334155;
+    }
+    .guardrail-label {
+      display: inline-flex; font-size: 0.72rem; font-weight: 700;
+      background: #0f172a; color: #34d399; padding: 0.15rem 0.5rem;
+      border-radius: 4px; white-space: nowrap; margin-top: 0.1rem; flex-shrink: 0;
+    }
+
+    /* ── Lessons ── */
+    .lesson { margin-bottom: 1.8rem; }
+    .lesson-title {
+      font-weight: 700; color: #0f172a; font-size: 1rem; margin-bottom: 0.4rem;
+      display: flex; align-items: flex-start; gap: 0.5rem;
+    }
+    .lesson-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 0.05rem; }
+    .lesson p { color: #475569; font-size: 0.95rem; margin: 0 0 0 1.6rem; }
+
+    /* ── Tech stack ── */
+    .tech-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;
+      margin: 1.2rem 0;
+    }
+    .tech-row {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 0.5rem 0.75rem; background: #f8fafc;
+      border: 1px solid #e2e8f0; border-radius: 6px;
+      font-size: 0.83rem;
+    }
+    .tech-label { color: #64748b; font-weight: 500; min-width: 80px; }
+    .tech-val { color: #0f172a; font-weight: 600; }
+    @media (max-width: 600px) { .tech-grid { grid-template-columns: 1fr; } }
+
+    /* ── Closing CTA ── */
+    .article-cta {
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      border-radius: 14px; padding: 2.5rem; margin: 3rem 0 1rem;
+      text-align: center; border: 1px solid rgba(16,185,129,0.15);
+    }
+    .article-cta h3 { color: #fff; font-size: 1.25rem; font-weight: 800; margin-bottom: 0.6rem; }
+    .article-cta p { color: #94a3b8; margin-bottom: 1.5rem; font-size: 0.95rem; }
+    .cta-buttons { display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.45rem;
+      padding: 0.65rem 1.4rem; border-radius: 8px;
+      font-size: 0.88rem; font-weight: 600; transition: all 0.2s; cursor: pointer;
+      text-decoration: none;
+    }
+    .btn-primary { background: #10b981; color: #fff; }
+    .btn-primary:hover { background: #059669; transform: translateY(-1px); }
+    .btn-ghost {
+      background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.8);
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+    .btn-ghost:hover { background: rgba(255,255,255,0.12); color: #fff; }
+
+    /* ── Sidebar TOC ── */
+    .toc-sidebar {
+      position: sticky; top: 116px;
+      background: #f8fafc; border: 1px solid #e2e8f0;
+      border-radius: 10px; padding: 1.4rem; font-size: 0.83rem;
+    }
+    .toc-title {
+      font-weight: 700; color: #0f172a; font-size: 0.75rem;
+      text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 1rem;
+    }
+    .toc-list { list-style: none; padding: 0; }
+    .toc-list li { margin-bottom: 0.1rem; }
+    .toc-list a {
+      display: block; padding: 0.35rem 0.6rem; border-radius: 5px;
+      color: #64748b; transition: all 0.15s; line-height: 1.4;
+    }
+    .toc-list a:hover { background: #e2e8f0; color: #0f172a; }
+    .toc-list a.active { background: #f0fdf4; color: #10b981; font-weight: 600; }
+    .toc-sep { height: 1px; background: #e2e8f0; margin: 0.75rem 0; }
+    .toc-author {
+      display: flex; align-items: center; gap: 0.6rem; margin-top: 1rem;
+      padding-top: 1rem; border-top: 1px solid #e2e8f0;
+    }
+    .toc-author-name { font-weight: 700; color: #0f172a; font-size: 0.82rem; }
+    .toc-author-title { font-size: 0.75rem; color: #94a3b8; }
+
+    /* ── Tags ── */
+    .article-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 2rem 0 0; }
+    .tag {
+      background: #f1f5f9; color: #475569;
+      padding: 0.3rem 0.8rem; border-radius: 100px;
+      font-size: 0.78rem; font-weight: 500;
+    }
+
+    /* ── Footer ── */
+    footer {
+      background: #0f172a; color: rgba(255,255,255,0.4);
+      text-align: center; padding: 2rem;
+      font-size: 0.82rem;
+    }
+    footer a { color: #10b981; }
+
+    /* ── Image modal ── */
+    .img-modal {
+      display: none; position: fixed; inset: 0; z-index: 1000;
+      background: rgba(0,0,0,0.85); backdrop-filter: blur(6px);
+      align-items: center; justify-content: center; padding: 2rem;
+    }
+    .img-modal.open { display: flex; }
+    .img-modal img {
+      max-width: 90vw; max-height: 88vh; border-radius: 10px;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.5);
+    }
+    .img-modal-close {
+      position: fixed; top: 1.5rem; right: 1.5rem;
+      background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15);
+      color: #fff; width: 38px; height: 38px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 1.1rem; transition: background 0.2s;
+    }
+    .img-modal-close:hover { background: rgba(255,255,255,0.2); }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">Mukesh<span class="logo-dot">.</span></a>
+    <div class="nav-right">
+      <a href="index.html#ai" class="nav-back">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        Portfolio
+      </a>
+      <span class="nav-sep">/</span>
+      <a href="ai-agent-network.html" class="nav-back">Overview</a>
+    </div>
+  </div>
+</nav>
+
+<!-- FEATURE NAV -->
+<div class="feature-nav">
+  <div class="feature-nav-inner">
+    <span class="feature-nav-label">Features</span>
+    <a href="ai-agent-network.html" class="feat-pill">
+      <span class="feat-num">↗</span> Overview
+    </a>
+    <a href="feature-test-generation.html" class="feat-pill">
+      <span class="feat-num">01</span> Test Generation
+    </a>
+    <a href="feature-test-authoring.html" class="feat-pill">
+      <span class="feat-num">02</span> Test Authoring Agent
+    </a>
+    <a href="feature-test-triaging.html" class="feat-pill">
+      <span class="feat-num">03</span> Test Triaging Agent
+    </a>
+    <a href="feature-test-healing.html" class="feat-pill active">
+      <span class="feat-num">04</span> Test Healing Agent
+    </a>
+    <a href="feature-rag-chat.html" class="feat-pill">
+      <span class="feat-num">05</span> Talk to Tests
+    </a>
+  </div>
+</div>
+
+<!-- HERO -->
+<header class="article-hero">
+  <div class="hero-orb orb-1"></div>
+  <div class="hero-orb orb-2"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+    <div class="article-tag">🔧 Feature 4 of 5</div>
+    <h1>The Test Healing Agent: <span class="grad-text">Broken Locators Fixed, Verified, and PRed Automatically</span></h1>
+    <div class="article-meta">
+      <span class="meta-item">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        8 min read
+      </span>
+      <span class="meta-dot"></span>
+      <span class="meta-item">Mukesh Rajput</span>
+      <span class="meta-dot"></span>
+      <span class="meta-item">May 2026</span>
+    </div>
+    <div class="hero-chips">
+      <span class="hero-chip">Claude Opus</span>
+      <span class="hero-chip">Maven</span>
+      <span class="hero-chip">GitHub CLI</span>
+      <span class="hero-chip">Page Object Model</span>
+      <span class="hero-chip">Auto-fix</span>
+    </div>
+  </div>
+</header>
+
+<!-- MAIN CONTENT -->
+<div class="article-layout">
+
+  <!-- ARTICLE -->
+  <article class="article-body">
+
+    <div class="intro-callout">
+      <p>A UI change ships — a button gets a new data-test attribute, a modal gets a new class name. Three tests start failing with "Element not found." The healing agent finds the broken locator, identifies the correct selector, updates the Java page object, verifies the fix with Maven, and raises a GitHub PR. Engineers review the diff. They don't do the detective work anymore.</p>
+    </div>
+
+    <!-- THE PROBLEM -->
+    <h2 id="problem">The Problem</h2>
+
+    <p>Locator failures are the most common, most tedious category of automation breakage. A UI change ships — a button gets a new <code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.9rem;color:#0f172a;">data-test</code> attribute, a modal gets a new class name, a form field gets a new id. Three tests start failing with <code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.9rem;color:#0f172a;">Element not found</code>.</p>
+
+    <p>A QA engineer then has to: find which page object has the stale locator, figure out the new selector by opening DevTools and inspecting the element in staging, update the Java file, re-run the test locally to verify the fix works, then commit and push. That's 30–45 minutes per locator — multiplied by however many broke in this deployment.</p>
+
+    <p>The healing agent does all of this autonomously. It reads the failing test, finds the page object, asks Claude to propose a fix based on the error message, applies it, verifies it with Maven against the actual test, and commits or rolls back depending on the result.</p>
+
+    <div class="metrics-grid">
+      <div class="metric-card green">
+        <div class="metric-val">30–45 min</div>
+        <div class="metric-label">Manual fix time per broken locator</div>
+      </div>
+      <div class="metric-card green">
+        <div class="metric-val">~3 min</div>
+        <div class="metric-label">Agent fix time per locator (end-to-end)</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-val">5 max</div>
+        <div class="metric-label">Fixes per session<br><code style="font-size:0.72rem;color:#94a3b8;background:none;font-weight:400">AUTO_FIX_MAX_FIXES_PER_RUN</code></div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-val">2 tries</div>
+        <div class="metric-label">Max attempts before skip<br><code style="font-size:0.72rem;color:#94a3b8;background:none;font-weight:400">MAX_FIX_ATTEMPTS</code></div>
+      </div>
+    </div>
+
+    <!-- HOW IT GETS TRIGGERED -->
+    <h2 id="triggered">How It Gets Triggered</h2>
+
+    <p>The healing agent is triggered by the triaging agent. After the 5-step triaging pipeline finishes, any failures classified as <strong>AUTOMATION_ISSUE + HIGH confidence + ELEMENT_NOT_FOUND</strong> are written to a JSON handoff file at:</p>
+
+    <p style="background:#f1f5f9;padding:0.75rem 1rem;border-radius:8px;font-family:monospace;font-size:0.88rem;color:#0f172a;margin:0.5rem 0 1.5rem;">agents/test-healing-agent/queue/&lt;build-tag&gt;.json</p>
+
+    <p>The healing agent reads this file and processes each failure in order, up to <code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.9rem;color:#0f172a;">AUTO_FIX_MAX_FIXES_PER_RUN=5</code> per session. This prevents runaway commits on large deployments where many locators broke at once.</p>
+
+    <div class="screenshot-block">
+      <img src="images/sample_report.png" alt="Triage report that feeds the healing agent" onclick="openModal(this)" />
+      <div class="screenshot-caption">The triage report that feeds the healing agent. Failures classified as AUTOMATION_ISSUE with HIGH confidence and ELEMENT_NOT_FOUND root cause are automatically queued for the healing agent.</div>
+    </div>
+
+    <!-- THE FIX PIPELINE -->
+    <h2 id="fix-pipeline">The Fix Pipeline (Per Failure)</h2>
+
+    <p>For each failure in the handoff file, the agent runs the following sequence. If any step fails, it skips to the next failure and records the reason.</p>
+
+    <div class="pipeline">
+      <div class="pipe-step">
+        <div class="pipe-left">
+          <div class="pipe-num">1</div>
+          <div class="pipe-line"></div>
+        </div>
+        <div class="pipe-body">
+          <div class="pipe-title">Locate the source files <span class="pipe-time">code_analyzer.py</span></div>
+          <p><code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">lib/code_analyzer.py</code> takes the failing test class name and method name from the handoff file. It walks the Jarvis source tree to find:</p>
+          <ul>
+            <li>The test class file — e.g. <code style="background:#f1f5f9;padding:0.1rem 0.3rem;border-radius:4px;font-size:0.82rem;color:#0f172a;">PaymentsWebTest.java</code></li>
+            <li>The page object file referenced in the failing method — e.g. <code style="background:#f1f5f9;padding:0.1rem 0.3rem;border-radius:4px;font-size:0.82rem;color:#0f172a;">PaymentsPage.java</code></li>
+          </ul>
+          <p style="margin-top:0.5rem;">This is where the broken locator lives. The analyzer uses static analysis — parsing the test method body to find which page object methods are called, then resolving those methods to their file.</p>
+        </div>
+      </div>
+
+      <div class="pipe-step">
+        <div class="pipe-left">
+          <div class="pipe-num">2</div>
+          <div class="pipe-line"></div>
+        </div>
+        <div class="pipe-body">
+          <div class="pipe-title">Build the fix prompt</div>
+          <p>Claude Opus receives everything it needs to reason about the fix:</p>
+          <ul>
+            <li>The failing test method code — so it knows what action was being performed</li>
+            <li>The full page object file — so it can see the stale locator in context with its surrounding methods</li>
+            <li>The actual error message: <code style="background:#f1f5f9;padding:0.1rem 0.3rem;border-radius:4px;font-size:0.82rem;color:#0f172a;">"Element not found: [data-test='submit-payment']"</code></li>
+            <li>The <code style="background:#f1f5f9;padding:0.1rem 0.3rem;border-radius:4px;font-size:0.82rem;color:#0f172a;">CONVENTIONS.md</code> / <code style="background:#f1f5f9;padding:0.1rem 0.3rem;border-radius:4px;font-size:0.82rem;color:#0f172a;">CLAUDE.md</code> framework rules — so it knows the correct Playwright selector patterns and naming conventions used in Jarvis</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="pipe-step">
+        <div class="pipe-left">
+          <div class="pipe-num">3</div>
+          <div class="pipe-line"></div>
+        </div>
+        <div class="pipe-body">
+          <div class="pipe-title">Apply the fix</div>
+          <p>Claude returns a corrected version of the page object file — not a diff, the full file with the fix applied. The agent writes it to disk, replacing the original. The original is backed up to a temp location before the write, so rollback is lossless.</p>
+        </div>
+      </div>
+
+      <div class="pipe-step">
+        <div class="pipe-left">
+          <div class="pipe-num">4</div>
+          <div class="pipe-line"></div>
+        </div>
+        <div class="pipe-body">
+          <div class="pipe-title">Verify with Maven</div>
+          <p>The agent runs the exact failing test method to verify the fix:</p>
+          <p style="background:#f1f5f9;padding:0.6rem 1rem;border-radius:6px;font-family:monospace;font-size:0.85rem;color:#0f172a;margin:0.5rem 0;">mvn test -Dtest=PaymentsWebTest#checkoutFlow</p>
+          <p>It reads <code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">test-results/report.json</code> written by Jarvis's <code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">JsonTestReporter.java</code> to determine pass or fail — not just the Maven exit code, which can be misleading.</p>
+        </div>
+      </div>
+
+      <div class="pipe-step">
+        <div class="pipe-left">
+          <div class="pipe-num">5</div>
+          <div class="pipe-line"></div>
+        </div>
+        <div class="pipe-body">
+          <div class="pipe-title">Commit or rollback</div>
+          <p>Two outcomes:</p>
+          <ul>
+            <li><strong>Test passes:</strong> <code style="background:#f1f5f9;padding:0.1rem 0.3rem;border-radius:4px;font-size:0.82rem;color:#0f172a;">git add PaymentsPage.java &amp;&amp; git commit -m "fix(payments): update stale locator in PaymentsPage"</code></li>
+            <li><strong>Test fails:</strong> The original file is restored from the backup. The failure output — the new error message from Maven — is injected into the next Claude prompt so it can try a different selector approach. Up to <code style="background:#f1f5f9;padding:0.1rem 0.3rem;border-radius:4px;font-size:0.82rem;color:#0f172a;">MAX_FIX_ATTEMPTS=2</code> retries per test.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="screenshot-block">
+      <img src="images/healing-fix-pipeline.png" alt="Healing agent fix pipeline terminal output" onclick="openModal(this)" />
+      <p class="screenshot-caption">The agent processing three broken locators in sequence — locating source files, extracting element names, calling Claude Opus for a fix proposal, applying it, and verifying with Maven. Each ✅ means the fixed test passed before the change was committed.</p>
+    </div>
+
+    <!-- THE GITHUB PR -->
+    <h2 id="github-pr">The GitHub PR</h2>
+
+    <p>Once all fixable tests are committed, <code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.9rem;color:#0f172a;">02_ship.py</code> packages everything into a PR that an engineer can review and merge without needing to understand what changed or why:</p>
+
+    <div class="pipeline">
+      <div class="pipe-step">
+        <div class="pipe-left">
+          <div class="pipe-num">1</div>
+          <div class="pipe-line"></div>
+        </div>
+        <div class="pipe-body">
+          <div class="pipe-title">Create branch</div>
+          <p>A new branch is created: <code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">chore/qa-autofix/&lt;build-tag&gt;-&lt;timestamp&gt;</code>. The branch name makes it immediately clear this is an automated fix and which build triggered it.</p>
+        </div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-left">
+          <div class="pipe-num">2</div>
+          <div class="pipe-line"></div>
+        </div>
+        <div class="pipe-body">
+          <div class="pipe-title">Push to GitHub</div>
+          <p>The branch is pushed to the Jarvis repository. All commits from the fix session are included — one commit per successfully fixed test.</p>
+        </div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-left">
+          <div class="pipe-num">3</div>
+          <div class="pipe-line"></div>
+        </div>
+        <div class="pipe-body">
+          <div class="pipe-title">gh pr create</div>
+          <p>The GitHub CLI creates the PR with a description listing every fix: which test, which file, what the old selector was, what the new one is, and whether it was verified by Maven. Tests that couldn't be fixed after 2 attempts are listed with the failure reason and marked NEEDS-REVIEW.</p>
+        </div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-left">
+          <div class="pipe-num">4</div>
+          <div class="pipe-line"></div>
+        </div>
+        <div class="pipe-body">
+          <div class="pipe-title">Slack notification</div>
+          <p>A message is posted to the QA channel: <em>"Auto-fixed 3/4 locator failures in payments module — PR #47 ready for review"</em>. The PR link is included so an engineer can click straight to the diff.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="screenshot-block">
+      <img src="images/healing-github-pr.png" alt="GitHub PR raised by the healing agent" onclick="openModal(this)" />
+      <p class="screenshot-caption">The pull request raised automatically — showing the exact diff for each locator fix, the Maven verification result per test, and a summary comment from the agent. Engineers see what changed, why, and that it was verified before they review.</p>
+    </div>
+
+    <!-- THE CLOSED LOOP -->
+    <h2 id="closed-loop">The Closed Loop</h2>
+
+    <div class="insight-box">
+      <h3>The full autonomous cycle</h3>
+      <div class="loop-chain">
+        <div class="loop-node">CI runs Jarvis tests</div>
+        <div class="loop-arrow">→</div>
+        <div class="loop-node">Jarvis writes results to MySQL</div>
+        <div class="loop-arrow">→</div>
+        <div class="loop-node">Triaging Agent classifies failures</div>
+        <div class="loop-arrow">→</div>
+        <div class="loop-node">Healing Agent auto-fixes ELEMENT_NOT_FOUND locators</div>
+        <div class="loop-arrow">→</div>
+        <div class="loop-node">PR raised on Jarvis repo</div>
+        <div class="loop-arrow">→</div>
+        <div class="loop-node">Engineer reviews and merges</div>
+        <div class="loop-arrow">→</div>
+        <div class="loop-node">Next CI run passes</div>
+      </div>
+      <p style="margin-top:1rem;">This is the loop that closes. The engineer touches two points: the merge decision and the product bug investigation. Everything in between — triage, fix, verification, PR — is autonomous.</p>
+    </div>
+
+    <p>The cycle time from CI failure to mergeable PR is typically under 15 minutes for a batch of 3–5 locator failures. That same batch manually would take a QA engineer 2–3 hours — find the failures, inspect the selectors, write the fixes, verify locally, open PRs.</p>
+
+    <div class="screenshot-block">
+      <img src="images/healing-session-summary.png" alt="Healing agent session summary" onclick="openModal(this)" />
+      <p class="screenshot-caption">The complete session summary — Ship step pushes the branch, opens the PR, posts the Slack notification, and prints timing per step. The entire cycle from queue pickup to mergeable PR: 1 minute 27 seconds.</p>
+    </div>
+
+    <!-- LIMITS AND GUARDRAILS -->
+    <h2 id="guardrails">Limits and Guardrails</h2>
+
+    <p>The healing agent is deliberately conservative. Every design decision prioritises engineer visibility and control over raw throughput.</p>
+
+    <ul class="guardrails">
+      <li>
+        <span class="guardrail-label">MAX 5 FIXES</span>
+        <span><strong>AUTO_FIX_MAX_FIXES_PER_RUN</strong> — prevents runaway commits on large deployments. If 20 locators broke, the first 5 are fixed autonomously. The rest appear in the PR with a note that they need manual review.</span>
+      </li>
+      <li>
+        <span class="guardrail-label">MAX 2 TRIES</span>
+        <span><strong>MAX_FIX_ATTEMPTS</strong> — if two attempts fail, the test is skipped with both attempts' failure outputs included in the PR description. Engineers get full context to fix it themselves.</span>
+      </li>
+      <li>
+        <span class="guardrail-label">ELEM NOT FOUND ONLY</span>
+        <span>Only <strong>ELEMENT_NOT_FOUND</strong> root cause qualifies for auto-healing. Timing and assertion failures require human judgement about whether to increase timeouts or revisit assertion logic.</span>
+      </li>
+      <li>
+        <span class="guardrail-label">HIGH CONFIDENCE ONLY</span>
+        <span>Medium and low confidence classifications from the triaging agent do not qualify. If the triaging agent isn't sure, the healing agent doesn't attempt it.</span>
+      </li>
+      <li>
+        <span class="guardrail-label">PR ALWAYS RAISED</span>
+        <span>Even if some fixes fail, a PR is created with what succeeded and detailed notes on what didn't. Engineers always have a single place to see the full picture of automated fix activity.</span>
+      </li>
+      <li>
+        <span class="guardrail-label">DRY RUN MODE</span>
+        <span><strong>AUTO_PUSH=false</strong> skips the PR and logs what would have been fixed. Useful for validating the agent's behaviour in a new environment before enabling live commits.</span>
+      </li>
+    </ul>
+
+    <div class="insight-box">
+      <h3>The principle behind the guardrails</h3>
+      <p>An agent that fixes tests perfectly 90% of the time but sometimes commits wrong changes in a way engineers can't trace is worse than no agent at all. Every guardrail here is about <strong>maintaining trust</strong>: the PR always shows what changed and why, the agent never commits silently, and the conservative qualification criteria mean false positives are extremely rare.</p>
+      <p>Engineers who review these PRs quickly learn to trust them — because the track record is clean and the failure cases are always surfaced transparently.</p>
+    </div>
+
+    <!-- CTA -->
+    <div class="article-cta">
+      <h3>Next: Talk to Tests</h3>
+      <p>The loop is closed. Now explore how your whole team can query the entire QA knowledge base in plain English — test plans, specs, runbooks, and live TestRail data, answered in seconds.</p>
+      <div class="cta-buttons">
+        <a href="feature-rag-chat.html" class="btn btn-primary">
+          Feature 5 — Talk to Tests
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+        <a href="feature-test-triaging.html" class="btn btn-ghost">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+          Feature 3 — Test Triaging
+        </a>
+        <a href="https://github.com/msr5464" target="_blank" class="btn btn-ghost">
+          <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
+          GitHub
+        </a>
+      </div>
+    </div>
+
+    <div class="article-tags">
+      <span class="tag">#ClaudeOpus</span>
+      <span class="tag">#SelfHealingTests</span>
+      <span class="tag">#PageObjectModel</span>
+      <span class="tag">#Maven</span>
+      <span class="tag">#GitHubCLI</span>
+      <span class="tag">#QAAutomation</span>
+      <span class="tag">#AIAgents</span>
+      <span class="tag">#Playwright</span>
+    </div>
+
+  </article>
+
+  <!-- TOC SIDEBAR -->
+  <aside class="toc-sidebar">
+    <div class="toc-title">On this page</div>
+    <ul class="toc-list">
+      <li><a href="#problem">The Problem</a></li>
+      <li><a href="#triggered">How It Gets Triggered</a></li>
+      <li><a href="#fix-pipeline">The Fix Pipeline</a></li>
+      <li><a href="#github-pr">The GitHub PR</a></li>
+      <li><a href="#closed-loop">The Closed Loop</a></li>
+      <li><a href="#guardrails">Limits and Guardrails</a></li>
+    </ul>
+    <div class="toc-sep"></div>
+    <div class="toc-author">
+      <div>
+        <div class="toc-author-name">Mukesh Rajput</div>
+        <div class="toc-author-title">QA Director · Aspire · AI Builder</div>
+      </div>
+    </div>
+  </aside>
+
+</div><!-- end article-layout -->
+
+<!-- IMAGE MODAL -->
+<div class="img-modal" id="imgModal" onclick="closeModal()">
+  <div class="img-modal-close" onclick="closeModal()">✕</div>
+  <img id="modalImg" src="" alt="" onclick="event.stopPropagation()" />
+</div>
+
+<footer>
+  <p>Built by <a href="index.html">Mukesh Rajput</a> · AI Test Studio · QA Agent Network · Jarvis</p>
+</footer>
+
+<script>
+  // Active TOC highlight
+  const sections = document.querySelectorAll('h2[id]');
+  const tocLinks = document.querySelectorAll('.toc-list a');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        tocLinks.forEach(l => l.classList.remove('active'));
+        const active = document.querySelector(`.toc-list a[href="#${e.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  sections.forEach(s => obs.observe(s));
+
+  // Image modal
+  function openModal(img) {
+    document.getElementById('modalImg').src = img.src;
+    document.getElementById('imgModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal() {
+    document.getElementById('imgModal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+</script>
+</body>
+</html>

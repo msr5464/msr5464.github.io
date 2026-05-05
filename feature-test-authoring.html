@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Test Authoring Agent: Plain English → GitHub PR — Mukesh Rajput</title>
+  <meta name="description" content="How the Test Authoring Agent takes plain-English test steps, validates selectors against a real browser with Playwright MCP, generates compilable Java, and ships a GitHub PR — without an engineer touching code." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      color: #0f172a;
+      background: #fff;
+      line-height: 1.75;
+      overflow-x: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+
+    /* ── Nav ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      background: rgba(15,23,42,0.85);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+    .nav-inner {
+      max-width: 1080px; margin: 0 auto; padding: 0 2rem;
+      height: 62px; display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-logo {
+      font-size: 1rem; font-weight: 900; letter-spacing: 0.06em; color: #fff;
+    }
+    .logo-dot { color: #10b981; }
+    .nav-back {
+      display: flex; align-items: center; gap: 0.5rem;
+      font-size: 0.82rem; font-weight: 500; color: rgba(255,255,255,0.6);
+      transition: color 0.2s;
+    }
+    .nav-back:hover { color: #10b981; }
+    .nav-back svg { flex-shrink: 0; }
+    .nav-right { display: flex; align-items: center; gap: 0.6rem; }
+    .nav-sep { color: rgba(255,255,255,0.2); font-size: 0.85rem; }
+
+    /* ── Hero ── */
+    .article-hero {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 55%, #0f2027 100%);
+      padding: 8rem 2rem 5rem;
+      position: relative; overflow: hidden;
+    }
+    .hero-orb {
+      position: absolute; border-radius: 50%; filter: blur(80px); pointer-events: none;
+    }
+    .orb-1 {
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(16,185,129,0.2) 0%, transparent 70%);
+      top: -120px; right: -100px;
+    }
+    .orb-2 {
+      width: 380px; height: 380px;
+      background: radial-gradient(circle, rgba(99,102,241,0.18) 0%, transparent 70%);
+      bottom: -60px; left: -80px;
+    }
+    .hero-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+    .hero-content {
+      max-width: 820px; margin: 0 auto; position: relative; z-index: 1;
+    }
+    .article-tag {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.28);
+      color: #34d399; padding: 0.3rem 0.9rem; border-radius: 100px;
+      font-size: 0.78rem; font-weight: 600; letter-spacing: 0.04em;
+      text-transform: uppercase; margin-bottom: 1.5rem;
+    }
+    .article-hero h1 {
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 800; color: #fff; line-height: 1.2;
+      letter-spacing: -0.02em; margin-bottom: 1.2rem;
+    }
+    .grad-text {
+      background: linear-gradient(135deg, #10b981, #34d399, #6366f1);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .article-meta {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 1.2rem;
+      font-size: 0.84rem; color: rgba(255,255,255,0.5); margin-bottom: 2rem;
+    }
+    .meta-item { display: flex; align-items: center; gap: 0.35rem; }
+    .meta-dot { width: 3px; height: 3px; background: rgba(255,255,255,0.25); border-radius: 50%; }
+    .hero-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .hero-chip {
+      background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.65); padding: 0.25rem 0.75rem;
+      border-radius: 100px; font-size: 0.75rem; font-weight: 500;
+    }
+
+    /* ── Feature Nav Bar ── */
+    .feature-nav {
+      background: #fff;
+      border-bottom: 1px solid #e2e8f0;
+      padding: 0 2rem;
+      position: sticky; top: 62px; z-index: 100;
+      overflow-x: auto;
+    }
+    .feature-nav-inner {
+      max-width: 1080px; margin: 0 auto;
+      display: flex; align-items: center; gap: 0.5rem;
+      padding: 0.75rem 0; white-space: nowrap;
+      justify-content: center;
+    }
+    .feature-nav-label {
+      font-size: 0.72rem; font-weight: 700; color: #94a3b8;
+      text-transform: uppercase; letter-spacing: 0.07em;
+      margin-right: 0.5rem; flex-shrink: 0;
+    }
+    .feat-pill {
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      padding: 0.3rem 0.85rem; border-radius: 100px;
+      font-size: 0.77rem; font-weight: 600;
+      border: 1px solid #e2e8f0; color: #64748b;
+      background: #f8fafc; transition: all 0.18s;
+      text-decoration: none; flex-shrink: 0;
+    }
+    .feat-pill:hover { border-color: #10b981; color: #10b981; background: #f0fdf4; }
+    .feat-pill.active {
+      background: #10b981; border-color: #10b981; color: #fff;
+    }
+    .feat-pill .feat-num {
+      font-size: 0.68rem; font-weight: 800; opacity: 0.75;
+    }
+
+    /* ── Layout ── */
+    .article-layout {
+      max-width: 1080px; margin: 0 auto; padding: 4rem 2rem 6rem;
+      display: grid; grid-template-columns: 1fr 260px; gap: 4rem; align-items: start;
+    }
+    @media (max-width: 900px) {
+      .article-layout { grid-template-columns: 1fr; }
+      .toc-sidebar { display: none; }
+    }
+
+    /* ── Article body ── */
+    .article-body { min-width: 0; }
+    .article-body p { font-size: 1.02rem; color: #334155; margin-bottom: 1.3rem; line-height: 1.8; }
+    .article-body h2 {
+      font-size: 1.45rem; font-weight: 800; color: #0f172a;
+      margin: 3rem 0 1rem; letter-spacing: -0.02em; line-height: 1.25;
+      padding-top: 1rem;
+    }
+    .article-body h3 {
+      font-size: 1.1rem; font-weight: 700; color: #0f172a;
+      margin: 2rem 0 0.6rem; letter-spacing: -0.01em;
+    }
+    .article-body ul, .article-body ol {
+      padding-left: 1.4rem; margin-bottom: 1.3rem;
+    }
+    .article-body li {
+      font-size: 1rem; color: #334155; margin-bottom: 0.45rem; line-height: 1.7;
+    }
+    .article-body strong { color: #0f172a; font-weight: 700; }
+    .article-body hr { border: none; border-top: 1px solid #e2e8f0; margin: 2.5rem 0; }
+    .article-body code {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 0.88em; background: #f1f5f9; color: #475569;
+      padding: 0.1em 0.4em; border-radius: 4px;
+    }
+
+    /* ── Intro callout ── */
+    .intro-callout {
+      background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
+      border-left: 3px solid #10b981;
+      padding: 1.2rem 1.5rem; border-radius: 0 8px 8px 0;
+      margin-bottom: 2rem;
+    }
+    .intro-callout p { color: #166534; margin: 0; font-size: 1rem; }
+
+    /* ── Screenshots ── */
+    .screenshot-block { margin: 2rem 0 2.5rem; }
+    .screenshot-block img {
+      width: 100%; border-radius: 10px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+      display: block; cursor: zoom-in;
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+    .screenshot-block img:hover {
+      box-shadow: 0 8px 40px rgba(0,0,0,0.14);
+      transform: translateY(-2px);
+    }
+    .screenshot-caption {
+      font-size: 0.82rem; color: #94a3b8; margin-top: 0.65rem;
+      text-align: center; font-style: italic; line-height: 1.5;
+    }
+
+    /* ── Pipeline steps ── */
+    .pipeline {
+      display: flex; flex-direction: column; gap: 0; margin: 1.5rem 0 2rem;
+    }
+    .pipe-step {
+      display: flex; gap: 1.2rem; position: relative; padding-bottom: 2rem;
+    }
+    .pipe-step:last-child { padding-bottom: 0; }
+    .pipe-left { display: flex; flex-direction: column; align-items: center; }
+    .pipe-num {
+      width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: #fff; font-size: 0.75rem; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      letter-spacing: 0.02em;
+    }
+    .pipe-line {
+      flex: 1; width: 2px; background: linear-gradient(to bottom, #d1fae5, transparent);
+      margin-top: 4px;
+    }
+    .pipe-step:last-child .pipe-line { display: none; }
+    .pipe-body { flex: 1; padding-top: 0.3rem; padding-bottom: 0.5rem; }
+    .pipe-title {
+      font-weight: 800; color: #0f172a; font-size: 1rem;
+      display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .pipe-time {
+      font-size: 0.72rem; font-weight: 600; color: #10b981;
+      background: #f0fdf4; border: 1px solid #bbf7d0;
+      padding: 0.1rem 0.5rem; border-radius: 100px;
+    }
+    .pipe-body p { font-size: 0.95rem; color: #475569; margin-bottom: 0.8rem; line-height: 1.75; }
+    .pipe-body p:last-child { margin-bottom: 0; }
+    .pipe-body ul { padding-left: 1.2rem; margin: 0.5rem 0 0; }
+    .pipe-body li { font-size: 0.93rem; color: #475569; margin-bottom: 0.3rem; line-height: 1.65; }
+
+    /* ── Code block ── */
+    .code-block {
+      background: #0f172a; border-radius: 10px;
+      padding: 1.4rem 1.6rem; margin: 1.5rem 0 2rem;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 0.82rem; line-height: 1.7;
+      color: #94a3b8; overflow-x: auto;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .code-block .g { color: #10b981; }
+    .code-block .b { color: #818cf8; }
+    .code-block .w { color: #e2e8f0; }
+    .code-block .a { color: #fbbf24; }
+    .code-block .r { color: #f87171; }
+
+    /* ── File list ── */
+    .file-list {
+      background: #f8fafc; border: 1px solid #e2e8f0;
+      border-radius: 10px; padding: 1.2rem 1.4rem; margin: 1.2rem 0;
+    }
+    .file-list-title {
+      font-size: 0.75rem; font-weight: 700; color: #64748b;
+      text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 0.8rem;
+    }
+    .file-item {
+      display: flex; align-items: center; gap: 0.6rem;
+      padding: 0.35rem 0; border-bottom: 1px solid #f1f5f9;
+      font-size: 0.88rem;
+    }
+    .file-item:last-child { border-bottom: none; }
+    .file-icon { font-size: 0.9rem; flex-shrink: 0; }
+    .file-name { font-family: 'Courier New', Courier, monospace; color: #0f172a; font-weight: 600; font-size: 0.83rem; }
+    .file-desc { color: #64748b; font-size: 0.8rem; margin-left: auto; }
+
+    /* ── Audit trail ── */
+    .audit-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 0.75rem; margin: 1.2rem 0 1.8rem;
+    }
+    .audit-item {
+      background: #f8fafc; border: 1px solid #e2e8f0;
+      border-radius: 8px; padding: 0.9rem 1rem;
+      transition: border-color 0.2s;
+    }
+    .audit-item:hover { border-color: #6366f1; }
+    .audit-item-icon { font-size: 1.1rem; margin-bottom: 0.3rem; }
+    .audit-item-name {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 0.78rem; font-weight: 700; color: #0f172a; margin-bottom: 0.2rem;
+    }
+    .audit-item-desc { font-size: 0.78rem; color: #64748b; line-height: 1.45; }
+
+    /* ── Insight box ── */
+    .insight-box {
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      border-radius: 12px; padding: 2rem; margin: 2rem 0;
+      border: 1px solid rgba(16,185,129,0.2);
+    }
+    .insight-box h3 { color: #34d399; margin-bottom: 0.8rem; font-size: 1rem; }
+    .insight-box p { color: #94a3b8; font-size: 0.95rem; margin: 0 0 0.7rem; line-height: 1.7; }
+    .insight-box p:last-child { margin-bottom: 0; }
+    .insight-box strong { color: #e2e8f0; }
+
+    /* ── Purple insight box variant ── */
+    .insight-box.purple {
+      border-color: rgba(99,102,241,0.25);
+    }
+    .insight-box.purple h3 { color: #a5b4fc; }
+
+    /* ── Timeline summary ── */
+    .timeline-summary {
+      background: #f8fafc; border: 1px solid #e2e8f0;
+      border-radius: 10px; padding: 1.4rem 1.6rem; margin: 1.5rem 0;
+    }
+    .timeline-summary-title {
+      font-size: 0.78rem; font-weight: 700; color: #64748b;
+      text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 1rem;
+    }
+    .timeline-row {
+      display: flex; align-items: baseline; gap: 1rem;
+      padding: 0.45rem 0; border-bottom: 1px solid #f1f5f9;
+      font-size: 0.88rem;
+    }
+    .timeline-row:last-child { border-bottom: none; }
+    .timeline-step { font-weight: 700; color: #10b981; min-width: 52px; }
+    .timeline-label { color: #0f172a; font-weight: 600; flex: 1; }
+    .timeline-time { color: #64748b; font-size: 0.82rem; white-space: nowrap; }
+
+    /* ── Article CTA ── */
+    .article-cta {
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      border-radius: 14px; padding: 2.5rem; margin: 3rem 0 1rem;
+      text-align: center; border: 1px solid rgba(16,185,129,0.15);
+    }
+    .article-cta h3 { color: #fff; font-size: 1.25rem; font-weight: 800; margin-bottom: 0.6rem; }
+    .article-cta p { color: #94a3b8; margin-bottom: 1.5rem; font-size: 0.95rem; }
+    .cta-buttons { display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.45rem;
+      padding: 0.65rem 1.4rem; border-radius: 8px;
+      font-size: 0.88rem; font-weight: 600; transition: all 0.2s; cursor: pointer;
+      text-decoration: none;
+    }
+    .btn-primary { background: #10b981; color: #fff; }
+    .btn-primary:hover { background: #059669; transform: translateY(-1px); }
+    .btn-ghost {
+      background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.8);
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+    .btn-ghost:hover { background: rgba(255,255,255,0.12); color: #fff; }
+
+    /* ── TOC Sidebar ── */
+    .toc-sidebar {
+      position: sticky; top: 118px;
+      background: #f8fafc; border: 1px solid #e2e8f0;
+      border-radius: 10px; padding: 1.4rem; font-size: 0.83rem;
+    }
+    .toc-title {
+      font-weight: 700; color: #0f172a; font-size: 0.75rem;
+      text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 1rem;
+    }
+    .toc-list { list-style: none; padding: 0; }
+    .toc-list li { margin-bottom: 0.1rem; }
+    .toc-list a {
+      display: block; padding: 0.35rem 0.6rem; border-radius: 5px;
+      color: #64748b; transition: all 0.15s; line-height: 1.4;
+    }
+    .toc-list a:hover { background: #e2e8f0; color: #0f172a; }
+    .toc-list a.active { background: #f0fdf4; color: #10b981; font-weight: 600; }
+    .toc-sep { height: 1px; background: #e2e8f0; margin: 0.75rem 0; }
+    .toc-nav-links { display: flex; flex-direction: column; gap: 0.4rem; }
+    .toc-nav-link {
+      display: flex; align-items: center; gap: 0.4rem;
+      font-size: 0.78rem; color: #64748b; padding: 0.3rem 0.5rem;
+      border-radius: 5px; transition: all 0.15s;
+    }
+    .toc-nav-link:hover { background: #e2e8f0; color: #0f172a; }
+    .toc-nav-link.next { color: #10b981; font-weight: 600; }
+    .toc-nav-link.next:hover { background: #f0fdf4; }
+    .toc-nav-link.prev { color: #64748b; }
+    .toc-author {
+      display: flex; align-items: center; gap: 0.6rem; margin-top: 1rem;
+      padding-top: 1rem; border-top: 1px solid #e2e8f0;
+    }
+    .toc-author-name { font-weight: 700; color: #0f172a; font-size: 0.82rem; }
+    .toc-author-title { font-size: 0.75rem; color: #94a3b8; }
+
+    /* ── Tags ── */
+    .article-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 2rem 0 0; }
+    .tag {
+      background: #f1f5f9; color: #475569;
+      padding: 0.3rem 0.8rem; border-radius: 100px;
+      font-size: 0.78rem; font-weight: 500;
+    }
+
+    /* ── Footer ── */
+    footer {
+      background: #0f172a; color: rgba(255,255,255,0.4);
+      text-align: center; padding: 2rem;
+      font-size: 0.82rem;
+    }
+    footer a { color: #10b981; }
+
+    /* ── Image modal ── */
+    .img-modal {
+      display: none; position: fixed; inset: 0; z-index: 1000;
+      background: rgba(0,0,0,0.85); backdrop-filter: blur(6px);
+      align-items: center; justify-content: center; padding: 2rem;
+    }
+    .img-modal.open { display: flex; }
+    .img-modal img {
+      max-width: 90vw; max-height: 88vh; border-radius: 10px;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.5);
+    }
+    .img-modal-close {
+      position: fixed; top: 1.5rem; right: 1.5rem;
+      background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15);
+      color: #fff; width: 38px; height: 38px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 1.1rem; transition: background 0.2s;
+    }
+    .img-modal-close:hover { background: rgba(255,255,255,0.2); }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">Mukesh<span class="logo-dot">.</span></a>
+    <div class="nav-right">
+      <a href="index.html#ai" class="nav-back">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        Portfolio
+      </a>
+      <span class="nav-sep">/</span>
+      <a href="ai-agent-network.html" class="nav-back">Overview</a>
+    </div>
+  </div>
+</nav>
+
+<!-- FEATURE NAV -->
+<div class="feature-nav">
+  <div class="feature-nav-inner">
+    <span class="feature-nav-label">Features</span>
+    <a href="ai-agent-network.html" class="feat-pill">
+      <span class="feat-num">↗</span> Overview
+    </a>
+    <a href="feature-test-generation.html" class="feat-pill">
+      <span class="feat-num">01</span> Test Generation
+    </a>
+    <a href="feature-test-authoring.html" class="feat-pill active">
+      <span class="feat-num">02</span> Test Authoring Agent
+    </a>
+    <a href="feature-test-triaging.html" class="feat-pill">
+      <span class="feat-num">03</span> Test Triaging Agent
+    </a>
+    <a href="feature-test-healing.html" class="feat-pill">
+      <span class="feat-num">04</span> Test Healing Agent
+    </a>
+    <a href="feature-rag-chat.html" class="feat-pill">
+      <span class="feat-num">05</span> Talk to Tests
+    </a>
+  </div>
+</div>
+
+<!-- HERO -->
+<header class="article-hero">
+  <div class="hero-orb orb-1"></div>
+  <div class="hero-orb orb-2"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+    <div class="article-tag">🤖 Feature 2 of 5</div>
+    <h1>The Test Authoring Agent: <span class="grad-text">Plain English → GitHub PR</span></h1>
+    <div class="article-meta">
+      <span class="meta-item">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        12 min read
+      </span>
+      <span class="meta-dot"></span>
+      <span class="meta-item">Mukesh Rajput</span>
+      <span class="meta-dot"></span>
+      <span class="meta-item">May 2026</span>
+    </div>
+    <div class="hero-chips">
+      <span class="hero-chip">Claude Opus</span>
+      <span class="hero-chip">Playwright MCP</span>
+      <span class="hero-chip">Java</span>
+      <span class="hero-chip">Maven</span>
+      <span class="hero-chip">GitHub CLI</span>
+    </div>
+  </div>
+</header>
+
+<!-- MAIN CONTENT -->
+<div class="article-layout">
+
+  <!-- ARTICLE -->
+  <article class="article-body">
+
+    <div class="intro-callout">
+      <p>The Test Authoring Agent takes plain-English test steps and turns them into a framework-compliant GitHub PR — complete with real browser validation, compilable Java code, and Maven-verified test execution. Engineers describe what they want to test. The agent handles everything else.</p>
+    </div>
+
+    <p>Writing automation code is one of the most time-consuming things a QA engineer does. Not because it's intellectually difficult — the logic is usually straightforward. It's slow because of the overhead: understanding the framework conventions, looking up the right class patterns, getting the right selectors, wiring everything together correctly, debugging compilation errors, running Maven, fixing test failures. A single feature might take 2–3 days from "we need to automate this" to a reviewed PR.</p>
+
+    <p>The Test Authoring Agent compresses that to under 10 minutes. And the engineer never touches Java.</p>
+
+    <!-- THE BIG IDEA -->
+    <h2 id="the-big-idea">The Big Idea</h2>
+
+    <p>The agent is triggered in one of two ways: through the UI in the <strong>Tests → Automation Code</strong> tab, or by dropping a <code>.txt</code> file into the queue directory and letting the file-watcher pick it up automatically. Either way, the input is the same: a module name, a platform type (Web, API, or Both), and plain-English test steps describing the scenario.</p>
+
+    <p>From that input, a five-step pipeline runs entirely without human involvement. By the time it's done, a git branch exists in the Jarvis repository with complete, framework-compliant Java files, Maven has successfully run the tests, and a GitHub PR has been raised with a description of everything that was generated. A Slack notification goes out. The engineer reviews the diff and merges — or leaves comments and the next iteration picks them up.</p>
+
+    <p>The engineer never touches Java. By the time a PR appears in GitHub, the code has been written, validated against a real browser, compiled, tested, and fixed — all without human involvement in any of those steps.</p>
+
+    <div class="screenshot-block">
+      <img src="images/customer-tab-agents.png" alt="The Test Authoring Agent interface" onclick="openModal(this)" />
+      <p class="screenshot-caption">The Test Authoring Agent interface — module name, platform type (Web / API / Both), plain-English test steps, and a "Run Agent" button. You can also pull automatable cases directly from TestRail via the "From TestRail" tab.</p>
+    </div>
+
+    <!-- THE 5-STEP PIPELINE -->
+    <h2 id="the-5-step-pipeline">The 5-Step Pipeline</h2>
+
+    <p>Every agent run executes exactly five steps, in sequence. Each step's output feeds into the next. The live console in the UI streams every action in real time — you can watch Claude navigate the browser, see the Java files being written, and follow the Maven output line by line.</p>
+
+    <div class="pipeline">
+
+      <div class="pipe-step">
+        <div class="pipe-left">
+          <div class="pipe-num">01</div>
+          <div class="pipe-line"></div>
+        </div>
+        <div class="pipe-body">
+          <div class="pipe-title">Parse <span class="pipe-time">~30 seconds</span></div>
+          <p>Claude Opus reads the plain-English test steps alongside <code>Jarvis/CLAUDE.md</code> — a plain-text conventions file that defines every naming rule, class pattern, and explicit DO/DON'T for the Java framework. This is not a generic code generation prompt. CLAUDE.md tells Claude exactly what package structure to use, how to name every class, what each class type must extend, which helpers are available and how to use them.</p>
+          <p>The output of Step 01 is a structured <strong>JSON generation plan</strong> that specifies everything the subsequent steps need: the module name, test type (API / Web / Both), every Java class that needs to be created (Data POJOs, Builders, Helpers, API enum classes, Page Objects, Test classes), their fields and methods, the API endpoints to cover, the UI pages that will be interacted with and their expected element descriptions. No code is written yet — just a precise specification of what will be written.</p>
+        </div>
+      </div>
+
+      <div class="pipe-step">
+        <div class="pipe-left">
+          <div class="pipe-num">02</div>
+          <div class="pipe-line"></div>
+        </div>
+        <div class="pipe-body">
+          <div class="pipe-title">Validate Web <span class="pipe-time">~2–3 minutes (web tests only)</span></div>
+          <p>Before writing a single line of Java, Claude takes control of a real headless Chromium browser via <strong>Playwright MCP</strong> — the same browser automation tool used by the Jarvis test framework itself. This step only runs for Web or Both platform types; API-only tests skip directly to Step 03.</p>
+          <p>Claude navigates to the actual staging environment URL from the generation plan. Then it clicks through the feature flow step by step, exactly as described in the plain-English input. For each step, it locates the relevant DOM element, records the confirmed selector (CSS, XPath, or ARIA depending on what's most stable), and marks the step as either <strong>STEP_PASSED</strong> or <strong>STEP_FAILED</strong>.</p>
+          <p>Only confirmed selectors — those that Claude successfully found and interacted with in the real browser — make it into the generation step. This eliminates an entire class of first-run compilation failures: guessed or hallucinated selectors that look plausible but don't exist in the actual DOM. The extra 2–3 minutes spent here saves significantly more time in the debug loop.</p>
+        </div>
+      </div>
+
+      <div class="pipe-step">
+        <div class="pipe-left">
+          <div class="pipe-num">03</div>
+          <div class="pipe-line"></div>
+        </div>
+        <div class="pipe-body">
+          <div class="pipe-title">Generate <span class="pipe-time">~1–2 minutes</span></div>
+          <p>With the JSON plan and confirmed selectors in hand, Claude generates the Java files. But it doesn't do this from a blank prompt. Claude reads three inputs simultaneously:</p>
+          <ul>
+            <li><strong>The JSON generation plan</strong> from Step 01</li>
+            <li><strong>The confirmed selectors</strong> from Step 02</li>
+            <li><strong>Nine reference Java files</strong> from the Jarvis repository — real, working examples of GitHubHelper, SauceDemoHelper, ApiHelper, and their corresponding test classes. These are not toy examples. They're production code that shows Claude the exact patterns being used, the exact method signatures, the exact annotations.</li>
+          </ul>
+          <p>Claude then writes complete, compilable Java files directly into the Jarvis repository — not as strings to be reviewed, but as actual <code>.java</code> files in the correct package directories. For a Web + API test, this typically includes: a Data POJO, a Builder, a Helper class extending ApiHelper or BasePage, an API enum implementing the ApiDetails interface, Page Object classes extending BasePage, and Test classes extending TestBase with <code>@DataProvider</code>-parameterised test methods.</p>
+        </div>
+      </div>
+
+      <div class="pipe-step">
+        <div class="pipe-left">
+          <div class="pipe-num">04</div>
+          <div class="pipe-line"></div>
+        </div>
+        <div class="pipe-body">
+          <div class="pipe-title">Run &amp; Fix <span class="pipe-time">~2–5 minutes, up to 3 attempts</span></div>
+          <p>Maven runs the specific generated test method(s) using a targeted command: <code>mvn test -Dtest=ClassName#methodName</code>. Results are read from <code>test-results/report.json</code> — a structured JSON file written by Jarvis's <code>JsonTestReporter.java</code> after every test run. This gives the agent machine-readable pass/fail status with full failure details, rather than having to parse Maven's console output.</p>
+          <p>If any test fails — whether from a compilation error, a runtime exception, or an actual assertion failure — the full error output is fed back into Claude's next prompt. Claude now knows exactly what went wrong: the specific line, the specific error message, the specific test that failed. It corrects the code and Maven runs again. This retry loop runs up to three times.</p>
+          <p>Most generations pass on the first or second attempt. The third attempt is rare and typically signals a structural issue with the original plain-English input that needs clarification — in which case the agent raises the PR anyway with a <strong>NEEDS-REVIEW</strong> verdict and the full error context attached, so the engineer can resolve it in minutes rather than starting from scratch.</p>
+        </div>
+      </div>
+
+      <div class="pipe-step">
+        <div class="pipe-left">
+          <div class="pipe-num">05</div>
+          <div class="pipe-line"></div>
+        </div>
+        <div class="pipe-body">
+          <div class="pipe-title">Ship <span class="pipe-time">~30 seconds</span></div>
+          <p>A git branch is created with a structured name: <code>feat/qa-autocreate/&lt;feature&gt;-&lt;timestamp&gt;</code>. All new Java files are committed with a descriptive commit message, pushed to the remote GitHub repository, and <code>gh pr create</code> raises a pull request. The PR description includes a summary of what was generated — which classes, what they cover, and whether the tests passed on the first or second attempt.</p>
+          <p>A Slack notification goes to <code>#qa-reports</code> with a link to the PR. The engineer opens it, reviews the diff, and merges — or leaves review comments, which are addressed in the next iteration. The entire flow from "click Run Agent" to "PR is open and waiting for review" takes under 10 minutes.</p>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="screenshot-block">
+      <img src="images/test-authoring-1.png" alt="Full Test Authoring Agent view with live console" onclick="openModal(this)" />
+      <p class="screenshot-caption">The full Test Authoring Agent view — Write tab for direct input, Saved Drafts for reusing previous inputs, From TestRail to pull automatable cases directly. The live console below streams every step of the pipeline in real time.</p>
+    </div>
+
+    <div class="timeline-summary">
+      <div class="timeline-summary-title">Total time: plain English → reviewed PR</div>
+      <div class="timeline-row">
+        <span class="timeline-step">Step 01</span>
+        <span class="timeline-label">Parse + generate JSON plan</span>
+        <span class="timeline-time">~30 seconds</span>
+      </div>
+      <div class="timeline-row">
+        <span class="timeline-step">Step 02</span>
+        <span class="timeline-label">Browser validation (web tests)</span>
+        <span class="timeline-time">~2–3 minutes</span>
+      </div>
+      <div class="timeline-row">
+        <span class="timeline-step">Step 03</span>
+        <span class="timeline-label">Generate Java files</span>
+        <span class="timeline-time">~1–2 minutes</span>
+      </div>
+      <div class="timeline-row">
+        <span class="timeline-step">Step 04</span>
+        <span class="timeline-label">Run, fix, verify (up to 3x)</span>
+        <span class="timeline-time">~2–5 minutes</span>
+      </div>
+      <div class="timeline-row">
+        <span class="timeline-step">Step 05</span>
+        <span class="timeline-label">Branch + PR + Slack</span>
+        <span class="timeline-time">~30 seconds</span>
+      </div>
+    </div>
+
+    <div class="screenshot-block">
+      <img src="images/test-authoring-2.png" alt="Agent pipeline streaming output" onclick="openModal(this)" />
+      <p class="screenshot-caption">The agent pipeline streaming in real time — each numbered step appears as it executes. The console output shows Claude navigating the browser, writing files, and running Maven in sequence.</p>
+    </div>
+
+    <div class="screenshot-block">
+      <img src="images/test-authoring-3.png" alt="Generated test files and GitHub PR" onclick="openModal(this)" />
+      <p class="screenshot-caption">The final output — generated Java test files committed to the automation repo and a pull request raised automatically, ready for review.</p>
+    </div>
+
+    <!-- THE SECRET: CLAUDE.MD -->
+    <h2 id="the-secret-claude-md">The Secret: CLAUDE.md</h2>
+
+    <p>The entire agent network's code quality depends on one file: <code>Jarvis/CLAUDE.md</code>. Understanding why this file exists — and what it contains — is essential to understanding why the generated code is framework-compliant rather than generic boilerplate.</p>
+
+    <p>Without CLAUDE.md, Claude would generate Java that looks plausible but doesn't fit the framework. Classes with the wrong names. Wrong inheritance hierarchies. Made-up helper methods. Annotations in the wrong places. Code that compiles but doesn't integrate with TestNG's DataProvider setup, or doesn't wire up to the BrowserStack configuration, or doesn't follow the Builder pattern the rest of the codebase uses.</p>
+
+    <p>CLAUDE.md solves this by being a complete, plain-text specification of the framework — written for an AI reader, not a human one. It defines:</p>
+
+    <ul>
+      <li><strong>Package structure</strong> — exactly where every class type lives in the directory tree</li>
+      <li><strong>Class naming conventions</strong> — module-prefix rules for Data, Builder, Helper, API enum, Page Object, and Test class names</li>
+      <li><strong>Inheritance rules</strong> — which base classes must be extended and when</li>
+      <li><strong>Available helpers</strong> — what methods exist in ApiHelper, BasePage, and TestBase, and how to use them correctly</li>
+      <li><strong>Explicit DO rules</strong> — use <code>@DataProvider</code> for parameterised tests, use the Builder pattern for all test data construction, extend TestBase in all test classes</li>
+      <li><strong>Explicit DO NOT rules</strong> — do not use <code>Thread.sleep</code>, do not hardcode URLs, do not create new helper methods when existing ones serve the purpose</li>
+    </ul>
+
+    <div class="insight-box purple">
+      <h3>The key leverage point</h3>
+      <p>When the framework changes — a new base class is introduced, a helper method is renamed, a new annotation becomes required — updating <strong>CLAUDE.md</strong> automatically teaches all agents the new pattern on the next run. <strong>No prompt changes are needed. No Python code is updated.</strong> The conventions live in the Jarvis repository alongside the Java code, version-controlled and reviewable by the whole team as part of normal code review.</p>
+      <p>This means the framework itself controls the agent's output. The team that owns the Java framework owns the agent's behaviour, directly, through the same files they already maintain.</p>
+    </div>
+
+    <!-- AUDIT TRAIL -->
+    <h2 id="audit-trail">Audit Trail</h2>
+
+    <p>Every agent run creates a full audit trail. A session folder is created at <code>agents/test-authoring-agent/audit/&lt;SESSION_ID&gt;/</code> the moment a run starts, and each step writes its output there as the pipeline progresses.</p>
+
+    <div class="audit-grid">
+      <div class="audit-item">
+        <div class="audit-item-icon">📋</div>
+        <div class="audit-item-name">01-parse.json</div>
+        <div class="audit-item-desc">The complete JSON generation plan — every class, field, method, and endpoint the agent intends to create.</div>
+      </div>
+      <div class="audit-item">
+        <div class="audit-item-icon">🌐</div>
+        <div class="audit-item-name">02-validate-web.json</div>
+        <div class="audit-item-desc">Browser validation output — confirmed selectors, STEP_PASSED / STEP_FAILED for each action, and the generated Playwright script.</div>
+      </div>
+      <div class="audit-item">
+        <div class="audit-item-icon">☕</div>
+        <div class="audit-item-name">03-generate.json</div>
+        <div class="audit-item-desc">List of Java files written, their paths in the Jarvis repo, and the full content of each file.</div>
+      </div>
+      <div class="audit-item">
+        <div class="audit-item-icon">🧪</div>
+        <div class="audit-item-name">04-run-and-fix.json</div>
+        <div class="audit-item-desc">Maven output for each attempt, failure messages, and the corrections Claude made between attempts.</div>
+      </div>
+      <div class="audit-item">
+        <div class="audit-item-icon">🚀</div>
+        <div class="audit-item-name">05-ship.json</div>
+        <div class="audit-item-desc">Branch name, commit SHA, PR URL, and the full Slack notification payload.</div>
+      </div>
+      <div class="audit-item">
+        <div class="audit-item-icon">✅</div>
+        <div class="audit-item-name">.verdict</div>
+        <div class="audit-item-desc">APPROVED if all tests passed; NEEDS-REVIEW if the agent exhausted retries. Both result in a PR being raised.</div>
+      </div>
+    </div>
+
+    <p>This audit trail is not just a log file — it is exposed via the HTTP server. The UI's <strong>History</strong> tab can replay any past session: you can see the JSON plan from Step 01, watch the browser validation steps, and review exactly what was generated and why. This is particularly useful when a NEEDS-REVIEW verdict needs investigation — everything Claude tried, and every error it encountered, is preserved in structured form.</p>
+
+    <div class="insight-box">
+      <h3>Why structured audit files matter</h3>
+      <p>Debugging an AI agent run should not require reading raw log files. By writing each step's output as structured JSON, the system makes every decision inspectable: you can see <strong>exactly what plan Claude created</strong>, <strong>exactly which selectors were confirmed</strong>, <strong>exactly what errors caused a retry</strong>, and <strong>exactly what corrections were made</strong>. When something goes wrong — and occasionally something does — the audit trail lets you find it in seconds rather than minutes.</p>
+    </div>
+
+    <!-- TESTING MODE -->
+    <h2 id="testing-mode">Testing Mode (For Iteration)</h2>
+
+    <p>Developing new scenarios, debugging a specific failure, or iterating on the CLAUDE.md conventions means running the agent repeatedly. Steps 01 and 02 — the LLM parse and the browser validation — are the most expensive parts of the pipeline: they take 3–4 minutes combined and incur API costs on every run.</p>
+
+    <p>Testing mode solves this. Set the environment variable <code>TESTING_MODE=true</code> and the agent caches the output of Steps 01 and 02 to disk on the first run. On all subsequent runs for the same module, it restores from cache — skipping the Claude parse and the Playwright browser session entirely. Execution jumps straight to Step 03 (Generate), which means you can iterate on code generation and the run/fix loop without paying the cost of the first two steps each time.</p>
+
+    <div class="code-block">
+<span class="g"># Enable testing mode for fast iteration</span>
+<span class="w">export</span> TESTING_MODE=<span class="a">true</span>
+
+<span class="g"># Run the agent — Steps 01 and 02 restore from cache</span>
+<span class="w">python</span> agents/test-authoring-agent/run.py
+
+<span class="g"># When you want fresh browser validation, clear the cache</span>
+<span class="w">rm</span> -rf agents/test-authoring-agent/cache/<span class="b">&lt;module-name&gt;</span>/
+    </div>
+
+    <p>The cache is keyed by module name, so you can have multiple modules cached simultaneously. Clearing the cache for one module triggers a fresh Step 01 and Step 02 on the next run for that module, without affecting cached state for others.</p>
+
+    <p>This mode is explicitly designed for the development workflow: build the agent, run it, see what it generates, update CLAUDE.md or the input, run it again — fast. In production runs, <code>TESTING_MODE</code> is not set, and every step executes from scratch every time.</p>
+
+    <hr />
+
+    <div class="article-cta">
+      <h3>Next: The Test Triaging Agent</h3>
+      <p>The Authoring Agent writes the code. The Triaging Agent keeps your CI signal clean — classifying every failure as a product bug or automation issue automatically, with an adversarial review step to catch misclassifications.</p>
+      <div class="cta-buttons">
+        <a href="feature-test-triaging.html" class="btn btn-primary">
+          Feature 3: Test Triaging
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+        <a href="feature-test-generation.html" class="btn btn-ghost">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+          Feature 1: Test Generation
+        </a>
+      </div>
+    </div>
+
+    <div class="article-tags">
+      <span class="tag">#TestAuthoring</span>
+      <span class="tag">#ClaudeOpus</span>
+      <span class="tag">#PlaywrightMCP</span>
+      <span class="tag">#JavaAutomation</span>
+      <span class="tag">#Maven</span>
+      <span class="tag">#GitHubPR</span>
+      <span class="tag">#AIAgents</span>
+      <span class="tag">#QAAutomation</span>
+      <span class="tag">#CLAUDEMD</span>
+    </div>
+
+  </article>
+
+  <!-- TOC SIDEBAR -->
+  <aside class="toc-sidebar">
+    <div class="toc-title">On this page</div>
+    <ul class="toc-list">
+      <li><a href="#the-big-idea">The Big Idea</a></li>
+      <li><a href="#the-5-step-pipeline">The 5-Step Pipeline</a></li>
+      <li><a href="#the-secret-claude-md">The Secret: CLAUDE.md</a></li>
+      <li><a href="#audit-trail">Audit Trail</a></li>
+      <li><a href="#testing-mode">Testing Mode</a></li>
+    </ul>
+    <div class="toc-sep"></div>
+    <div class="toc-nav-links">
+      <div class="toc-nav-link" style="font-size:0.72rem;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;padding:0 0.5rem 0.2rem;">Features</div>
+      <a href="feature-test-generation.html" class="toc-nav-link prev">
+        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        Feature 1: Test Generation
+      </a>
+      <a href="feature-test-triaging.html" class="toc-nav-link next">
+        Feature 3: Test Triaging
+        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+      </a>
+      <a href="feature-test-healing.html" class="toc-nav-link">Feature 4: Healing Agent</a>
+      <a href="feature-rag-chat.html" class="toc-nav-link">Feature 5: Talk to Tests</a>
+    </div>
+    <div class="toc-sep"></div>
+    <div class="toc-author">
+      <div>
+        <div class="toc-author-name">Mukesh Rajput</div>
+        <div class="toc-author-title">QA Director · Aspire · AI Builder</div>
+      </div>
+    </div>
+  </aside>
+
+</div><!-- end article-layout -->
+
+<!-- IMAGE MODAL -->
+<div class="img-modal" id="imgModal" onclick="closeModal()">
+  <div class="img-modal-close" onclick="closeModal()">&#x2715;</div>
+  <img id="modalImg" src="" alt="" onclick="event.stopPropagation()" />
+</div>
+
+<footer>
+  <p>Built by <a href="index.html">Mukesh Rajput</a> · AI Test Studio · QA Agent Network · Jarvis</p>
+</footer>
+
+<script>
+  // Active TOC highlight
+  const sections = document.querySelectorAll('h2[id]');
+  const tocLinks = document.querySelectorAll('.toc-list a');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        tocLinks.forEach(l => l.classList.remove('active'));
+        const active = document.querySelector(`.toc-list a[href="#${e.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  sections.forEach(s => obs.observe(s));
+
+  // Image modal
+  function openModal(img) {
+    document.getElementById('modalImg').src = img.src;
+    document.getElementById('imgModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal() {
+    document.getElementById('imgModal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+</script>
+</body>
+</html>
