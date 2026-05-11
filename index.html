@@ -408,7 +408,7 @@
         <div class="flagship-left">
           <span class="flagship-badge">Flagship Project · Open Source · Live</span>
           <h3 class="flagship-title">AI Test Studio &amp; QA Agent Network</h3>
-          <p class="flagship-desc">A production network of <strong style="color:#e2e8f0">4 AI agents</strong> that closes the loop on testing — from requirements to verified code, no human in the pipeline. Three repos working together: an AI Studio UI, a multi-agent backend, and a Java test framework that verifies every generated test actually compiles and runs green.</p>
+          <p class="flagship-desc">A production network of <strong style="color:#e2e8f0">4 AI agents</strong> that automates the end-to-end QA lifecycle — from converting requirements and plain-English test scenarios into automation code, to classifying daily test failures into Product Bugs vs Automation Issues, and automatically healing automation failures.</p>
           <div class="flagship-meta">
             <span class="flagship-meta-item">4 AI agents</span>
             <span class="flagship-meta-sep">·</span>
@@ -418,7 +418,8 @@
           </div>
           <div class="flagship-ctas">
             <a href="ai-agent-network.html" class="flagship-cta-primary">Read Full Deep Dive →</a>
-            <a href="https://github.com/msr5464" target="_blank" class="flagship-cta-ghost">GitHub ↗</a>
+            <a href="https://github.com/msr5464/AI-Test-Studio" target="_blank" class="flagship-cta-ghost">AI Test Studio ↗</a>
+            <a href="https://github.com/msr5464/AI-Agent-Network" target="_blank" class="flagship-cta-ghost">AI Agent Network ↗</a>
           </div>
         </div>
         <div class="flagship-right">
@@ -465,32 +466,48 @@
 
       <div class="other-projects-grid">
 
-        <div class="other-card">
-          <div class="other-card-num">Open Source · ⭐ 2</div>
-          <div class="other-card-title">QA AI Agent <a href="https://github.com/msr5464/QA-AI-Agent" target="_blank" class="repo-link">GitHub ↗</a></div>
-          <p class="other-card-desc">Two-level AI classification: Level 1 — Product Bug vs. Automation Issue; Level 2 — pinpoints root cause. Smart flaky test detection with configurable thresholds across N runs.</p>
-          <div class="other-card-chips">
-            <span class="chip">GPT-4</span><span class="chip">Gemini</span><span class="chip">Ollama</span><span class="chip">MySQL</span><span class="chip">Python</span>
-          </div>
-        </div>
-
-        <div class="other-card">
+        <a href="https://github.com/msr5464/AI-Test-Studio" target="_blank" rel="noopener" class="other-card">
           <div class="other-card-num">Open Source · ⭐ 3</div>
-          <div class="other-card-title">In-house Knowledge AI <a href="https://github.com/msr5464/Knowledge-AI" target="_blank" class="repo-link">GitHub ↗</a></div>
+          <div class="other-card-title">AI Test Studio</div>
+          <p class="other-card-desc">Browser-based orchestration hub for the entire AI agent network. Test generation from requirements, RAG chat over the QA knowledge base, TestRail &amp; Confluence sync, and admin knowledge base — all in one Flask UI.</p>
+          <div class="other-card-chips">
+            <span class="chip">Python</span><span class="chip">Flask</span><span class="chip">ChromaDB</span><span class="chip">LangChain</span><span class="chip">TestRail API</span>
+          </div>
+          <div class="card-github-cta">
+            <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
+            View on GitHub
+            <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </div>
+        </a>
+
+        <a href="https://github.com/msr5464/AI-Agent-Network" target="_blank" rel="noopener" class="other-card">
+          <div class="other-card-num">Open Source · ⭐ 5</div>
+          <div class="other-card-title">AI Agent Network</div>
+          <p class="other-card-desc">Three Claude-powered agents running as an HTTP server: Test Authoring (plain English → GitHub PR), Test Triaging (classifies CI failures with adversarial review), and Test Healing (auto-fixes broken locators &amp; raises PRs).</p>
+          <div class="other-card-chips">
+            <span class="chip">Claude</span><span class="chip">Python</span><span class="chip">Playwright MCP</span><span class="chip">SSE</span><span class="chip">GitHub CLI</span>
+          </div>
+          <div class="card-github-cta">
+            <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
+            View on GitHub
+            <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </div>
+        </a>
+
+        <a href="https://github.com/msr5464/Knowledge-AI" target="_blank" rel="noopener" class="other-card">
+          <div class="other-card-num">Open Source · ⭐ 3</div>
+          <div class="other-card-title">In-house Knowledge AI</div>
           <p class="other-card-desc">100% locally hosted RAG system — completely private. Company docs → intelligent knowledge base in natural language. Includes Slack bots: DevopsBot &amp; TechSupportBot.</p>
           <div class="other-card-chips">
             <span class="chip">LangChain</span><span class="chip">ChromaDB</span><span class="chip">Ollama</span><span class="chip">Slack API</span><span class="chip">Flask</span>
           </div>
-        </div>
-
-        <div class="other-card">
-          <div class="other-card-num">Open Source · ⭐ 34</div>
-          <div class="other-card-title">Quality Dashboard <a href="https://github.com/msr5464/QA-Dashboard" target="_blank" class="repo-link">GitHub ↗</a></div>
-          <p class="other-card-desc">Most starred project. Analytics platform covering FCT coverage, automation stability, and bug metrics across prod, staging &amp; FCT environments with dynamic filtering.</p>
-          <div class="other-card-chips">
-            <span class="chip">PHP 7.4+</span><span class="chip">MySQL 8</span><span class="chip">JavaScript</span><span class="chip">TestRail</span><span class="chip">Jira</span>
+          <div class="card-github-cta">
+            <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
+            View on GitHub
+            <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
           </div>
-        </div>
+        </a>
+
 
       </div>
 
@@ -501,7 +518,7 @@
 
       <div class="frameworks-grid">
 
-        <div class="fw-card">
+        <a href="https://github.com/msr5464/Selenium-Automation-Framework" target="_blank" rel="noopener" class="fw-card">
           <div class="fw-header">
             <div>
               <span class="fw-name">THANOS</span>
@@ -509,14 +526,19 @@
             </div>
             <span class="oss-lang-badge">Java</span>
           </div>
-          <h3><a href="https://github.com/msr5464/Selenium-Automation-Framework" target="_blank">Selenium Automation Framework</a></h3>
+          <h3>Selenium Automation Framework</h3>
           <p>Hybrid POM + Data-Driven framework on Selenium 4.15, Java 21, TestNG 7.9. Web, API (REST-Assured), and Mobile (Appium) under one roof. Cross-browser, MongoDB support, zero deprecated code.</p>
           <div class="fw-chips">
             <span class="chip">Selenium 4</span><span class="chip">Java 21</span><span class="chip">RestAssured</span><span class="chip">Appium</span><span class="chip">TestNG</span>
           </div>
-        </div>
+          <div class="card-github-cta">
+            <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
+            View on GitHub
+            <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </div>
+        </a>
 
-        <div class="fw-card">
+        <a href="https://github.com/msr5464/Playwright-Automation-Framework" target="_blank" rel="noopener" class="fw-card">
           <div class="fw-header">
             <div>
               <span class="fw-name">JARVIS</span>
@@ -524,22 +546,37 @@
             </div>
             <span class="oss-lang-badge">Java</span>
           </div>
-          <h3><a href="https://github.com/msr5464/Playwright-Automation-Framework" target="_blank">Playwright Automation Framework</a></h3>
+          <h3>Playwright Automation Framework</h3>
           <p>Modern Playwright-based framework covering Chromium, Firefox, and WebKit. Shared core layer for Web, REST API, and Mobile. Each test gets a fresh isolated config — no shared state between runs.</p>
           <div class="fw-chips">
             <span class="chip">Playwright</span><span class="chip">Java 21</span><span class="chip">RestAssured</span><span class="chip">Appium</span><span class="chip">TestNG</span>
           </div>
-        </div>
-
-        <div class="fw-card fw-github">
-          <div class="oss-cta-inner">
-            <div class="oss-cta-icon">
-              <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
-            </div>
-            <p style="font-size:0.82rem;color:#64748b;margin-top:0.3rem">5 public repos · Building in public since 2017</p>
-            <a href="https://github.com/msr5464" target="_blank" class="btn btn-primary" style="margin-top:0.9rem;font-size:0.82rem;padding:0.5rem 1.1rem;">View GitHub ↗</a>
+          <div class="card-github-cta">
+            <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
+            View on GitHub
+            <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
           </div>
-        </div>
+        </a>
+
+        <a href="https://github.com/msr5464/QA-Dashboard" target="_blank" rel="noopener" class="fw-card">
+          <div class="fw-header">
+            <div>
+              <span class="fw-name">QA Dashboard</span>
+              <span class="fw-stars">⭐ 34</span>
+            </div>
+            <span class="oss-lang-badge">PHP</span>
+          </div>
+          <h3>QA Quality Dashboard</h3>
+          <p>Most starred project. Analytics platform covering FCT coverage, automation stability, and bug metrics across prod, staging &amp; FCT environments — with dynamic filtering and TestRail &amp; Jira integration.</p>
+          <div class="fw-chips">
+            <span class="chip">PHP 7.4+</span><span class="chip">MySQL 8</span><span class="chip">JavaScript</span><span class="chip">TestRail</span><span class="chip">Jira</span>
+          </div>
+          <div class="card-github-cta">
+            <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
+            View on GitHub
+            <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </div>
+        </a>
 
       </div>
 
