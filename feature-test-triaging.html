@@ -3,8 +3,24 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The Test Triaging Agent — Mukesh Rajput</title>
-  <meta name="description" content="How a 5-step AI pipeline classifies every CI failure automatically — product bug vs automation issue — with adversarial review between Claude Opus and Sonnet." />
+  <title>The Test Triaging Agent | Mukesh Rajput</title>
+  <link rel="icon" href="favicon.ico" sizes="any" />
+  <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png" />
+  <link rel="apple-touch-icon" href="images/apple-touch-icon.png" />
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Mukesh Rajput" />
+  <meta property="og:title" content="The Test Triaging Agent | Mukesh Rajput" />
+  <meta property="og:description" content="How a 5-step AI pipeline classifies every CI failure automatically (product bug vs automation issue) with an independent second Claude pass reviewing every classification." />
+  <meta property="og:url" content="https://msr5464.github.io/feature-test-triaging.html" />
+  <meta property="og:image" content="https://msr5464.github.io/images/og-preview.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Mukesh Rajput, AI-Driven Quality Engineering Leader" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="The Test Triaging Agent | Mukesh Rajput" />
+  <meta name="twitter:description" content="How a 5-step AI pipeline classifies every CI failure automatically (product bug vs automation issue) with an independent second Claude pass reviewing every classification." />
+  <meta name="twitter:image" content="https://msr5464.github.io/images/og-preview.jpg" />
+  <meta name="description" content="How a 5-step AI pipeline classifies every CI failure automatically (product bug vs automation issue) with an independent second Claude pass reviewing every classification." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <style>
@@ -57,7 +73,7 @@
       max-width: 1080px; margin: 0 auto;
       display: flex; align-items: center; gap: 0.5rem;
       padding: 0.75rem 0; white-space: nowrap;
-      justify-content: center;
+      width: max-content;
     }
     .feature-nav-label {
       font-size: 0.72rem; font-weight: 700; color: #94a3b8;
@@ -388,6 +404,8 @@
       cursor: pointer; font-size: 1.1rem; transition: background 0.2s;
     }
     .img-modal-close:hover { background: rgba(255,255,255,0.2); }
+      /* A long setting name in one <code>/<strong> must not widen the page on phones. */
+    .article-body code, .article-body strong { overflow-wrap: anywhere; }
   </style>
 </head>
 <body>
@@ -414,8 +432,8 @@
     <a href="ai-agent-network.html" class="feat-pill">
       <span class="feat-num">↗</span> Overview
     </a>
-    <a href="feature-test-generation.html" class="feat-pill">
-      <span class="feat-num">01</span> Test Generation
+    <a href="feature-test-design.html" class="feat-pill">
+      <span class="feat-num">01</span> Test Design Agent
     </a>
     <a href="feature-test-authoring.html" class="feat-pill">
       <span class="feat-num">02</span> Test Authoring Agent
@@ -426,8 +444,11 @@
     <a href="feature-test-healing.html" class="feat-pill">
       <span class="feat-num">04</span> Test Healing Agent
     </a>
+    <a href="feature-test-adaptation.html" class="feat-pill">
+      <span class="feat-num">05</span> Test Adaptation Agent
+    </a>
     <a href="feature-rag-chat.html" class="feat-pill">
-      <span class="feat-num">05</span> Talk to Tests
+      <span class="feat-num">06</span> Talk to Tests
     </a>
   </div>
 </div>
@@ -438,22 +459,22 @@
   <div class="hero-orb orb-2"></div>
   <div class="hero-grid"></div>
   <div class="hero-content">
-    <div class="article-tag">🔍 Feature 3 of 5</div>
+    <div class="article-tag">🔍 Feature 3 of 6</div>
     <h1>The Test Triaging Agent: <span class="grad-text">AI Classifies Every CI Failure Automatically</span></h1>
     <div class="article-meta">
       <span class="meta-item">
         <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-        10 min read
+        6 min read
       </span>
       <span class="meta-dot"></span>
       <span class="meta-item">Mukesh Rajput</span>
       <span class="meta-dot"></span>
-      <span class="meta-item">May 2026</span>
+      <span class="meta-item">Updated October 2026</span>
     </div>
     <div class="hero-chips">
-      <span class="hero-chip">Claude Opus</span>
-      <span class="hero-chip">Claude Sonnet</span>
+      <span class="hero-chip">Claude</span>
       <span class="hero-chip">MySQL</span>
+      <span class="hero-chip">Failure Diagnosis</span>
       <span class="hero-chip">Adversarial Review</span>
       <span class="hero-chip">Flaky Detection</span>
     </div>
@@ -467,34 +488,34 @@
   <article class="article-body">
 
     <div class="intro-callout">
-      <p>After a CI run with 30 failing tests, someone has to figure out which are product bugs, which are automation issues, and which are flaky. That triage typically takes 1–2 hours per CI cycle and requires someone who knows both the product and the automation framework. The triaging agent does it in minutes — with a built-in adversarial review step between two AI models.</p>
+      <p>After a CI run with 30 failing tests, someone has to figure out which are product bugs, which are automation issues, and which are flaky. Done by hand, that triage can take an hour or two per CI cycle and needs someone who knows both the product and the automation framework. The triaging agent does it in minutes, with a built-in adversarial review: a second, independent Claude pass that challenges every classification.</p>
     </div>
 
     <!-- THE PROBLEM -->
     <h2 id="problem">The Problem</h2>
 
-    <p>CI runs fail. That's expected. What isn't expected is how long it takes to understand <em>why</em> they failed — and what to do about each one.</p>
+    <p>CI runs fail. That's expected. What isn't expected is how long it takes to understand <em>why</em> they failed, and what to do about each one.</p>
 
     <p>A typical post-CI triage session looks like: open the HTML report, click into each failure one by one, read the stack trace, check the error message, decide if this is a real product regression or a stale locator, check if this test has been flaky recently, write a summary for the dev team, and try to remember which failures you already looked at. Multiplied by 30 failing tests, that's a morning gone.</p>
 
-    <p>The triaging agent replaces this manual process. It runs a 5-step pipeline that scouts unanalysed builds, collects failure data with flakiness history, classifies each failure with Claude Opus, submits that classification to a Claude Sonnet adversarial review, and ships a full HTML report to Slack — all without human involvement.</p>
+    <p>The triaging agent replaces this manual process. It runs a 5-step pipeline that scouts unanalysed builds, collects failure data with flakiness history, classifies each failure with Claude, submits that classification to an independent adversarial review, and ships a full HTML report to Slack, all without human involvement.</p>
 
     <div class="metrics-grid">
       <div class="metric-card green">
-        <div class="metric-val">~8 min</div>
-        <div class="metric-label">Avg. agent run time for 30 failures</div>
+        <div class="metric-val">10 runs</div>
+        <div class="metric-label">Of history checked per test for flakiness</div>
       </div>
       <div class="metric-card green">
         <div class="metric-val">5 steps</div>
         <div class="metric-label">Scout → Collect → Classify → Review → Ship</div>
       </div>
       <div class="metric-card">
-        <div class="metric-val">2 LLMs</div>
-        <div class="metric-label">Claude Opus classifies · Claude Sonnet reviews</div>
+        <div class="metric-val">2 passes</div>
+        <div class="metric-label">Claude classifies · a separate Claude call reviews</div>
       </div>
       <div class="metric-card">
-        <div class="metric-val">10×</div>
-        <div class="metric-label">Failures batched per Opus call</div>
+        <div class="metric-val">10</div>
+        <div class="metric-label">Failures batched per Claude call</div>
       </div>
     </div>
 
@@ -509,7 +530,7 @@
         </div>
         <div class="pipe-body">
           <div class="pipe-title">Scout <span class="pipe-time">01_scout.py</span></div>
-          <p><code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">01_scout.py</code> queries MySQL for build tags that have failures not yet analysed. It scores each candidate by <strong>failure count × recency</strong> and picks the highest-priority unanalysed build. This step is lightweight — pure database queries, no AI. The agent only moves to the next step when it finds a build worth analysing.</p>
+          <p><code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">01_scout.py</code> queries MySQL for build tags that have failures not yet analysed. It scores each candidate by <strong>failure count × recency</strong> and picks the highest-priority unanalysed build. This step is lightweight: pure database queries, no AI. The agent only moves to the next step when it finds a build worth analysing.</p>
         </div>
       </div>
 
@@ -524,8 +545,9 @@
           <ul>
             <li>Fetches the complete stack trace and error message from MySQL</li>
             <li>Parses the HTML test report (BeautifulSoup) for screenshots and additional context</li>
-            <li>Checks the last N runs to detect flaky tests — a test that passed in 3 of the last 5 runs is flaky, not a real failure</li>
-            <li>Computes failure trends — is this test getting worse over time?</li>
+            <li>Checks the recent runs (the last 10 by default): a test that failed in at least 5 of them is flagged, and its pass/fail pattern shows whether it is intermittent or consistently broken</li>
+            <li>Computes failure trends: is this test getting worse over time?</li>
+            <li>Copies each failure's DOM snapshot, trace and page baselines into the session, so the next step can diagnose from evidence rather than from the error text alone</li>
           </ul>
         </div>
       </div>
@@ -536,15 +558,16 @@
           <div class="pipe-line"></div>
         </div>
         <div class="pipe-body">
-          <div class="pipe-title">Classify — Claude Opus <span class="pipe-time">03_classify.py</span></div>
-          <p><code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">03_classify.py</code> batches failures in groups of 10 and calls Claude Opus for each batch. The prompt includes the test name, full stack trace, error message, flakiness data, and trend history. Claude classifies each failure as one of two types:</p>
+          <div class="pipe-title">Diagnose + Classify · Claude <span class="pipe-time">03_classify.py</span></div>
+          <p>First, a <strong>failure diagnosis</strong> reads the evidence on disk (DOM snapshot, trace, baselines) and decides <em>why</em> an element was missing: a stale or ambiguous locator, or something no locator edit can fix (wrong page, an earlier step failed, environment unreachable, not ready yet…). A HIGH-confidence diagnosis is authoritative.</p>
+          <p><code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">03_classify.py</code> then batches the remaining failures in groups of 10 and calls Claude for each batch. The prompt includes the test name, full stack trace, error message, flakiness data, and trend history. Claude classifies each failure as one of two types, or <strong>UNKNOWN</strong> when the evidence doesn't support either:</p>
 
           <div class="class-pills">
             <span class="class-pill pill-bug">PRODUCT_BUG</span>
             <span class="class-pill pill-auto">AUTOMATION_ISSUE</span>
           </div>
 
-          <p style="margin-top:0.75rem;"><strong>PRODUCT_BUG</strong> — the application behaviour changed: assertion on business logic failed, API returned unexpected status, UI element content changed. <strong>AUTOMATION_ISSUE</strong> — the test code is wrong: element not found (stale locator), timeout (timing issue), wrong selector, bad assertion logic.</p>
+          <p style="margin-top:0.75rem;"><strong>PRODUCT_BUG</strong> means the application behaviour changed: assertion on business logic failed, API returned unexpected status, UI element content changed. <strong>AUTOMATION_ISSUE</strong> means the test code is wrong: element not found (stale locator), timeout (timing issue), wrong selector, bad assertion logic.</p>
 
           <p>It also assigns a <strong>confidence level</strong>:</p>
           <div class="class-pills">
@@ -553,7 +576,7 @@
             <span class="class-pill pill-low">LOW</span>
           </div>
 
-          <p style="margin-top:0.75rem;">And a <strong>root cause category</strong>: <code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">ELEMENT_NOT_FOUND</code>, <code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">TIMING</code>, <code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">ASSERTION_FAILURE</code>, <code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">ENV_ISSUE</code>, <code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">DATA_ISSUE</code>, <code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">NETWORK_ERROR</code>, <code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">UNKNOWN</code>.</p>
+          <p style="margin-top:0.75rem;">And a <strong>root cause category</strong>: <code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">ELEMENT_NOT_FOUND</code>, <code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">TIMEOUT</code>, <code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">ASSERTION_FAILURE</code>, <code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">ENVIRONMENT_ISSUE</code>, <code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">CODE_ISSUE</code>, <code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">OTHER</code>, or the diagnosis verdict itself, such as <code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">LOCATOR_STALE</code> or <code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">WRONG_PAGE</code>.</p>
         </div>
       </div>
 
@@ -563,9 +586,9 @@
           <div class="pipe-line"></div>
         </div>
         <div class="pipe-body">
-          <div class="pipe-title">Adversarial Review — Claude Sonnet <span class="pipe-time">04_review.py</span></div>
-          <p>This is the key quality gate. <code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">04_review.py</code> sends the classifier's output to a second Claude instance — Sonnet — acting as an independent reviewer.</p>
-          <p>The reviewer challenges each classification it disagrees with and provides alternative reasoning. The classifier can rebut or concede. Up to <strong>2 debate rounds per failure</strong>. The final verdict is written to a <code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">.verdict</code> file. When two models disagree — that's a signal. Low-confidence disagreements are escalated to humans in the final report.</p>
+          <div class="pipe-title">Adversarial Review · independent Claude pass <span class="pipe-time">04_review.py</span></div>
+          <p>This is the key quality gate. <code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">04_review.py</code> sends the classifier's output to a second, separate Claude call (no shared context with the classifier), acting as an independent reviewer. It uses the same model: the independence comes from the separate call, not a different model.</p>
+          <p>The reviewer challenges each classification it disagrees with and provides alternative reasoning. The classifier can rebut or concede. Up to <strong>2 debate rounds</strong> by default (<code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">TRIAGING_MAX_REVIEW_ROUNDS</code>). The outcome is written to a <code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">.verdict</code> file: <strong>APPROVED</strong>, or <strong>NEEDS-HUMAN</strong> when the two passes can't settle it. When they disagree, that's a signal. Low-confidence disagreements are escalated to humans in the final report.</p>
         </div>
       </div>
 
@@ -576,38 +599,38 @@
         </div>
         <div class="pipe-body">
           <div class="pipe-title">Ship <span class="pipe-time">05_ship.py</span></div>
-          <p><code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">05_ship.py</code> generates a full HTML report, posts it to Slack (<code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">#qa-reports</code> or <code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">#qa-critical</code> depending on failure severity), and writes handoff JSON to <code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">agents/test-healing-agent/queue/</code> for failures that qualify for auto-healing.</p>
+          <p><code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">05_ship.py</code> generates the HTML report (<code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">AI-Generated-Report_&lt;build-tag&gt;.html</code>). An <strong>APPROVED</strong> review posts it to Slack (<code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">#qa-reports</code>) and writes handoff JSON to <code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">agents/test-healing-agent/queue/</code> for failures that qualify for auto-healing. A <strong>NEEDS-HUMAN</strong> review escalates to the alert channel (<code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">#qa-critical</code>) instead, and nothing is queued for healing.</p>
         </div>
       </div>
     </div>
 
     <div class="insight-box">
-      <h3>Why two models?</h3>
-      <p>A single model classifying CI failures will make confident mistakes. The error patterns are subtle — a test that fails because of a UI change can <em>look</em> like a product bug if you only read the assertion failure. Running a second model as an independent reviewer with structured debate rounds catches these misclassifications before they reach the report. <strong>The disagreement itself is signal worth surfacing to engineers.</strong></p>
+      <h3>Why a second pass?</h3>
+      <p>A single model classifying CI failures will make confident mistakes. The error patterns are subtle: a test that fails because of a UI change can <em>look</em> like a product bug if you only read the assertion failure. Running an independent review pass with structured debate rounds catches these misclassifications before they reach the report. <strong>The disagreement itself is signal worth surfacing to engineers.</strong></p>
     </div>
 
     <!-- THE REPORT -->
     <h2 id="report">The Report</h2>
 
     <div class="screenshot-block">
-      <img src="images/sample_report.png" alt="AI-Generated Automation Report" onclick="openModal(this)" />
-      <div class="screenshot-caption">An AI-Generated Automation Report — executive summary with pass rate, failure breakdown by category (product bug vs automation issue), failures by root cause, all flaky tests with historical run patterns, and known failures. Each section is AI-generated from the classified data.</div>
+      <img src="images/triaging-agent-report.png" alt="AI-Generated Automation Report" onclick="openModal(this)" />
+      <div class="screenshot-caption">An AI-Generated Automation Report: executive summary with pass rate, failure breakdown by category (product bug vs automation issue), failures by root cause, all flaky tests with historical run patterns, and known failures. Each section is AI-generated from the classified data.</div>
     </div>
 
     <p>The HTML report is generated by <code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">05_ship.py</code> and includes every section an engineer needs to act on a CI run without looking at raw logs:</p>
 
     <ul>
-      <li><strong>Executive summary</strong> — overall pass rate, total failures, breakdown into automation issues vs product bugs. The top-line numbers a manager can read in 10 seconds.</li>
-      <li><strong>Failure breakdown by category</strong> — donut chart of root cause distribution across the whole build. Useful for spotting patterns: if 80% of failures are <code>ELEMENT_NOT_FOUND</code>, there was probably a UI refresh.</li>
-      <li><strong>Failures by root cause category</strong> — grouped failures with stack traces and AI reasoning for each classification. Engineers can see <em>why</em> the model made each call.</li>
-      <li><strong>Flaky test matrix</strong> — test name plus pass/fail pattern across the last 10 runs, visualised as coloured dots. Instant visibility into which tests can't be trusted.</li>
-      <li><strong>Known failures</strong> — tests that have been failing consistently across multiple builds, flagged as pre-existing rather than new regressions.</li>
+      <li><strong>Executive summary</strong>: overall pass rate, total failures, breakdown into automation issues vs product bugs. The top-line numbers a manager can read in 10 seconds.</li>
+      <li><strong>Failure breakdown by category</strong>: donut chart of root cause distribution across the whole build. Useful for spotting patterns: if 80% of failures are <code>ELEMENT_NOT_FOUND</code>, there was probably a UI refresh.</li>
+      <li><strong>Failures by root cause category</strong>: grouped failures with stack traces and AI reasoning for each classification. Engineers can see <em>why</em> the model made each call.</li>
+      <li><strong>Flaky test matrix</strong>: test name plus pass/fail pattern across the last 10 runs, visualised as coloured dots. Instant visibility into which tests can't be trusted.</li>
+      <li><strong>Known failures</strong>: tests tagged in the results with a known issue and its linked Jira ticket, listed separately so they aren't mistaken for new regressions.</li>
     </ul>
 
     <!-- WHAT QUALIFIES FOR AUTO-HEALING -->
     <h2 id="auto-healing">What Qualifies for Auto-Healing</h2>
 
-    <p>Only failures meeting all three criteria are handed to the healing agent. This conservative filter ensures the healing agent only attempts fixes where it has a high probability of success.</p>
+    <p>Only failures meeting all three criteria (from an APPROVED review) are handed to the healing agent. This conservative filter ensures the healing agent only attempts fixes where it has a high probability of success.</p>
 
     <div class="qualify-grid">
       <div class="qualify-card">
@@ -620,29 +643,29 @@
       </div>
       <div class="qualify-card">
         <div class="qualify-label">Root cause</div>
-        <div class="qualify-val">ELEMENT_NOT_FOUND</div>
+        <div class="qualify-val">LOCATOR_STALE<br>AMBIGUOUS_LOCATOR<br>ELEMENT_NOT_FOUND</div>
       </div>
     </div>
 
-    <p>Failures that don't qualify still appear in the report — they just don't get auto-fixed. <strong>TIMING</strong> and <strong>ASSERTION_FAILURE</strong> issues require human judgement about whether the timeout should be increased or the assertion logic revisited. <strong>PRODUCT_BUG</strong> failures are routed to the dev team with the full AI reasoning attached.</p>
+    <p>A diagnosis <em>stop</em> verdict (wrong page, prior step failed, environment unreachable and the rest) never qualifies, whatever the classifier said: no locator edit can fix it. Failures that don't qualify still appear in the report; they just don't get auto-fixed. <strong>TIMEOUT</strong> and <strong>ASSERTION_FAILURE</strong> issues require human judgement about whether the timeout should be increased or the assertion logic revisited. <strong>PRODUCT_BUG</strong> failures are routed to the dev team with the full AI reasoning attached.</p>
 
     <div class="insight-box">
       <h3>The handoff to healing</h3>
-      <p>Qualifying failures are written to <code style="background:#1e293b;padding:0.1rem 0.4rem;border-radius:4px;font-size:0.85rem;color:#34d399;">agents/test-healing-agent/queue/&lt;build-tag&gt;.json</code>. This JSON file contains the failing test class name, method name, error message, and the AI classification reasoning. The healing agent reads this file and processes each failure in sequence — no human in the loop between triage and the first fix attempt.</p>
+      <p>Qualifying failures are written to <code style="background:#1e293b;padding:0.1rem 0.4rem;border-radius:4px;font-size:0.85rem;color:#34d399;">agents/test-healing-agent/queue/&lt;build-tag&gt;.json</code>. This JSON file contains the failing test class name, method name, error message, and the AI classification reasoning. The healing agent reads this file and processes each failure in sequence, no human in the loop between triage and the first fix attempt.</p>
     </div>
 
     <!-- CTA -->
     <div class="article-cta">
       <h3>Next: The Test Healing Agent</h3>
-      <p>See how the agent takes the triaging output, finds the broken locator in the page object, fixes it, verifies with Maven, and raises a GitHub PR — autonomously.</p>
+      <p>See how the agent takes the triaging output, confirms why each element was missing, fixes the stale locators, proves every fix with the real test, and raises a GitHub PR, autonomously.</p>
       <div class="cta-buttons">
         <a href="feature-test-healing.html" class="btn btn-primary">
-          Feature 4 — Test Healing
+          Feature 4: Test Healing
           <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
         </a>
         <a href="feature-test-authoring.html" class="btn btn-ghost">
           <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-          Feature 2 — Test Authoring
+          Feature 2: Test Authoring
         </a>
         <a href="ai-agent-network.html" class="btn btn-ghost">
           Back to Overview
@@ -651,8 +674,7 @@
     </div>
 
     <div class="article-tags">
-      <span class="tag">#ClaudeOpus</span>
-      <span class="tag">#ClaudeSonnet</span>
+      <span class="tag">#Claude</span>
       <span class="tag">#AIAgents</span>
       <span class="tag">#QAAutomation</span>
       <span class="tag">#CITriage</span>
@@ -719,6 +741,14 @@
     document.body.style.overflow = '';
   }
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+</script>
+<script>
+  // On narrow screens the feature strip scrolls sideways; start it on this page's pill.
+  (function () {
+    var nav = document.querySelector('.feature-nav');
+    var active = nav && nav.querySelector('.feat-pill.active');
+    if (active) nav.scrollLeft = active.offsetLeft - (nav.clientWidth - active.offsetWidth) / 2;
+  })();
 </script>
 </body>
 </html>

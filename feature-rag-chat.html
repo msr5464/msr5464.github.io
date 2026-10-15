@@ -3,8 +3,24 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Talk to Tests: QA Knowledge Base Chat — Mukesh Rajput</title>
-  <meta name="description" content="How the Talk to Tests feature turns your entire QA knowledge base — TestRail, Confluence, uploaded docs — into a single queryable AI chat interface." />
+  <title>Talk to Tests: QA Knowledge Base Chat | Mukesh Rajput</title>
+  <link rel="icon" href="favicon.ico" sizes="any" />
+  <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png" />
+  <link rel="apple-touch-icon" href="images/apple-touch-icon.png" />
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Mukesh Rajput" />
+  <meta property="og:title" content="Talk to Tests: QA Knowledge Base Chat | Mukesh Rajput" />
+  <meta property="og:description" content="How the Talk to Tests feature turns your entire QA knowledge base (TestRail, Confluence, uploaded docs) into a single queryable AI chat interface." />
+  <meta property="og:url" content="https://msr5464.github.io/feature-rag-chat.html" />
+  <meta property="og:image" content="https://msr5464.github.io/images/og-preview.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Mukesh Rajput, AI-Driven Quality Engineering Leader" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Talk to Tests: QA Knowledge Base Chat | Mukesh Rajput" />
+  <meta name="twitter:description" content="How the Talk to Tests feature turns your entire QA knowledge base (TestRail, Confluence, uploaded docs) into a single queryable AI chat interface." />
+  <meta name="twitter:image" content="https://msr5464.github.io/images/og-preview.jpg" />
+  <meta name="description" content="How the Talk to Tests feature turns your entire QA knowledge base (TestRail, Confluence, uploaded docs) into a single queryable AI chat interface." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <style>
@@ -57,7 +73,7 @@
       max-width: 1080px; margin: 0 auto;
       display: flex; align-items: center; gap: 0.5rem;
       padding: 0.75rem 0; white-space: nowrap;
-      justify-content: center;
+      width: max-content;
     }
     .feature-nav-label {
       font-size: 0.72rem; font-weight: 700; color: #94a3b8;
@@ -359,6 +375,8 @@
       cursor: pointer; font-size: 1.1rem; transition: background 0.2s;
     }
     .img-modal-close:hover { background: rgba(255,255,255,0.2); }
+      /* A long setting name in one <code>/<strong> must not widen the page on phones. */
+    .article-body code, .article-body strong { overflow-wrap: anywhere; }
   </style>
 </head>
 <body>
@@ -385,8 +403,8 @@
     <a href="ai-agent-network.html" class="feat-pill">
       <span class="feat-num">↗</span> Overview
     </a>
-    <a href="feature-test-generation.html" class="feat-pill">
-      <span class="feat-num">01</span> Test Generation
+    <a href="feature-test-design.html" class="feat-pill">
+      <span class="feat-num">01</span> Test Design Agent
     </a>
     <a href="feature-test-authoring.html" class="feat-pill">
       <span class="feat-num">02</span> Test Authoring Agent
@@ -397,8 +415,11 @@
     <a href="feature-test-healing.html" class="feat-pill">
       <span class="feat-num">04</span> Test Healing Agent
     </a>
+    <a href="feature-test-adaptation.html" class="feat-pill">
+      <span class="feat-num">05</span> Test Adaptation Agent
+    </a>
     <a href="feature-rag-chat.html" class="feat-pill active">
-      <span class="feat-num">05</span> Talk to Tests
+      <span class="feat-num">06</span> Talk to Tests
     </a>
   </div>
 </div>
@@ -409,7 +430,7 @@
   <div class="hero-orb orb-2"></div>
   <div class="hero-grid"></div>
   <div class="hero-content">
-    <div class="article-tag">💬 Feature 5 of 5</div>
+    <div class="article-tag">💬 Feature 6 of 6</div>
     <h1>Talk to Tests: <span class="grad-text">Ask Anything About Your QA Knowledge Base</span></h1>
     <div class="article-meta">
       <span class="meta-item">
@@ -419,7 +440,7 @@
       <span class="meta-dot"></span>
       <span class="meta-item">Mukesh Rajput</span>
       <span class="meta-dot"></span>
-      <span class="meta-item">May 2026</span>
+      <span class="meta-item">Updated October 2026</span>
     </div>
     <div class="hero-chips">
       <span class="hero-chip">RAG</span>
@@ -439,43 +460,43 @@
   <article class="article-body">
 
     <div class="intro-callout">
-      <p>Finding information about test coverage today means opening TestRail to search cases, digging through Confluence for spec docs, asking teammates who might remember. It's slow and inconsistent. The RAG Chat tab turns your entire QA knowledge base into a single queryable interface — answered in seconds, grounded in your actual documentation.</p>
+      <p>Finding information about test coverage today means opening TestRail to search cases, digging through Confluence for spec docs, asking teammates who might remember. It's slow and inconsistent. The RAG Chat tab turns your entire QA knowledge base into a single queryable interface, answered in seconds, grounded in your actual documentation.</p>
     </div>
 
     <!-- THE PROBLEM IT SOLVES -->
     <h2 id="problem">The Problem It Solves</h2>
 
-    <p>Ask any QA engineer what happens when someone on the team asks "do we have test coverage for the 2FA login flow?" The answer is a combination of: opening TestRail and typing in the search box, opening Confluence and hunting through nested pages, pinging someone in Slack who might know, and hoping the answer is right. This is not a knowledge problem — the documentation exists. It's an access problem. The information is scattered across three systems and a human's memory.</p>
+    <p>Ask any QA engineer what happens when someone on the team asks "do we have test coverage for the 2FA login flow?" The answer is a combination of: opening TestRail and typing in the search box, opening Confluence and hunting through nested pages, pinging someone in Slack who might know, and hoping the answer is right. This is not a knowledge problem; the documentation exists. It's an access problem. The information is scattered across three systems and a human's memory.</p>
 
-    <p>The <strong>Talk to Tests</strong> chat interface solves this by indexing all of that documentation — TestRail cases, Confluence pages, uploaded PDFs and Word docs — into a vector database, and letting engineers query all of it through a single conversational interface. Ask in plain English. Get an answer in seconds. Traceable to specific documents.</p>
+    <p>The <strong>Talk to Tests</strong> chat interface solves this by indexing all of that documentation (TestRail cases, Confluence pages and uploaded test-case exports) into a vector database, and letting engineers query all of it through a single conversational interface. Ask in plain English. Get an answer in seconds. Traceable to specific documents.</p>
 
     <!-- THE KNOWLEDGE BASE -->
     <h2 id="knowledge-base">What Powers It: The Knowledge Base</h2>
 
     <div class="screenshot-block">
-      <img src="images/admin-stats-clean.png" alt="Admin dashboard showing knowledge base stats" onclick="openModal(this)" />
-      <div class="screenshot-caption">Admin dashboard — the knowledge base behind Talk to Tests. Documents are ingested, chunked, and embedded into ChromaDB. The system statistics block shows live document and chunk counts.</div>
+      <img src="images/admin-knowledge-base.png" alt="Admin dashboard showing knowledge base stats" onclick="openModal(this)" />
+      <div class="screenshot-caption">The admin portal's Knowledge Base: the store behind Talk to Tests. Content is ingested, chunked and embedded into ChromaDB; the sidebar shows live document, chunk and user counts.</div>
     </div>
 
     <p>The knowledge base is built from three sources synced via the Admin panel:</p>
 
     <ul>
-      <li><strong>TestRail sync</strong> — every test case across all connected projects is pulled, chunked by section, and embedded into ChromaDB. When you ask "what test cases do we have for card payments?", the system retrieves the actual TestRail cases.</li>
-      <li><strong>Confluence sync</strong> — product spec pages, runbooks, onboarding guides, and design docs are all indexed. The AI can reference your actual product documentation when answering.</li>
-      <li><strong>Document uploads</strong> — PDFs, Word docs, Excel sheets, PowerPoints, plain text. Anything you upload via the Admin panel is chunked and embedded automatically.</li>
+      <li><strong>TestRail sync</strong>: every test case across all connected projects is pulled, chunked by section, and embedded into ChromaDB. When you ask "what test cases do we have for card payments?", the system retrieves the actual TestRail cases.</li>
+      <li><strong>Confluence sync</strong>: product spec pages, runbooks, onboarding guides, and design docs are all indexed. The AI can reference your actual product documentation when answering.</li>
+      <li><strong>Test-case uploads</strong>: CSV or Excel test-case exports, for suites that live outside TestRail. Each upload is validated, chunked and embedded automatically.</li>
     </ul>
 
     <div class="screenshot-block">
-      <img src="images/admin-testrail-row.png" alt="TestRail sync streaming in real time" onclick="openModal(this)" />
-      <div class="screenshot-caption">TestRail sync streaming in real time — thousands of test cases pulled across multiple projects and indexed into ChromaDB. Every case becomes a retrievable chunk.</div>
+      <img src="images/connectors.png" alt="TestRail and Confluence syncs running side by side, each with a live log" onclick="openModal(this)" />
+      <div class="screenshot-caption">Admin portal connectors: TestRail and Confluence sync side by side, each going through fetch, validate and update the knowledge base with a live running log. Every synced case or page becomes a retrievable chunk in ChromaDB.</div>
     </div>
 
-    <p>All embeddings are stored locally in ChromaDB — no test case content or documentation leaves your infrastructure when using a local LLM. The vector database is persistent across restarts and only updated when you trigger a sync or upload a new document.</p>
+    <p>All embeddings are stored locally in ChromaDB, no test case content or documentation leaves your infrastructure when using a local LLM. The vector database is persistent across restarts and only updated when you trigger a sync or upload a new document.</p>
 
     <!-- HOW RAG WORKS -->
     <h2 id="how-rag-works">How RAG Works Here</h2>
 
-    <p>RAG — Retrieval-Augmented Generation — means the LLM generates its answer from retrieved context, not from its training data. Here's the retrieval pipeline for every question asked in Talk to Tests:</p>
+    <p>RAG, Retrieval-Augmented Generation, means the LLM generates its answer from retrieved context, not from its training data. Here's the retrieval pipeline for every question asked in Talk to Tests:</p>
 
     <div class="pipeline">
       <div class="pipe-step">
@@ -494,8 +515,8 @@
           <div class="pipe-line"></div>
         </div>
         <div class="pipe-body">
-          <div class="pipe-title">Similarity search</div>
-          <p>ChromaDB performs a cosine similarity search across all stored chunks, returning the top-K most relevant pieces. These chunks might come from TestRail cases, Confluence pages, or uploaded documents — all searched simultaneously.</p>
+          <div class="pipe-title">Hybrid search + reranking</div>
+          <p>A <strong>hybrid search</strong> runs keyword (BM25) and vector similarity side by side across all stored chunks, expands the query with related terms, and <strong>reranks</strong> the candidates so the most relevant pieces reach the model. These chunks might come from TestRail cases, Confluence pages or uploaded test cases, all searched simultaneously. Repeat questions and embeddings are cached.</p>
         </div>
       </div>
       <div class="pipe-step">
@@ -505,7 +526,7 @@
         </div>
         <div class="pipe-body">
           <div class="pipe-title">Context injection</div>
-          <p>The retrieved chunks are injected into the LLM prompt as context, along with the original question. The prompt instructs the model to answer only from the provided context and to say "I don't know" if the answer isn't there.</p>
+          <p>The retrieved chunks are injected into the LLM prompt as context, along with the original question. The prompt makes that context the source of truth: the model may tidy wording and structure, but must not invent product rules, screens or API fields the context doesn't support, and must say what is missing when the context falls short.</p>
         </div>
       </div>
       <div class="pipe-step">
@@ -515,7 +536,7 @@
         </div>
         <div class="pipe-body">
           <div class="pipe-title">Grounded generation</div>
-          <p>The LLM generates an answer strictly from the provided context, not from general training knowledge. This is what prevents hallucination — the answer is always traceable to a specific document or TestRail case. If the information isn't in your knowledge base, the model says so.</p>
+          <p>The LLM writes its answer from the retrieved context, using general QA knowledge only for clarity and structure. This is what keeps hallucination down, and because every answer lists its sources, each claim can be checked against a specific document or TestRail case.</p>
         </div>
       </div>
     </div>
@@ -529,11 +550,11 @@
     <h2 id="using-the-chat">Using the Chat</h2>
 
     <div class="screenshot-block">
-      <img src="images/customer-talk-clean.png" alt="Talk to Tests chat interface with starter questions" onclick="openModal(this)" />
-      <div class="screenshot-caption">Talk to Tests — the chat interface with suggested starter questions. Engineers can ask anything about test coverage, product flows, or documentation without leaving the portal.</div>
+      <img src="images/talk-to-tests.png" alt="Talk to Tests chat interface with starter questions" onclick="openModal(this)" />
+      <div class="screenshot-caption">Talk to Tests: the chat interface with suggested starter questions. Engineers can ask anything about test coverage, product flows, or documentation without leaving the portal.</div>
     </div>
 
-    <p>The chat interface opens in the Customer portal under the "Talk to Tests" tab. Engineers can ask questions in plain English — the system handles the retrieval and generation. Common use cases:</p>
+    <p>The chat lives on the <strong>Talk to your Tests</strong> page. Engineers can ask questions in plain English; the system handles the retrieval and generation. Common use cases:</p>
 
     <ul>
       <li><strong>Coverage discovery</strong>: "Do we have test cases for 2FA at login?"</li>
@@ -542,56 +563,46 @@
       <li><strong>Gap finding</strong>: "What edge cases are missing from our payment flow tests?"</li>
     </ul>
 
-    <div class="screenshot-block">
-      <img src="images/customer-talk-typed.png" alt="A question typed into the Talk to Tests chat" onclick="openModal(this)" />
-      <div class="screenshot-caption">A question typed into the chat — "Give me the top test cases for Card Payments in SG". The system will retrieve relevant TestRail cases and product spec chunks before generating the answer.</div>
-    </div>
-
-    <div class="screenshot-block">
-      <img src="images/customer-talk-response.png" alt="AI preparing a response in Talk to Tests" onclick="openModal(this)" />
-      <div class="screenshot-caption">The AI preparing a response — grounded in the actual TestRail cases and Confluence docs indexed during sync. The "AI Thinking..." state shows the retrieval and generation pipeline running.</div>
-    </div>
-
-    <p>Responses stream back token by token, so engineers see the answer forming in real time rather than waiting for a complete response. The streaming is handled via Server-Sent Events on the Flask backend.</p>
+    <p>Every answer shows its <strong>sources</strong>, how long it took and what it cost, so the team can see both where an answer came from and what the feature spends. Individual test cases in an answer can be copied straight out.</p>
 
     <div class="screenshot-block">
       <img src="images/talk-to-tests-result.png" alt="Talk to Tests final result" onclick="openModal(this)" />
-      <p class="screenshot-caption">The complete Talk to Tests response — the AI surfaces the relevant test cases and documentation, grounded in the indexed TestRail and Confluence data.</p>
+      <p class="screenshot-caption">A coverage question answered: the matching TestRail cases with priority, platform, steps and expected results, plus the response time, cost and tokens used.</p>
     </div>
 
     <!-- MULTI-LLM SUPPORT -->
     <h2 id="multi-llm">Multi-LLM Support</h2>
 
-    <p>The chat backend supports three LLM providers, configurable via environment variable. ChromaDB remains local regardless of which LLM is chosen — only the generation step changes.</p>
+    <p>The chat backend supports three LLM providers, configurable via environment variable. ChromaDB remains local regardless of which LLM is chosen; only the generation step changes.</p>
 
     <div class="tech-grid">
-      <div class="tech-row"><span class="tech-label">OpenAI GPT-4</span><span class="tech-val">Highest quality · cloud</span></div>
+      <div class="tech-row"><span class="tech-label">OpenAI</span><span class="tech-val">Highest quality · cloud</span></div>
       <div class="tech-row"><span class="tech-label">Google Gemini</span><span class="tech-val">Cost-effective · cloud</span></div>
       <div class="tech-row"><span class="tech-label">Ollama (local)</span><span class="tech-val">Fully on-premise · no data egress</span></div>
       <div class="tech-row"><span class="tech-label">Vector DB</span><span class="tech-val">ChromaDB · always local</span></div>
     </div>
 
-    <p>Switch provider with <code style="background:#f1f5f9;padding:0.1rem 0.4rem;border-radius:4px;font-size:0.9rem;color:#0f172a;">LLM_PROVIDER=openai|google|ollama</code> in your environment config. When using Ollama, the LLM runs on your machine — no data leaves your network at any stage of the pipeline. This is important for teams with strict data residency requirements.</p>
+    <p>Switch provider with <code style="background:#f1f5f9;padding:0.1rem 0.4rem;border-radius:4px;font-size:0.9rem;color:#0f172a;">LLM_PROVIDER=openai|gemini|ollama</code>, from the admin portal's Studio Settings or the environment config, and restart the app. Switching to or from OpenAI also changes the embedding model, so the knowledge base needs a rebuild. When using Ollama, the LLM runs on your machine; no data leaves your network at any stage of the pipeline. This is important for teams with strict data residency requirements.</p>
 
     <div class="insight-box">
       <h3>On-premise option</h3>
-      <p>Teams that cannot send test case content or product documentation to cloud LLMs can run the full stack locally: Ollama for generation, ChromaDB for vector storage, Flask for the API. <strong>Zero data egress</strong>. The trade-off is response quality — GPT-4 and Gemini produce notably more coherent answers for complex multi-document questions.</p>
+      <p>Teams that cannot send test case content or product documentation to cloud LLMs can run the full stack locally: Ollama for generation, ChromaDB for vector storage, Flask for the API. <strong>Zero data egress</strong>. The trade-off is response quality: the cloud models produce notably more coherent answers for complex multi-document questions.</p>
     </div>
 
     <!-- CTA -->
     <div class="article-cta">
       <h3>You've seen the full system</h3>
-      <p>Five features, three repositories, one continuous loop — generation, authoring, triaging, healing, and now the knowledge layer that ties it all together. Read the full architecture overview or explore another feature.</p>
+      <p>Six features, three repositories, one continuous loop: generation, authoring, triaging, healing, adaptation, and now the knowledge layer that ties it all together. Read the full architecture overview or explore another feature.</p>
       <div class="cta-buttons">
         <a href="ai-agent-network.html" class="btn btn-primary">
           Full System Overview
           <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
         </a>
-        <a href="feature-test-healing.html" class="btn btn-ghost">
+        <a href="feature-test-adaptation.html" class="btn btn-ghost">
           <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-          Feature 4 — Test Healing
+          Feature 5: Test Adaptation
         </a>
-        <a href="https://github.com/msr5464" target="_blank" class="btn btn-ghost">
+        <a href="https://github.com/msr5464" target="_blank" rel="noopener" class="btn btn-ghost">
           GitHub
         </a>
       </div>
@@ -667,6 +678,14 @@
     document.body.style.overflow = '';
   }
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+</script>
+<script>
+  // On narrow screens the feature strip scrolls sideways; start it on this page's pill.
+  (function () {
+    var nav = document.querySelector('.feature-nav');
+    var active = nav && nav.querySelector('.feat-pill.active');
+    if (active) nav.scrollLeft = active.offsetLeft - (nav.clientWidth - active.offsetWidth) / 2;
+  })();
 </script>
 </body>
 </html>

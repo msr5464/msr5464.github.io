@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Test Adaptation Agent | Mukesh Rajput</title>
+  <link rel="icon" href="favicon.ico" sizes="any" />
+  <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png" />
+  <link rel="apple-touch-icon" href="images/apple-touch-icon.png" />
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Mukesh Rajput" />
+  <meta property="og:title" content="The Test Adaptation Agent | Mukesh Rajput" />
+  <meta property="og:description" content="How the adaptation agent turns a plain-English change note into updated tests: it explores the live product, edits steps inside a transaction, and proves each test still checks what it did before." />
+  <meta property="og:url" content="https://msr5464.github.io/feature-test-adaptation.html" />
+  <meta property="og:image" content="https://msr5464.github.io/images/og-preview.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Mukesh Rajput, AI-Driven Quality Engineering Leader" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="The Test Adaptation Agent | Mukesh Rajput" />
+  <meta name="twitter:description" content="How the adaptation agent turns a plain-English change note into updated tests: it explores the live product, edits steps inside a transaction, and proves each test still checks what it did before." />
+  <meta name="twitter:image" content="https://msr5464.github.io/images/og-preview.jpg" />
+  <meta name="description" content="How the adaptation agent turns a plain-English change note into updated tests: it explores the live product, edits steps inside a transaction, and proves each test still checks what it did before." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      color: #0f172a;
+      background: #fff;
+      line-height: 1.75;
+      overflow-x: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+
+    /* ── Nav ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      background: rgba(15,23,42,0.85);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+    .nav-inner {
+      max-width: 1080px; margin: 0 auto; padding: 0 2rem;
+      height: 62px; display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-logo {
+      font-size: 1rem; font-weight: 900; letter-spacing: 0.06em; color: #fff;
+    }
+    .logo-dot { color: #10b981; }
+    .nav-back {
+      display: flex; align-items: center; gap: 0.5rem;
+      font-size: 0.82rem; font-weight: 500; color: rgba(255,255,255,0.6);
+      transition: color 0.2s;
+    }
+    .nav-back:hover { color: #10b981; }
+    .nav-back svg { flex-shrink: 0; }
+    .nav-right { display: flex; align-items: center; gap: 0.6rem; }
+    .nav-sep { color: rgba(255,255,255,0.2); font-size: 0.85rem; }
+
+    /* ── Feature nav ── */
+    .feature-nav {
+      background: #fff;
+      border-bottom: 1px solid #e2e8f0;
+      padding: 0 2rem;
+      position: sticky; top: 62px; z-index: 100;
+      overflow-x: auto;
+    }
+    .feature-nav-inner {
+      max-width: 1080px; margin: 0 auto;
+      display: flex; align-items: center; gap: 0.5rem;
+      padding: 0.75rem 0; white-space: nowrap;
+      width: max-content;
+    }
+    .feature-nav-label {
+      font-size: 0.72rem; font-weight: 700; color: #94a3b8;
+      text-transform: uppercase; letter-spacing: 0.07em;
+      margin-right: 0.5rem; flex-shrink: 0;
+    }
+    .feat-pill {
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      padding: 0.3rem 0.85rem; border-radius: 100px;
+      font-size: 0.77rem; font-weight: 600;
+      border: 1px solid #e2e8f0; color: #64748b;
+      background: #f8fafc; transition: all 0.18s;
+      text-decoration: none; flex-shrink: 0;
+    }
+    .feat-pill:hover { border-color: #10b981; color: #10b981; background: #f0fdf4; }
+    .feat-pill.active { background: #10b981; border-color: #10b981; color: #fff; }
+    .feat-pill .feat-num { font-size: 0.68rem; font-weight: 800; opacity: 0.75; }
+
+    /* ── Hero ── */
+    .article-hero {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 55%, #0f2027 100%);
+      padding: 5rem 2rem 5rem;
+      position: relative; overflow: hidden;
+    }
+    .hero-orb {
+      position: absolute; border-radius: 50%; filter: blur(80px); pointer-events: none;
+    }
+    .orb-1 {
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(16,185,129,0.2) 0%, transparent 70%);
+      top: -120px; right: -100px;
+    }
+    .orb-2 {
+      width: 380px; height: 380px;
+      background: radial-gradient(circle, rgba(99,102,241,0.18) 0%, transparent 70%);
+      bottom: -60px; left: -80px;
+    }
+    .hero-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+    .hero-content {
+      max-width: 820px; margin: 0 auto; position: relative; z-index: 1;
+    }
+    .article-tag {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.28);
+      color: #34d399; padding: 0.3rem 0.9rem; border-radius: 100px;
+      font-size: 0.78rem; font-weight: 600; letter-spacing: 0.04em;
+      text-transform: uppercase; margin-bottom: 1.5rem;
+    }
+    .article-hero h1 {
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 800; color: #fff; line-height: 1.2;
+      letter-spacing: -0.02em; margin-bottom: 1.2rem;
+    }
+    .grad-text {
+      background: linear-gradient(135deg, #10b981, #34d399, #6366f1);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .article-meta {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 1.2rem;
+      font-size: 0.84rem; color: rgba(255,255,255,0.5); margin-bottom: 2rem;
+    }
+    .meta-item { display: flex; align-items: center; gap: 0.35rem; }
+    .meta-dot { width: 3px; height: 3px; background: rgba(255,255,255,0.25); border-radius: 50%; }
+    .hero-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .hero-chip {
+      background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.65); padding: 0.25rem 0.75rem;
+      border-radius: 100px; font-size: 0.75rem; font-weight: 500;
+    }
+
+    /* ── Layout ── */
+    .article-layout {
+      max-width: 1080px; margin: 0 auto; padding: 4rem 2rem 6rem;
+      display: grid; grid-template-columns: 1fr 260px; gap: 4rem; align-items: start;
+    }
+    @media (max-width: 900px) {
+      .article-layout { grid-template-columns: 1fr; }
+      .toc-sidebar { display: none; }
+    }
+
+    /* ── Article body ── */
+    .article-body { min-width: 0; }
+    .article-body p { font-size: 1.02rem; color: #334155; margin-bottom: 1.3rem; line-height: 1.8; }
+    .article-body h2 {
+      font-size: 1.45rem; font-weight: 800; color: #0f172a;
+      margin: 3rem 0 1rem; letter-spacing: -0.02em; line-height: 1.25;
+      padding-top: 1rem;
+    }
+    .article-body h3 {
+      font-size: 1.1rem; font-weight: 700; color: #0f172a;
+      margin: 2rem 0 0.6rem; letter-spacing: -0.01em;
+    }
+    .article-body ul, .article-body ol {
+      padding-left: 1.4rem; margin-bottom: 1.3rem;
+    }
+    .article-body li {
+      font-size: 1rem; color: #334155; margin-bottom: 0.45rem; line-height: 1.7;
+    }
+    .article-body strong { color: #0f172a; font-weight: 700; }
+    .article-body code { background: #f1f5f9; padding: 0.1rem 0.35rem; border-radius: 4px; font-size: 0.88em; color: #0f172a; }
+    .article-body .code-line { background: #f1f5f9; padding: 0.75rem 1rem; border-radius: 8px; font-family: monospace; font-size: 0.88rem; color: #0f172a; margin: 0.5rem 0 1.5rem; }
+    .article-body pre.code-block { background: #0f172a; color: #e2e8f0; padding: 1.1rem 1.3rem; border-radius: 10px; font-size: 0.84rem; line-height: 1.6; overflow-x: auto; margin: 0.5rem 0 1.5rem; white-space: pre; }
+    .article-body code.metric-code { font-size: 0.7rem; color: #94a3b8; background: none; padding: 0; font-weight: 400; }
+    .article-body hr { border: none; border-top: 1px solid #e2e8f0; margin: 2.5rem 0; }
+
+    /* ── Intro callout ── */
+    .intro-callout {
+      background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
+      border-left: 3px solid #10b981;
+      padding: 1.2rem 1.5rem; border-radius: 0 8px 8px 0;
+      margin-bottom: 2rem;
+    }
+    .intro-callout p { color: #166534; margin: 0; font-size: 1rem; }
+
+    /* ── Screenshots ── */
+    .screenshot-block { margin: 2rem 0 2.5rem; }
+    .screenshot-block img {
+      width: 100%; border-radius: 10px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+      display: block; cursor: zoom-in;
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+    .screenshot-block img:hover {
+      box-shadow: 0 8px 40px rgba(0,0,0,0.14);
+      transform: translateY(-2px);
+    }
+    .screenshot-caption {
+      font-size: 0.82rem; color: #94a3b8; margin-top: 0.65rem;
+      text-align: center; font-style: italic; line-height: 1.5;
+    }
+
+    /* ── Pipeline steps ── */
+    .pipeline {
+      display: flex; flex-direction: column; gap: 0; margin: 1.5rem 0 2rem;
+    }
+    .pipe-step {
+      display: flex; gap: 1.2rem; position: relative; padding-bottom: 1.8rem;
+    }
+    .pipe-step:last-child { padding-bottom: 0; }
+    .pipe-left { display: flex; flex-direction: column; align-items: center; }
+    .pipe-num {
+      width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: #fff; font-size: 0.78rem; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .pipe-line {
+      flex: 1; width: 2px; background: linear-gradient(to bottom, #d1fae5, transparent);
+      margin-top: 4px;
+    }
+    .pipe-step:last-child .pipe-line { display: none; }
+    .pipe-body { flex: 1; padding-top: 0.2rem; }
+    .pipe-title {
+      font-weight: 700; color: #0f172a; font-size: 0.97rem;
+      display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.35rem;
+      flex-wrap: wrap;
+    }
+    .pipe-time {
+      font-size: 0.72rem; font-weight: 600; color: #10b981;
+      background: #f0fdf4; border: 1px solid #bbf7d0;
+      padding: 0.1rem 0.5rem; border-radius: 100px;
+    }
+    .pipe-body p { font-size: 0.93rem; color: #475569; margin: 0 0 0.5rem; }
+    .pipe-body ul { padding-left: 1.2rem; margin: 0.4rem 0 0; }
+    .pipe-body li { font-size: 0.9rem; color: #475569; margin-bottom: 0.3rem; }
+
+    /* ── Metric cards ── */
+    .metrics-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 1rem; margin: 1.5rem 0 2rem;
+    }
+    .metric-card {
+      background: #f8fafc; border: 1px solid #e2e8f0;
+      border-radius: 10px; padding: 1.2rem 1.4rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .metric-card:hover { border-color: #10b981; box-shadow: 0 4px 16px rgba(16,185,129,0.1); }
+    .metric-val { font-size: 1.5rem; font-weight: 800; color: #0f172a; line-height: 1; margin-bottom: 0.3rem; }
+    .metric-label { font-size: 0.8rem; color: #64748b; font-weight: 500; }
+    .metric-card.green .metric-val { color: #059669; }
+
+    /* ── Key insight box ── */
+    .insight-box {
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      border-radius: 12px; padding: 2rem;
+      margin: 2rem 0;
+      border: 1px solid rgba(16,185,129,0.2);
+    }
+    .insight-box h3 { color: #34d399; margin-bottom: 0.8rem; font-size: 1rem; }
+    .insight-box p { color: #94a3b8; font-size: 0.95rem; margin: 0 0 0.6rem; line-height: 1.7; }
+    .insight-box p:last-child { margin-bottom: 0; }
+    .insight-box strong { color: #e2e8f0; }
+
+    /* ── Closed loop chain ── */
+    .loop-chain {
+      display: flex; flex-wrap: wrap; align-items: center;
+      gap: 0.4rem; margin: 1rem 0;
+    }
+    .loop-node {
+      background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.25);
+      color: #e2e8f0; padding: 0.4rem 0.85rem; border-radius: 6px;
+      font-size: 0.8rem; font-weight: 600; line-height: 1.3; text-align: center;
+    }
+    .loop-arrow {
+      color: #34d399; font-size: 1rem; font-weight: 700; flex-shrink: 0;
+    }
+
+    /* ── Guardrails list ── */
+    .guardrails { list-style: none; padding: 0; margin: 1rem 0 1.5rem; }
+    .guardrails li {
+      display: flex; align-items: flex-start; gap: 0.75rem;
+      padding: 0.75rem 1rem; border-radius: 8px;
+      background: #f8fafc; border: 1px solid #e2e8f0;
+      margin-bottom: 0.5rem; font-size: 0.95rem; color: #334155;
+    }
+    .guardrail-label {
+      display: inline-flex; font-size: 0.72rem; font-weight: 700;
+      background: #0f172a; color: #34d399; padding: 0.15rem 0.5rem;
+      border-radius: 4px; white-space: nowrap; margin-top: 0.1rem; flex-shrink: 0;
+    }
+
+    /* ── Lessons ── */
+    .lesson { margin-bottom: 1.8rem; }
+    .lesson-title {
+      font-weight: 700; color: #0f172a; font-size: 1rem; margin-bottom: 0.4rem;
+      display: flex; align-items: flex-start; gap: 0.5rem;
+    }
+    .lesson-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 0.05rem; }
+    .lesson p { color: #475569; font-size: 0.95rem; margin: 0 0 0 1.6rem; }
+
+    /* ── Tech stack ── */
+    .tech-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;
+      margin: 1.2rem 0;
+    }
+    .tech-row {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 0.5rem 0.75rem; background: #f8fafc;
+      border: 1px solid #e2e8f0; border-radius: 6px;
+      font-size: 0.83rem;
+    }
+    .tech-label { color: #64748b; font-weight: 500; min-width: 80px; }
+    .tech-val { color: #0f172a; font-weight: 600; }
+    @media (max-width: 600px) {
+      .tech-grid { grid-template-columns: 1fr; }
+      /* label above the text on phones, so long names are not squeezed into a narrow column */
+      .guardrails li { flex-direction: column; gap: 0.4rem; }
+      /* keep the note's line breaks but wrap long lines instead of hiding them off-screen */
+      .article-body pre.code-block { white-space: pre-wrap; overflow-wrap: anywhere; }
+    }
+
+    /* ── Closing CTA ── */
+    .article-cta {
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      border-radius: 14px; padding: 2.5rem; margin: 3rem 0 1rem;
+      text-align: center; border: 1px solid rgba(16,185,129,0.15);
+    }
+    .article-cta h3 { color: #fff; font-size: 1.25rem; font-weight: 800; margin-bottom: 0.6rem; }
+    .article-cta p { color: #94a3b8; margin-bottom: 1.5rem; font-size: 0.95rem; }
+    .cta-buttons { display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.45rem;
+      padding: 0.65rem 1.4rem; border-radius: 8px;
+      font-size: 0.88rem; font-weight: 600; transition: all 0.2s; cursor: pointer;
+      text-decoration: none;
+    }
+    .btn-primary { background: #10b981; color: #fff; }
+    .btn-primary:hover { background: #059669; transform: translateY(-1px); }
+    .btn-ghost {
+      background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.8);
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+    .btn-ghost:hover { background: rgba(255,255,255,0.12); color: #fff; }
+
+    /* ── Sidebar TOC ── */
+    .toc-sidebar {
+      position: sticky; top: 116px;
+      background: #f8fafc; border: 1px solid #e2e8f0;
+      border-radius: 10px; padding: 1.4rem; font-size: 0.83rem;
+    }
+    .toc-title {
+      font-weight: 700; color: #0f172a; font-size: 0.75rem;
+      text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 1rem;
+    }
+    .toc-list { list-style: none; padding: 0; }
+    .toc-list li { margin-bottom: 0.1rem; }
+    .toc-list a {
+      display: block; padding: 0.35rem 0.6rem; border-radius: 5px;
+      color: #64748b; transition: all 0.15s; line-height: 1.4;
+    }
+    .toc-list a:hover { background: #e2e8f0; color: #0f172a; }
+    .toc-list a.active { background: #f0fdf4; color: #10b981; font-weight: 600; }
+    .toc-sep { height: 1px; background: #e2e8f0; margin: 0.75rem 0; }
+    .toc-author {
+      display: flex; align-items: center; gap: 0.6rem; margin-top: 1rem;
+      padding-top: 1rem; border-top: 1px solid #e2e8f0;
+    }
+    .toc-author-name { font-weight: 700; color: #0f172a; font-size: 0.82rem; }
+    .toc-author-title { font-size: 0.75rem; color: #94a3b8; }
+
+    /* ── Tags ── */
+    .article-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 2rem 0 0; }
+    .tag {
+      background: #f1f5f9; color: #475569;
+      padding: 0.3rem 0.8rem; border-radius: 100px;
+      font-size: 0.78rem; font-weight: 500;
+    }
+
+    /* ── Footer ── */
+    footer {
+      background: #0f172a; color: rgba(255,255,255,0.4);
+      text-align: center; padding: 2rem;
+      font-size: 0.82rem;
+    }
+    footer a { color: #10b981; }
+
+    /* ── Image modal ── */
+    .img-modal {
+      display: none; position: fixed; inset: 0; z-index: 1000;
+      background: rgba(0,0,0,0.85); backdrop-filter: blur(6px);
+      align-items: center; justify-content: center; padding: 2rem;
+    }
+    .img-modal.open { display: flex; }
+    .img-modal img {
+      max-width: 90vw; max-height: 88vh; border-radius: 10px;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.5);
+    }
+    .img-modal-close {
+      position: fixed; top: 1.5rem; right: 1.5rem;
+      background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15);
+      color: #fff; width: 38px; height: 38px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 1.1rem; transition: background 0.2s;
+    }
+    .img-modal-close:hover { background: rgba(255,255,255,0.2); }
+      /* A long setting name in one <code>/<strong> must not widen the page on phones. */
+    .article-body code, .article-body strong { overflow-wrap: anywhere; }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">Mukesh<span class="logo-dot">.</span></a>
+    <div class="nav-right">
+      <a href="index.html#ai" class="nav-back">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        Portfolio
+      </a>
+      <span class="nav-sep">/</span>
+      <a href="ai-agent-network.html" class="nav-back">Overview</a>
+    </div>
+  </div>
+</nav>
+
+<!-- FEATURE NAV -->
+<div class="feature-nav">
+  <div class="feature-nav-inner">
+    <span class="feature-nav-label">Features</span>
+    <a href="ai-agent-network.html" class="feat-pill">
+      <span class="feat-num">↗</span> Overview
+    </a>
+    <a href="feature-test-design.html" class="feat-pill">
+      <span class="feat-num">01</span> Test Design Agent
+    </a>
+    <a href="feature-test-authoring.html" class="feat-pill">
+      <span class="feat-num">02</span> Test Authoring Agent
+    </a>
+    <a href="feature-test-triaging.html" class="feat-pill">
+      <span class="feat-num">03</span> Test Triaging Agent
+    </a>
+    <a href="feature-test-healing.html" class="feat-pill">
+      <span class="feat-num">04</span> Test Healing Agent
+    </a>
+    <a href="feature-test-adaptation.html" class="feat-pill active">
+      <span class="feat-num">05</span> Test Adaptation Agent
+    </a>
+    <a href="feature-rag-chat.html" class="feat-pill">
+      <span class="feat-num">06</span> Talk to Tests
+    </a>
+  </div>
+</div>
+
+<!-- HERO -->
+<header class="article-hero">
+  <div class="hero-orb orb-1"></div>
+  <div class="hero-orb orb-2"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+    <div class="article-tag">🔁 Feature 5 of 6</div>
+    <h1>The Test Adaptation Agent: <span class="grad-text">Update Tests When the Product Changes, Before They Go Red</span></h1>
+    <div class="article-meta">
+      <span class="meta-item">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        9 min read
+      </span>
+      <span class="meta-dot"></span>
+      <span class="meta-item">Mukesh Rajput</span>
+      <span class="meta-dot"></span>
+      <span class="meta-item">Updated October 2026</span>
+    </div>
+    <div class="hero-chips">
+      <span class="hero-chip">Claude</span>
+      <span class="hero-chip">Playwright MCP</span>
+      <span class="hero-chip">Intent Contracts</span>
+      <span class="hero-chip">Change Notes</span>
+      <span class="hero-chip">GitHub CLI</span>
+    </div>
+  </div>
+</header>
+
+<!-- MAIN CONTENT -->
+<div class="article-layout">
+
+  <!-- ARTICLE -->
+  <article class="article-body">
+
+    <div class="intro-callout">
+      <p>Product teams usually know before they ship: "after login there's now a <em>Choose workspace</em> screen", "the 3-step checkout is now 2 steps". Today that knowledge waits until the nightly run goes red. The adaptation agent takes a plain-English change note, explores the live product, and updates the affected tests, while holding a frozen record of what each test proved, so no edit is allowed to quietly prove less.</p>
+    </div>
+
+    <!-- THE PROBLEM -->
+    <h2 id="problem">The Problem</h2>
+
+    <p>The healing agent handles a renamed selector. Product changes are usually bigger: a step is inserted, a wizard's pages merge, a <code>&lt;select&gt;</code> becomes a combobox, a route moves, a form gains a required field. None of that is a locator fix; the test's <strong>steps</strong> have to change.</p>
+
+    <p>And once an edit may add or remove steps, <strong>"the test passes" stops being evidence</strong>. A test that asserts nothing passes fastest of all. Widening a healing agent's diff budget doesn't buy the ability to repair a changed flow; it buys the ability to delete an assertion and ship a permanently green, broken test. So adaptation is a separate agent with a different proof, different evidence and a different shipping policy.</p>
+
+    <div class="metrics-grid">
+      <div class="metric-card green">
+        <div class="metric-val">Before red</div>
+        <div class="metric-label">Triggered by a change note, not by a failure</div>
+      </div>
+      <div class="metric-card green">
+        <div class="metric-val">13 kinds</div>
+        <div class="metric-label">Of change, each with its own diff budget</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-val">14 guards</div>
+        <div class="metric-label">Run on every change item before it compiles</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-val">Always</div>
+        <div class="metric-label">NEEDS-REVIEW: a human approves every adaptation PR</div>
+      </div>
+    </div>
+
+    <!-- THE CHANGE NOTE -->
+    <h2 id="change-note">The Change Note</h2>
+
+    <p>The input is a short note a human writes, in AI Test Studio's <em>Adapt to Product Changes</em> page, or as a file in the agent's queue:</p>
+
+    <pre class="code-block">Module: checkout
+Type: web
+URL: https://app.staging.example.com
+Affects: automation.checkout.*
+
+What changed:
+1. After login a "Choose workspace" screen now appears before the dashboard.
+2. The 3-step checkout wizard is now 2 steps.
+3. "Place Order" was renamed to "Confirm &amp; Pay".
+
+Expected outcome unchanged: an order is placed and a confirmation number is shown.</pre>
+
+    <p>Each numbered item is classified into a <strong>kind</strong> (<code>locator</code>, <code>interaction</code>, <code>route</code>, <code>step_insert</code>, <code>step_merge</code>, <code>field_added</code>, <code>api_contract</code>, <code>content_changed</code>, <code>outcome_changed</code> and more) and the kind decides how much authority the repair gets. Replacing a selector may touch 6 lines; inserting a step, 40 per file; a whole new page object, 300. An item the classifier can't place gets no authority at all: it escalates to a human.</p>
+
+    <div class="insight-box">
+      <h3>Why a note beats a failure</h3>
+      <p>Telling <strong>"a step was inserted"</strong> apart from <strong>"the previous step silently did nothing"</strong> is the hardest inference in the whole problem. Both look identical from a failing test. A human writing the change note has already answered it, which is the entire payoff of triggering on a note instead of on red.</p>
+    </div>
+
+    <div class="screenshot-block">
+      <img src="images/adaptation-agent.png" alt="Adapt to Product Changes page in AI Test Studio" onclick="openModal(this)" />
+      <div class="screenshot-caption">Adapt to Product Changes in AI Test Studio, where the change note sits beside what the test proves today: its steps and every check reachable through its helpers. The expected outcome defaults to "same as today".</div>
+    </div>
+
+    <!-- THE PIPELINE -->
+    <h2 id="pipeline">The 5-Step Pipeline</h2>
+
+    <div class="pipeline">
+      <div class="pipe-step">
+        <div class="pipe-left">
+          <div class="pipe-num">01</div>
+          <div class="pipe-line"></div>
+        </div>
+        <div class="pipe-body">
+          <div class="pipe-title">Parse Change <span class="pipe-time">Python + Claude</span></div>
+          <p>Headers (module, type, affected tests, URLs) are parsed in Python. Claude classifies each numbered item into its kind.</p>
+        </div>
+      </div>
+
+      <div class="pipe-step">
+        <div class="pipe-left">
+          <div class="pipe-num">02</div>
+          <div class="pipe-line"></div>
+        </div>
+        <div class="pipe-body">
+          <div class="pipe-title">Scope <span class="pipe-time">no model call</span></div>
+          <p>A static read of the automation repo works out the <strong>blast radius</strong> (the named tests, tests that share the changed surface, and what verifying them will cost) and freezes an <strong>intent contract</strong> for each test: every assertion reachable through its whole helper call graph, not just the ones visible in the test file.</p>
+        </div>
+      </div>
+
+      <div class="pipe-step">
+        <div class="pipe-left">
+          <div class="pipe-num">03</div>
+          <div class="pipe-line"></div>
+        </div>
+        <div class="pipe-body">
+          <div class="pipe-title">Explore <span class="pipe-time">live product</span></div>
+          <p>The API half makes real HTTP calls against the live endpoints. The web half has Claude drive the live product through <strong>Playwright MCP</strong>, from a saved login session. Both combine into one ordered <strong>flow map</strong> of what was actually observed. Every selector's uniqueness is re-counted in Python; the model's own count is kept, and used for nothing.</p>
+        </div>
+      </div>
+
+      <div class="pipe-step">
+        <div class="pipe-left">
+          <div class="pipe-num">04</div>
+          <div class="pipe-line"></div>
+        </div>
+        <div class="pipe-body">
+          <div class="pipe-title">Adapt <span class="pipe-time">one transaction per change item</span></div>
+          <p>Edits the Java for each change item as a transaction: <strong>snapshot → apply → guards → compile → verify</strong>, and restore every file on any failure. One item routinely spans a new page object, a helper and a call site, so it is all or nothing. Failed verifications retry within a budget. Propose-only mode still compiles the edit and checks it against the contracts, then rolls it back, so a proposal that doesn't build, or drops an assertion, is rejected before anyone reads it.</p>
+        </div>
+      </div>
+
+      <div class="pipe-step">
+        <div class="pipe-left">
+          <div class="pipe-num">05</div>
+          <div class="pipe-line"></div>
+        </div>
+        <div class="pipe-body">
+          <div class="pipe-title">Ship <span class="pipe-time">always NEEDS-REVIEW</span></div>
+          <p>Commits one change item at a time and opens a PR in which every edit is tied to the observed step that justified it. The verdict is always NEEDS-REVIEW: an adaptation changes what a test does, and a human signs that off.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="screenshot-block">
+      <img src="images/adaptation-agent-run.png" alt="An adaptation run in AI Test Studio" onclick="openModal(this)" />
+      <div class="screenshot-caption">A demo run on SauceDemo from a two-item change note: add a second product to the cart, and check the cart for two items. The first Adapt attempt got 4 of the 5 affected tests passing (the edited test needed a product row the test data didn't have yet), so the retry added it, and all 5 passed. The second item turned out to be covered by the first one's edit. Ship opened the PR as NEEDS-REVIEW.</div>
+    </div>
+
+    <!-- SAFETY -->
+    <h2 id="safety">What Makes It Safe</h2>
+
+    <h3>1. Freeze the contract before editing</h3>
+    <p>Step 02 measures what every in-scope test proves and stores it. Every later check compares against <strong>that stored copy</strong>. Re-deriving the contract after the edit would describe the edited code, and a conservation check against that approves whatever the edit just did.</p>
+
+    <h3>2. Guess, then measure, then edit</h3>
+    <p>Page objects are first nominated by name, cheap, usually right, and still a guess: two modules can both own a <code>LoginPage</code>. Once exploration has reported what is on each page, the agent <strong>measures</strong> which page object each observed page actually is, using the same page-identity rule the healing agent applies to a failure, and only then edits.</p>
+
+    <h3>3. Transcribe, don't invent</h3>
+    <p>Every interaction an edit <strong>adds</strong> must match a step exploration actually observed. A flow-map step whose selector couldn't be verified unique justifies nothing; <em>unverified</em> is not <em>yes</em>.</p>
+
+    <p>Then the guards run over each change item's combined diff, before anything compiles:</p>
+
+    <ul class="guardrails">
+      <li>
+        <span class="guardrail-label">CHECKS CONSERVED</span>
+        <span>An assertion removed, changed, weakened or made conditional without the note declaring it, anywhere in the call graph. Fails closed when it can't measure.</span>
+      </li>
+      <li>
+        <span class="guardrail-label">STEPS JUSTIFIED</span>
+        <span>An added interaction that matches nothing exploration observed.</span>
+      </li>
+      <li>
+        <span class="guardrail-label">NOT THE LOGIN PAGE</span>
+        <span>An anchor that also matches the logged-out or error page. A selector that matches the login page is not proof of a successful login.</span>
+      </li>
+      <li>
+        <span class="guardrail-label">NO SWALLOWING</span>
+        <span>Empty catches, <code>Thread.sleep</code>, <code>@Ignore</code>, disabled or skipped tests.</span>
+      </li>
+      <li>
+        <span class="guardrail-label">FRAMEWORK RULES</span>
+        <span>Raw driver calls instead of the framework's wrappers, an interaction without its <code>logStep</code>, or a hard-coded URL.</span>
+      </li>
+      <li>
+        <span class="guardrail-label">BUDGETS</span>
+        <span>Each item's per-kind line budget, the run's total diff budget, and a cap on files touched.</span>
+      </li>
+    </ul>
+
+    <!-- ESCALATE -->
+    <h2 id="escalate">When It Refuses</h2>
+
+    <p>The agent refuses rather than guesses. It escalates to a human when:</p>
+
+    <ul>
+      <li>the classifier couldn't place a change item;</li>
+      <li>a failure appears that no line of the note accounts for (<strong>the change-vs-bug gate</strong>): a human asserted change A, which says nothing about an unrelated defect B;</li>
+      <li>the login the test itself uses doesn't produce a session, a finding about the module, not a reason to sign in some other way;</li>
+      <li>the flow ends in something irreversible (ordering, paying, deleting) outside a sandbox environment;</li>
+      <li>an existing page object would need regenerating wholesale;</li>
+      <li>a check would have to change, or be weakened, without the note saying so;</li>
+      <li>the blast radius is bigger than one agent run should take on;</li>
+      <li>a changed expected text is something the browser doesn't actually show.</li>
+    </ul>
+
+    <!-- FIT -->
+    <h2 id="fit">How It Fits the Network</h2>
+
+    <p>Change notes arrive three ways: an engineer writes one in AI Test Studio (or loads a saved note), drops one in the agent's queue from the CLI, or the <a href="feature-test-healing.html" style="color:#10b981;font-weight:600;">healing agent</a> drafts one. When every locator on a failing page stopped matching but its URL still matches the last good run, the page was rebuilt in place; healing writes a <strong>draft</strong> change note instead of patching selectors, and a human reviews it before it runs.</p>
+
+    <p><strong>Explore-only</strong> stops after step 03 and returns just the flow map, useful for seeing what the product does today before writing the note. Like the other agents, every run leaves a full audit trail and reports its time and cost to the Studio's Analytics page.</p>
+
+    <div class="insight-box">
+      <h3>The division of labour</h3>
+      <p><strong>Healing</strong> is reactive: a test failed, and the question is <em>why</em>. It holds one hypothesis (the selector is stale) and runs unattended. <strong>Adaptation</strong> is proactive: somebody knows what changed, and the question is what the tests should now do about it. It may change steps, so it proves itself against the frozen intent contract and never ships without review. Merging them would leave the unattended nightly path one setting away from whole-file rewrites.</p>
+    </div>
+
+    <!-- CTA -->
+    <div class="article-cta">
+      <h3>Next: Talk to Tests</h3>
+      <p>Four agents write, triage, heal and adapt the automation. The last feature is the knowledge layer: ask the whole QA knowledge base a question in plain English and get an answer grounded in your own test cases.</p>
+      <div class="cta-buttons">
+        <a href="feature-rag-chat.html" class="btn btn-primary">
+          Feature 6: Talk to Tests
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+        <a href="feature-test-healing.html" class="btn btn-ghost">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+          Feature 4: Test Healing
+        </a>
+        <a href="https://github.com/msr5464/AI-Agent-Network" target="_blank" rel="noopener" class="btn btn-ghost">
+          <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
+          GitHub
+        </a>
+      </div>
+    </div>
+
+    <div class="article-tags">
+      <span class="tag">#TestAdaptation</span>
+      <span class="tag">#IntentContracts</span>
+      <span class="tag">#PlaywrightMCP</span>
+      <span class="tag">#Claude</span>
+      <span class="tag">#ChangeManagement</span>
+      <span class="tag">#QAAutomation</span>
+      <span class="tag">#AIAgents</span>
+    </div>
+
+  </article>
+
+  <!-- TOC SIDEBAR -->
+  <aside class="toc-sidebar">
+    <div class="toc-title">On this page</div>
+    <ul class="toc-list">
+      <li><a href="#problem">The Problem</a></li>
+      <li><a href="#change-note">The Change Note</a></li>
+      <li><a href="#pipeline">The 5-Step Pipeline</a></li>
+      <li><a href="#safety">What Makes It Safe</a></li>
+      <li><a href="#escalate">When It Refuses</a></li>
+      <li><a href="#fit">How It Fits</a></li>
+    </ul>
+    <div class="toc-sep"></div>
+    <div class="toc-author">
+      <div>
+        <div class="toc-author-name">Mukesh Rajput</div>
+        <div class="toc-author-title">QA Director · Aspire · AI Builder</div>
+      </div>
+    </div>
+  </aside>
+
+</div><!-- end article-layout -->
+
+<!-- IMAGE MODAL -->
+<div class="img-modal" id="imgModal" onclick="closeModal()">
+  <div class="img-modal-close" onclick="closeModal()">✕</div>
+  <img id="modalImg" src="" alt="" onclick="event.stopPropagation()" />
+</div>
+
+<footer>
+  <p>Built by <a href="index.html">Mukesh Rajput</a> · AI Test Studio · QA Agent Network · Jarvis</p>
+</footer>
+
+<script>
+  // Active TOC highlight
+  const sections = document.querySelectorAll('h2[id]');
+  const tocLinks = document.querySelectorAll('.toc-list a');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        tocLinks.forEach(l => l.classList.remove('active'));
+        const active = document.querySelector(`.toc-list a[href="#${e.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  sections.forEach(s => obs.observe(s));
+
+  // Image modal
+  function openModal(img) {
+    document.getElementById('modalImg').src = img.src;
+    document.getElementById('imgModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal() {
+    document.getElementById('imgModal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+</script>
+<script>
+  // On narrow screens the feature strip scrolls sideways; start it on this page's pill.
+  (function () {
+    var nav = document.querySelector('.feature-nav');
+    var active = nav && nav.querySelector('.feat-pill.active');
+    if (active) nav.scrollLeft = active.offsetLeft - (nav.clientWidth - active.offsetWidth) / 2;
+  })();
+</script>
+</body>
+</html>

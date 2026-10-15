@@ -3,8 +3,24 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The Test Healing Agent — Mukesh Rajput</title>
-  <meta name="description" content="How the healing agent takes broken locator failures from the triaging pipeline, fixes them with Claude Opus, verifies with Maven, and raises a GitHub PR — autonomously." />
+  <title>The Test Healing Agent | Mukesh Rajput</title>
+  <link rel="icon" href="favicon.ico" sizes="any" />
+  <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png" />
+  <link rel="apple-touch-icon" href="images/apple-touch-icon.png" />
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Mukesh Rajput" />
+  <meta property="og:title" content="The Test Healing Agent | Mukesh Rajput" />
+  <meta property="og:description" content="How the healing agent diagnoses why an element was missing, fixes stale locators with a deterministic engine or Claude, proves every fix with the real test, and raises a GitHub PR." />
+  <meta property="og:url" content="https://msr5464.github.io/feature-test-healing.html" />
+  <meta property="og:image" content="https://msr5464.github.io/images/og-preview.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Mukesh Rajput, AI-Driven Quality Engineering Leader" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="The Test Healing Agent | Mukesh Rajput" />
+  <meta name="twitter:description" content="How the healing agent diagnoses why an element was missing, fixes stale locators with a deterministic engine or Claude, proves every fix with the real test, and raises a GitHub PR." />
+  <meta name="twitter:image" content="https://msr5464.github.io/images/og-preview.jpg" />
+  <meta name="description" content="How the healing agent diagnoses why an element was missing, fixes stale locators with a deterministic engine or Claude, proves every fix with the real test, and raises a GitHub PR." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <style>
@@ -57,7 +73,7 @@
       max-width: 1080px; margin: 0 auto;
       display: flex; align-items: center; gap: 0.5rem;
       padding: 0.75rem 0; white-space: nowrap;
-      justify-content: center;
+      width: max-content;
     }
     .feature-nav-label {
       font-size: 0.72rem; font-weight: 700; color: #94a3b8;
@@ -164,6 +180,9 @@
       font-size: 1rem; color: #334155; margin-bottom: 0.45rem; line-height: 1.7;
     }
     .article-body strong { color: #0f172a; font-weight: 700; }
+    .article-body code { background: #f1f5f9; padding: 0.1rem 0.35rem; border-radius: 4px; font-size: 0.88em; color: #0f172a; }
+    .article-body .code-line { background: #f1f5f9; padding: 0.75rem 1rem; border-radius: 8px; font-family: monospace; font-size: 0.88rem; color: #0f172a; margin: 0.5rem 0 1.5rem; }
+    .article-body code.metric-code { font-size: 0.7rem; color: #94a3b8; background: none; padding: 0; font-weight: 400; }
     .article-body hr { border: none; border-top: 1px solid #e2e8f0; margin: 2.5rem 0; }
 
     /* ── Intro callout ── */
@@ -305,7 +324,11 @@
     }
     .tech-label { color: #64748b; font-weight: 500; min-width: 80px; }
     .tech-val { color: #0f172a; font-weight: 600; }
-    @media (max-width: 600px) { .tech-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 600px) {
+      .tech-grid { grid-template-columns: 1fr; }
+      /* label above the text on phones, so long names are not squeezed into a narrow column */
+      .guardrails li { flex-direction: column; gap: 0.4rem; }
+    }
 
     /* ── Closing CTA ── */
     .article-cta {
@@ -391,6 +414,8 @@
       cursor: pointer; font-size: 1.1rem; transition: background 0.2s;
     }
     .img-modal-close:hover { background: rgba(255,255,255,0.2); }
+      /* A long setting name in one <code>/<strong> must not widen the page on phones. */
+    .article-body code, .article-body strong { overflow-wrap: anywhere; }
   </style>
 </head>
 <body>
@@ -417,8 +442,8 @@
     <a href="ai-agent-network.html" class="feat-pill">
       <span class="feat-num">↗</span> Overview
     </a>
-    <a href="feature-test-generation.html" class="feat-pill">
-      <span class="feat-num">01</span> Test Generation
+    <a href="feature-test-design.html" class="feat-pill">
+      <span class="feat-num">01</span> Test Design Agent
     </a>
     <a href="feature-test-authoring.html" class="feat-pill">
       <span class="feat-num">02</span> Test Authoring Agent
@@ -429,8 +454,11 @@
     <a href="feature-test-healing.html" class="feat-pill active">
       <span class="feat-num">04</span> Test Healing Agent
     </a>
+    <a href="feature-test-adaptation.html" class="feat-pill">
+      <span class="feat-num">05</span> Test Adaptation Agent
+    </a>
     <a href="feature-rag-chat.html" class="feat-pill">
-      <span class="feat-num">05</span> Talk to Tests
+      <span class="feat-num">06</span> Talk to Tests
     </a>
   </div>
 </div>
@@ -441,24 +469,24 @@
   <div class="hero-orb orb-2"></div>
   <div class="hero-grid"></div>
   <div class="hero-content">
-    <div class="article-tag">🔧 Feature 4 of 5</div>
-    <h1>The Test Healing Agent: <span class="grad-text">Broken Locators Fixed, Verified, and PRed Automatically</span></h1>
+    <div class="article-tag">🔧 Feature 4 of 6</div>
+    <h1>The Test Healing Agent: <span class="grad-text">Diagnose First, Fix the Locator, Prove It with the Real Test</span></h1>
     <div class="article-meta">
       <span class="meta-item">
         <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-        8 min read
+        9 min read
       </span>
       <span class="meta-dot"></span>
       <span class="meta-item">Mukesh Rajput</span>
       <span class="meta-dot"></span>
-      <span class="meta-item">May 2026</span>
+      <span class="meta-item">Updated October 2026</span>
     </div>
     <div class="hero-chips">
-      <span class="hero-chip">Claude Opus</span>
-      <span class="hero-chip">Maven</span>
+      <span class="hero-chip">Failure Diagnosis</span>
+      <span class="hero-chip">Deterministic Locator Engine</span>
+      <span class="hero-chip">Claude</span>
+      <span class="hero-chip">Playwright</span>
       <span class="hero-chip">GitHub CLI</span>
-      <span class="hero-chip">Page Object Model</span>
-      <span class="hero-chip">Auto-fix</span>
     </div>
   </div>
 </header>
@@ -470,17 +498,17 @@
   <article class="article-body">
 
     <div class="intro-callout">
-      <p>A UI change ships — a button gets a new data-test attribute, a modal gets a new class name. Three tests start failing with "Element not found." The healing agent finds the broken locator, identifies the correct selector, updates the Java page object, verifies the fix with Maven, and raises a GitHub PR. Engineers review the diff. They don't do the detective work anymore.</p>
+      <p>A UI change ships: a button gets a new data-test attribute, a modal gets a new class name. Tests start failing with "element not found." But that error has a dozen causes, and only one of them is a stale selector. The healing agent works out <em>why</em> the element was missing, fixes the locator only when the selector itself is the defect, proves every fix by re-running the real test, and raises a GitHub PR. Engineers review a diff, not a debugging session.</p>
     </div>
 
     <!-- THE PROBLEM -->
     <h2 id="problem">The Problem</h2>
 
-    <p>Locator failures are the most common, most tedious category of automation breakage. A UI change ships — a button gets a new <code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.9rem;color:#0f172a;">data-test</code> attribute, a modal gets a new class name, a form field gets a new id. Three tests start failing with <code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.9rem;color:#0f172a;">Element not found</code>.</p>
+    <p>Locator failures are the most common, most tedious category of automation breakage. A UI change ships (a button gets a new <code>data-test</code> attribute, a form field gets a new id), and tests start failing with <code>Element not found</code>.</p>
 
-    <p>A QA engineer then has to: find which page object has the stale locator, figure out the new selector by opening DevTools and inspecting the element in staging, update the Java file, re-run the test locally to verify the fix works, then commit and push. That's 30–45 minutes per locator — multiplied by however many broke in this deployment.</p>
+    <p>A QA engineer then has to: find which page object has the stale locator, figure out the new selector by opening DevTools against staging, update the Java file, re-run the test to verify the fix, then commit and push. That's 30–45 minutes per locator, multiplied by however many broke in this deployment.</p>
 
-    <p>The healing agent does all of this autonomously. It reads the failing test, finds the page object, asks Claude to propose a fix based on the error message, applies it, verifies it with Maven against the actual test, and commits or rolls back depending on the result.</p>
+    <p>The harder problem is one the first version of this agent missed. An element is missing <strong>identically</strong> however it went missing: the page was still loading, a request failed, an earlier click silently did nothing, the session expired and left the flow on the login page. An agent that treats every one of those as a stale locator will "fix" them anyway, and the verification loop won't catch it, because the easiest way to make a page check pass is to weaken it. So the current agent <strong>diagnoses first</strong>, and edits only when the answer allows it.</p>
 
     <div class="metrics-grid">
       <div class="metric-card green">
@@ -488,37 +516,60 @@
         <div class="metric-label">Manual fix time per broken locator</div>
       </div>
       <div class="metric-card green">
-        <div class="metric-val">~3 min</div>
-        <div class="metric-label">Agent fix time per locator (end-to-end)</div>
+        <div class="metric-val">$0</div>
+        <div class="metric-label">When the locator engine can prove the selector, no model call at all</div>
       </div>
       <div class="metric-card">
-        <div class="metric-val">5 max</div>
-        <div class="metric-label">Fixes per session<br><code style="font-size:0.72rem;color:#94a3b8;background:none;font-weight:400">AUTO_FIX_MAX_FIXES_PER_RUN</code></div>
+        <div class="metric-val">5 defects</div>
+        <div class="metric-label">Distinct fixes per run<br><code class="metric-code">HEALING_MAX_FIXES_PER_RUN</code></div>
       </div>
       <div class="metric-card">
-        <div class="metric-val">2 tries</div>
-        <div class="metric-label">Max attempts before skip<br><code style="font-size:0.72rem;color:#94a3b8;background:none;font-weight:400">MAX_FIX_ATTEMPTS</code></div>
+        <div class="metric-val">4 / 12</div>
+        <div class="metric-label">Attempts without progress / hard ceiling<br><code class="metric-code">HEALING_RETRY_COUNT · HEALING_MAX_ATTEMPTS</code></div>
       </div>
     </div>
 
-    <!-- HOW IT GETS TRIGGERED -->
-    <h2 id="triggered">How It Gets Triggered</h2>
+    <!-- TWO WAYS IN -->
+    <h2 id="triggered">Two Ways In</h2>
 
-    <p>The healing agent is triggered by the triaging agent. After the 5-step triaging pipeline finishes, any failures classified as <strong>AUTOMATION_ISSUE + HIGH confidence + ELEMENT_NOT_FOUND</strong> are written to a JSON handoff file at:</p>
+    <p><strong>From the triaging agent.</strong> After a CI build, the triaging agent queues failures that are <strong>AUTOMATION_ISSUE</strong>, <strong>HIGH</strong> confidence, with a root cause of <code>LOCATOR_STALE</code>, <code>AMBIGUOUS_LOCATOR</code> or <code>ELEMENT_NOT_FOUND</code>, and not one of the diagnosis stop verdicts. They land in a handoff file:</p>
 
-    <p style="background:#f1f5f9;padding:0.75rem 1rem;border-radius:8px;font-family:monospace;font-size:0.88rem;color:#0f172a;margin:0.5rem 0 1.5rem;">agents/test-healing-agent/queue/&lt;build-tag&gt;.json</p>
+    <p class="code-line">agents/test-healing-agent/queue/&lt;build-tag&gt;.json</p>
 
-    <p>The healing agent reads this file and processes each failure in order, up to <code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.9rem;color:#0f172a;">AUTO_FIX_MAX_FIXES_PER_RUN=5</code> per session. This prevents runaway commits on large deployments where many locators broke at once.</p>
+    <p><strong>Standalone, by naming a test.</strong> Pick a failing test on AI Test Studio's <em>Auto-Heal Failing Tests</em> page, or run <code>./scripts/run-healing-agent.sh --test Class#method</code>. A whole class works too. The agent runs the test itself first, so it works from a real, fresh failure rather than a report.</p>
 
     <div class="screenshot-block">
-      <img src="images/sample_report.png" alt="Triage report that feeds the healing agent" onclick="openModal(this)" />
-      <div class="screenshot-caption">The triage report that feeds the healing agent. Failures classified as AUTOMATION_ISSUE with HIGH confidence and ELEMENT_NOT_FOUND root cause are automatically queued for the healing agent.</div>
+      <img src="images/healing-agent.png" alt="Auto-Heal Failing Tests page in AI Test Studio" onclick="openModal(this)" />
+      <div class="screenshot-caption">Auto-Heal Failing Tests in AI Test Studio: pick a failing test from the automation repo's catalogue, or take a handoff from the triaging agent. Choose the base branch and whether to push a PR.</div>
+    </div>
+
+    <!-- DIAGNOSIS -->
+    <h2 id="diagnosis">Diagnose Before Editing</h2>
+
+    <p>Before anything touches a locator, a diagnosis engine answers <em>"why wasn't the element there?"</em> from evidence already on disk: the DOM snapshot captured at failure, the trace, the page baselines recorded on the last green run, and the test's own step history. It returns one verdict:</p>
+
+    <ul class="guardrails">
+      <li>
+        <span class="guardrail-label">FIX</span>
+        <span><strong>LOCATOR_STALE</strong>, <strong>AMBIGUOUS_LOCATOR</strong> mean the defect lives in the selector itself: it no longer matches its element, or it matches more than one. Only these two authorise an edit.</span>
+      </li>
+      <li>
+        <span class="guardrail-label">STOP</span>
+        <span><strong>WRONG_PAGE</strong>, <strong>PRIOR_STEP_FAILED</strong>, <strong>ERROR_STATE</strong>, <strong>ENV_UNREACHABLE</strong>, <strong>DATA_PRECONDITION</strong>, <strong>FLAKY_TRANSIENT</strong>, <strong>ELEMENT_GONE</strong>, <strong>NOT_READY</strong>, <strong>TOO_SLOW</strong>, <strong>BLOCKED</strong>: no locator edit can fix these. The run ends before any model call and reports the cause and the change a human would make.</span>
+      </li>
+      <li>
+        <span class="guardrail-label">ABSTAIN</span>
+        <span><strong>INSUFFICIENT_EVIDENCE</strong>: falls through to the normal fix path, so a weak signal never blocks a genuine fix.</span>
+      </li>
+    </ul>
+
+    <div class="insight-box">
+      <h3>Why diagnosis comes first</h3>
+      <p>A green re-run proves the test passes. It does not prove the fix was right. <strong>A fix built on a wrong diagnosis goes green</strong> (by pointing at a different element, or by loosening a check), and ships a permanently broken test with a passing run as its alibi. Deciding the cause before editing is the only place that mistake can be caught.</p>
     </div>
 
     <!-- THE FIX PIPELINE -->
-    <h2 id="fix-pipeline">The Fix Pipeline (Per Failure)</h2>
-
-    <p>For each failure in the handoff file, the agent runs the following sequence. If any step fails, it skips to the next failure and records the reason.</p>
+    <h2 id="fix-pipeline">The Pipeline</h2>
 
     <div class="pipeline">
       <div class="pipe-step">
@@ -527,13 +578,8 @@
           <div class="pipe-line"></div>
         </div>
         <div class="pipe-body">
-          <div class="pipe-title">Locate the source files <span class="pipe-time">code_analyzer.py</span></div>
-          <p><code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">lib/code_analyzer.py</code> takes the failing test class name and method name from the handoff file. It walks the Jarvis source tree to find:</p>
-          <ul>
-            <li>The test class file — e.g. <code style="background:#f1f5f9;padding:0.1rem 0.3rem;border-radius:4px;font-size:0.82rem;color:#0f172a;">PaymentsWebTest.java</code></li>
-            <li>The page object file referenced in the failing method — e.g. <code style="background:#f1f5f9;padding:0.1rem 0.3rem;border-radius:4px;font-size:0.82rem;color:#0f172a;">PaymentsPage.java</code></li>
-          </ul>
-          <p style="margin-top:0.5rem;">This is where the broken locator lives. The analyzer uses static analysis — parsing the test method body to find which page object methods are called, then resolving those methods to their file.</p>
+          <div class="pipe-title">Reproduce <span class="pipe-time">standalone only</span></div>
+          <p>Runs the named test. A pass, or a failure that isn't about a locator, ends the run with an explanation instead of a guess. <code>REPAIR=true</code> parks the failing browser so an engineer can inspect it live; <code>FORCE=true</code> proceeds anyway.</p>
         </div>
       </div>
 
@@ -543,14 +589,8 @@
           <div class="pipe-line"></div>
         </div>
         <div class="pipe-body">
-          <div class="pipe-title">Build the fix prompt</div>
-          <p>Claude Opus receives everything it needs to reason about the fix:</p>
-          <ul>
-            <li>The failing test method code — so it knows what action was being performed</li>
-            <li>The full page object file — so it can see the stale locator in context with its surrounding methods</li>
-            <li>The actual error message: <code style="background:#f1f5f9;padding:0.1rem 0.3rem;border-radius:4px;font-size:0.82rem;color:#0f172a;">"Element not found: [data-test='submit-payment']"</code></li>
-            <li>The <code style="background:#f1f5f9;padding:0.1rem 0.3rem;border-radius:4px;font-size:0.82rem;color:#0f172a;">CONVENTIONS.md</code> / <code style="background:#f1f5f9;padding:0.1rem 0.3rem;border-radius:4px;font-size:0.82rem;color:#0f172a;">CLAUDE.md</code> framework rules — so it knows the correct Playwright selector patterns and naming conventions used in Jarvis</li>
-          </ul>
+          <div class="pipe-title">Locate <span class="pipe-time">deterministic · no model · no browser</span></div>
+          <p>The target framework records a fingerprint of every element on each green page load. Locate compares that fingerprint with the capture taken at failure, scores the candidates, and proposes a selector that is <strong>proven unique against the saved DOM</strong>, written in the repo's own syntax. An offline benchmark (<code>locator-eval</code>) keeps the engine honest.</p>
         </div>
       </div>
 
@@ -560,8 +600,9 @@
           <div class="pipe-line"></div>
         </div>
         <div class="pipe-body">
-          <div class="pipe-title">Apply the fix</div>
-          <p>Claude returns a corrected version of the page object file — not a diff, the full file with the fix applied. The agent writes it to disk, replacing the original. The original is backed up to a temp location before the write, so rollback is lossless.</p>
+          <div class="pipe-title">Fix <span class="pipe-time">diagnose → edit → re-run the real test</span></div>
+          <p>Runs the diagnosis. On a locator verdict it applies Locate's proposal, or, when Locate can't prove one, asks Claude, which sees the test, the page objects, the failure evidence and the automation repo's own <code>CLAUDE.md</code> conventions. Then it re-runs the real test. Passing edits are committed; failing ones are rolled back.</p>
+          <p><strong>↺ Repeat while it makes progress.</strong> One repaired locator often gets the flow further, onto the next broken one. A test that now fails on a <em>different</em> element is progress: the edit stays, and the next attempt is handed the new failure. Only a test that still fails on the <em>same</em> element condemns the edit.</p>
         </div>
       </div>
 
@@ -571,86 +612,35 @@
           <div class="pipe-line"></div>
         </div>
         <div class="pipe-body">
-          <div class="pipe-title">Verify with Maven</div>
-          <p>The agent runs the exact failing test method to verify the fix:</p>
-          <p style="background:#f1f5f9;padding:0.6rem 1rem;border-radius:6px;font-family:monospace;font-size:0.85rem;color:#0f172a;margin:0.5rem 0;">mvn test -Dtest=PaymentsWebTest#checkoutFlow</p>
-          <p>It reads <code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">test-results/report.json</code> written by Jarvis's <code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">JsonTestReporter.java</code> to determine pass or fail — not just the Maven exit code, which can be misleading.</p>
-        </div>
-      </div>
-
-      <div class="pipe-step">
-        <div class="pipe-left">
-          <div class="pipe-num">5</div>
-          <div class="pipe-line"></div>
-        </div>
-        <div class="pipe-body">
-          <div class="pipe-title">Commit or rollback</div>
-          <p>Two outcomes:</p>
-          <ul>
-            <li><strong>Test passes:</strong> <code style="background:#f1f5f9;padding:0.1rem 0.3rem;border-radius:4px;font-size:0.82rem;color:#0f172a;">git add PaymentsPage.java &amp;&amp; git commit -m "fix(payments): update stale locator in PaymentsPage"</code></li>
-            <li><strong>Test fails:</strong> The original file is restored from the backup. The failure output — the new error message from Maven — is injected into the next Claude prompt so it can try a different selector approach. Up to <code style="background:#f1f5f9;padding:0.1rem 0.3rem;border-radius:4px;font-size:0.82rem;color:#0f172a;">MAX_FIX_ATTEMPTS=2</code> retries per test.</li>
-          </ul>
+          <div class="pipe-title">Ship</div>
+          <p>Pushes a <code>healing/&lt;session-id&gt;</code> branch, opens the PR and posts to Slack.</p>
         </div>
       </div>
     </div>
 
     <div class="screenshot-block">
-      <img src="images/healing-fix-pipeline.png" alt="Healing agent fix pipeline terminal output" onclick="openModal(this)" />
-      <p class="screenshot-caption">The agent processing three broken locators in sequence — locating source files, extracting element names, calling Claude Opus for a fix proposal, applying it, and verifying with Maven. Each ✅ means the fixed test passed before the change was committed.</p>
+      <img src="images/healing-agent-run.png" alt="A healing run in AI Test Studio" onclick="openModal(this)" />
+      <p class="screenshot-caption">A demo run on SauceDemo, with two locators broken on purpose. Locate proposed both selectors deterministically (each scored against the fingerprint from the last green run), so the run made zero model calls and cost $0. The first fix got the test past the login button to a second broken locator; the loop kept that edit and fixed the next one too.</p>
     </div>
+
+    <!-- BY DEFECT -->
+    <h2 id="defects">Fixing by Defect, Not by Test</h2>
+
+    <p>One broken locator fails every test that walks past it, so a build with 30 failures is usually a handful of defects. The agent works in phases:</p>
+
+    <ul>
+      <li><strong>Understand everything first.</strong> Context is built for every failing test (test file, page objects, element names, trace), with no model calls.</li>
+      <li><strong>Group by what actually broke.</strong> Failures are clustered on <em>(page object, element)</em>, so five tests dying on the same element are one unit of work.</li>
+      <li><strong>Cap defects, not tests.</strong> <code>HEALING_MAX_FIXES_PER_RUN</code> limits distinct fixes. The largest clusters go first, so a capped run unblocks the most tests it can; the rest are reported as deferred, not silently dropped.</li>
+      <li><strong>Every affected test must still prove it.</strong> All members of a cluster are re-run, and a fix is credited only for the tests that actually pass.</li>
+    </ul>
 
     <!-- THE GITHUB PR -->
     <h2 id="github-pr">The GitHub PR</h2>
 
-    <p>Once all fixable tests are committed, <code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.9rem;color:#0f172a;">02_ship.py</code> packages everything into a PR that an engineer can review and merge without needing to understand what changed or why:</p>
+    <p>The PR lists every fix: which test, which file, the old selector and the new one, and how it was verified. The agent never reports an unverified fix as verified: <strong>verified</strong>, <strong>unverified</strong> and <strong>failed</strong> stay distinct all the way to the PR, and anything short of verified marks it <strong>NEEDS-REVIEW</strong>. If nothing was fixed, no PR is opened.</p>
 
-    <div class="pipeline">
-      <div class="pipe-step">
-        <div class="pipe-left">
-          <div class="pipe-num">1</div>
-          <div class="pipe-line"></div>
-        </div>
-        <div class="pipe-body">
-          <div class="pipe-title">Create branch</div>
-          <p>A new branch is created: <code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">chore/qa-autofix/&lt;build-tag&gt;-&lt;timestamp&gt;</code>. The branch name makes it immediately clear this is an automated fix and which build triggered it.</p>
-        </div>
-      </div>
-      <div class="pipe-step">
-        <div class="pipe-left">
-          <div class="pipe-num">2</div>
-          <div class="pipe-line"></div>
-        </div>
-        <div class="pipe-body">
-          <div class="pipe-title">Push to GitHub</div>
-          <p>The branch is pushed to the Jarvis repository. All commits from the fix session are included — one commit per successfully fixed test.</p>
-        </div>
-      </div>
-      <div class="pipe-step">
-        <div class="pipe-left">
-          <div class="pipe-num">3</div>
-          <div class="pipe-line"></div>
-        </div>
-        <div class="pipe-body">
-          <div class="pipe-title">gh pr create</div>
-          <p>The GitHub CLI creates the PR with a description listing every fix: which test, which file, what the old selector was, what the new one is, and whether it was verified by Maven. Tests that couldn't be fixed after 2 attempts are listed with the failure reason and marked NEEDS-REVIEW.</p>
-        </div>
-      </div>
-      <div class="pipe-step">
-        <div class="pipe-left">
-          <div class="pipe-num">4</div>
-          <div class="pipe-line"></div>
-        </div>
-        <div class="pipe-body">
-          <div class="pipe-title">Slack notification</div>
-          <p>A message is posted to the QA channel: <em>"Auto-fixed 3/4 locator failures in payments module — PR #47 ready for review"</em>. The PR link is included so an engineer can click straight to the diff.</p>
-        </div>
-      </div>
-    </div>
-
-    <div class="screenshot-block">
-      <img src="images/healing-github-pr.png" alt="GitHub PR raised by the healing agent" onclick="openModal(this)" />
-      <p class="screenshot-caption">The pull request raised automatically — showing the exact diff for each locator fix, the Maven verification result per test, and a summary comment from the agent. Engineers see what changed, why, and that it was verified before they review.</p>
-    </div>
+    <p>Refreshed page baselines are committed with the fix, so the next failure has an up-to-date fingerprint to compare against. Slack gets the result: all fixed goes to the notify channel, a partial or empty result to the alert channel. With <code>AUTO_PUSH=false</code> the run works in the local checkout and pushes nothing, a safe dry run for a new environment.</p>
 
     <!-- THE CLOSED LOOP -->
     <h2 id="closed-loop">The Closed Loop</h2>
@@ -660,11 +650,11 @@
       <div class="loop-chain">
         <div class="loop-node">CI runs Jarvis tests</div>
         <div class="loop-arrow">→</div>
-        <div class="loop-node">Jarvis writes results to MySQL</div>
+        <div class="loop-node">Results written to MySQL</div>
         <div class="loop-arrow">→</div>
-        <div class="loop-node">Triaging Agent classifies failures</div>
+        <div class="loop-node">Triaging Agent diagnoses &amp; classifies</div>
         <div class="loop-arrow">→</div>
-        <div class="loop-node">Healing Agent auto-fixes ELEMENT_NOT_FOUND locators</div>
+        <div class="loop-node">Healing Agent fixes stale &amp; ambiguous locators</div>
         <div class="loop-arrow">→</div>
         <div class="loop-node">PR raised on Jarvis repo</div>
         <div class="loop-arrow">→</div>
@@ -672,68 +662,91 @@
         <div class="loop-arrow">→</div>
         <div class="loop-node">Next CI run passes</div>
       </div>
-      <p style="margin-top:1rem;">This is the loop that closes. The engineer touches two points: the merge decision and the product bug investigation. Everything in between — triage, fix, verification, PR — is autonomous.</p>
+      <p style="margin-top:1rem;">The engineer touches two points: the merge decision and the product bug investigation. Everything in between (triage, diagnosis, fix, verification, PR) is autonomous.</p>
     </div>
 
-    <p>The cycle time from CI failure to mergeable PR is typically under 15 minutes for a batch of 3–5 locator failures. That same batch manually would take a QA engineer 2–3 hours — find the failures, inspect the selectors, write the fixes, verify locally, open PRs.</p>
-
-    <div class="screenshot-block">
-      <img src="images/healing-session-summary.png" alt="Healing agent session summary" onclick="openModal(this)" />
-      <p class="screenshot-caption">The complete session summary — Ship step pushes the branch, opens the PR, posts the Slack notification, and prints timing per step. The entire cycle from queue pickup to mergeable PR: 1 minute 27 seconds.</p>
-    </div>
+    <p><strong>When the page was rebuilt, not re-labelled.</strong> If every locator on a page stopped matching but its URL still matches the last good run, the page was redesigned in place: a flow change, not a stale selector. Healing doesn't try to patch that. It writes a <strong>draft change note</strong> for the <a href="feature-test-adaptation.html" style="color:#10b981;font-weight:600;">Test Adaptation Agent</a>, which a human reviews before it runs.</p>
 
     <!-- LIMITS AND GUARDRAILS -->
     <h2 id="guardrails">Limits and Guardrails</h2>
 
-    <p>The healing agent is deliberately conservative. Every design decision prioritises engineer visibility and control over raw throughput.</p>
+    <p>The healing agent is deliberately narrow. It holds exactly one repair hypothesis (the selector string is stale) and the guardrails below enforce that narrowness.</p>
 
     <ul class="guardrails">
       <li>
-        <span class="guardrail-label">MAX 5 FIXES</span>
-        <span><strong>AUTO_FIX_MAX_FIXES_PER_RUN</strong> — prevents runaway commits on large deployments. If 20 locators broke, the first 5 are fixed autonomously. The rest appear in the PR with a note that they need manual review.</span>
+        <span class="guardrail-label">DIAGNOSIS FIRST</span>
+        <span>Only <strong>LOCATOR_STALE</strong> and <strong>AMBIGUOUS_LOCATOR</strong> authorise an edit. Stop verdicts end the run before any model call.</span>
       </li>
       <li>
-        <span class="guardrail-label">MAX 2 TRIES</span>
-        <span><strong>MAX_FIX_ATTEMPTS</strong> — if two attempts fail, the test is skipped with both attempts' failure outputs included in the PR description. Engineers get full context to fix it themselves.</span>
+        <span class="guardrail-label">LOCATORS ONLY</span>
+        <span>Selector strings change; steps, waits and checks do not. Flow changes belong to the adaptation agent.</span>
       </li>
       <li>
-        <span class="guardrail-label">ELEM NOT FOUND ONLY</span>
-        <span>Only <strong>ELEMENT_NOT_FOUND</strong> root cause qualifies for auto-healing. Timing and assertion failures require human judgement about whether to increase timeouts or revisit assertion logic.</span>
+        <span class="guardrail-label">PROVEN BY THE TEST</span>
+        <span>Every fix must pass the real test before it is committed. A failing edit is restored.</span>
+      </li>
+      <li>
+        <span class="guardrail-label">5 DEFECTS PER RUN</span>
+        <span><strong>HEALING_MAX_FIXES_PER_RUN</strong> caps distinct fixes. Deferred defects are listed, not dropped.</span>
+      </li>
+      <li>
+        <span class="guardrail-label">PROGRESS BUDGET</span>
+        <span><strong>HEALING_RETRY_COUNT</strong> attempts may make no progress; <strong>HEALING_MAX_ATTEMPTS</strong> is the hard ceiling however much progress is being made.</span>
       </li>
       <li>
         <span class="guardrail-label">HIGH CONFIDENCE ONLY</span>
-        <span>Medium and low confidence classifications from the triaging agent do not qualify. If the triaging agent isn't sure, the healing agent doesn't attempt it.</span>
+        <span>From triaging, only HIGH-confidence automation issues qualify. If the triaging agent isn't sure, healing doesn't attempt it.</span>
       </li>
       <li>
-        <span class="guardrail-label">PR ALWAYS RAISED</span>
-        <span>Even if some fixes fail, a PR is created with what succeeded and detailed notes on what didn't. Engineers always have a single place to see the full picture of automated fix activity.</span>
+        <span class="guardrail-label">HONEST PR</span>
+        <span>Verified, unverified and failed stay distinct. Anything short of verified marks the PR NEEDS-REVIEW.</span>
       </li>
       <li>
         <span class="guardrail-label">DRY RUN MODE</span>
-        <span><strong>AUTO_PUSH=false</strong> skips the PR and logs what would have been fixed. Useful for validating the agent's behaviour in a new environment before enabling live commits.</span>
+        <span><strong>AUTO_PUSH=false</strong> applies and tests fixes in the local checkout and pushes nothing.</span>
       </li>
     </ul>
 
     <div class="insight-box">
       <h3>The principle behind the guardrails</h3>
-      <p>An agent that fixes tests perfectly 90% of the time but sometimes commits wrong changes in a way engineers can't trace is worse than no agent at all. Every guardrail here is about <strong>maintaining trust</strong>: the PR always shows what changed and why, the agent never commits silently, and the conservative qualification criteria mean false positives are extremely rare.</p>
-      <p>Engineers who review these PRs quickly learn to trust them — because the track record is clean and the failure cases are always surfaced transparently.</p>
+      <p>An agent that fixes tests perfectly 90% of the time but sometimes commits wrong changes in a way engineers can't trace is worse than no agent at all. Every guardrail here is about <strong>maintaining trust</strong>: the agent works out the cause before it edits, never commits an unproven fix, and the PR always shows what changed, why, and how it was verified.</p>    </div>
+
+    <!-- HOW IT'S MEASURED -->
+    <h2 id="measured">How It's Measured</h2>
+
+    <p>The locator engine has its own offline benchmark: a corpus of page changes where the right answer is known in advance. Every element is tagged with its true identity before the page is changed, and the tag is stripped before the engine sees the page, so it can't see the answer.</p>
+
+    <div class="metrics-grid">
+      <div class="metric-card green">
+        <div class="metric-val">Should fix</div>
+        <div class="metric-label">Renamed ids, reworded text, a button turned into a link: healed to the right element?</div>
+      </div>
+      <div class="metric-card green">
+        <div class="metric-val">Should refuse</div>
+        <div class="metric-label">Element removed, wrong page, duplicates: correctly left alone?</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-val">Live site</div>
+        <div class="metric-label">A third-party site with real markup, mutated in the browser</div>
+      </div>
     </div>
+
+    <p>A wrong fix is the failure that matters most: the test goes green while checking the wrong element, and nobody notices. That is why it is the gating metric, not accuracy. Part of the corpus was written after the engine's settings were frozen and is never tuned against, so a good result isn't the engine memorising its own test set. The engine makes no LLM calls on any of it.</p>
 
     <!-- CTA -->
     <div class="article-cta">
-      <h3>Next: Talk to Tests</h3>
-      <p>The loop is closed. Now explore how your whole team can query the entire QA knowledge base in plain English — test plans, specs, runbooks, and live TestRail data, answered in seconds.</p>
+      <h3>Next: The Test Adaptation Agent</h3>
+      <p>Healing repairs locators after a test goes red. The adaptation agent goes further: it updates test steps when the product changes (before anything fails) and proves each test still checks what it checked before.</p>
       <div class="cta-buttons">
-        <a href="feature-rag-chat.html" class="btn btn-primary">
-          Feature 5 — Talk to Tests
+        <a href="feature-test-adaptation.html" class="btn btn-primary">
+          Feature 5: Test Adaptation
           <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
         </a>
         <a href="feature-test-triaging.html" class="btn btn-ghost">
           <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-          Feature 3 — Test Triaging
+          Feature 3: Test Triaging
         </a>
-        <a href="https://github.com/msr5464" target="_blank" class="btn btn-ghost">
+        <a href="https://github.com/msr5464" target="_blank" rel="noopener" class="btn btn-ghost">
           <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
           GitHub
         </a>
@@ -741,10 +754,10 @@
     </div>
 
     <div class="article-tags">
-      <span class="tag">#ClaudeOpus</span>
       <span class="tag">#SelfHealingTests</span>
-      <span class="tag">#PageObjectModel</span>
-      <span class="tag">#Maven</span>
+      <span class="tag">#FailureDiagnosis</span>
+      <span class="tag">#LocatorEngine</span>
+      <span class="tag">#Claude</span>
       <span class="tag">#GitHubCLI</span>
       <span class="tag">#QAAutomation</span>
       <span class="tag">#AIAgents</span>
@@ -758,11 +771,14 @@
     <div class="toc-title">On this page</div>
     <ul class="toc-list">
       <li><a href="#problem">The Problem</a></li>
-      <li><a href="#triggered">How It Gets Triggered</a></li>
-      <li><a href="#fix-pipeline">The Fix Pipeline</a></li>
+      <li><a href="#triggered">Two Ways In</a></li>
+      <li><a href="#diagnosis">Diagnose Before Editing</a></li>
+      <li><a href="#fix-pipeline">The Pipeline</a></li>
+      <li><a href="#defects">Fixing by Defect</a></li>
       <li><a href="#github-pr">The GitHub PR</a></li>
       <li><a href="#closed-loop">The Closed Loop</a></li>
       <li><a href="#guardrails">Limits and Guardrails</a></li>
+      <li><a href="#measured">How It's Measured</a></li>
     </ul>
     <div class="toc-sep"></div>
     <div class="toc-author">
@@ -811,6 +827,14 @@
     document.body.style.overflow = '';
   }
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+</script>
+<script>
+  // On narrow screens the feature strip scrolls sideways; start it on this page's pill.
+  (function () {
+    var nav = document.querySelector('.feature-nav');
+    var active = nav && nav.querySelector('.feat-pill.active');
+    if (active) nav.scrollLeft = active.offsetLeft - (nav.clientWidth - active.offsetWidth) / 2;
+  })();
 </script>
 </body>
 </html>
