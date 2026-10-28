@@ -25,7 +25,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; font-size: 16px; }
+    html { scroll-behavior: smooth; scroll-padding-top: 136px; font-size: 16px; }
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       color: #0f172a;
@@ -64,7 +64,7 @@
     /* ── Hero ── */
     .article-hero {
       background: linear-gradient(135deg, #0f172a 0%, #1e293b 55%, #0f2027 100%);
-      padding: 8rem 2rem 5rem;
+      padding: 5rem 2rem 5rem;
       position: relative; overflow: hidden;
     }
     .hero-orb {
@@ -185,11 +185,7 @@
     }
     .article-body strong { color: #0f172a; font-weight: 700; }
     .article-body hr { border: none; border-top: 1px solid #e2e8f0; margin: 2.5rem 0; }
-    .article-body code {
-      font-family: 'Courier New', Courier, monospace;
-      font-size: 0.88em; background: #f1f5f9; color: #475569;
-      padding: 0.1em 0.4em; border-radius: 4px;
-    }
+    .article-body code { background: #f1f5f9; padding: 0.1rem 0.35rem; border-radius: 4px; font-size: 0.88em; color: #0f172a; }
 
     /* ── Section number label ── */
     .section-number {
@@ -228,13 +224,15 @@
       font-size: 0.82rem; color: #94a3b8; margin-top: 0.65rem;
       text-align: center; font-style: italic; line-height: 1.5;
     }
+    .screenshot-caption a { color: #10b981; font-weight: 600; font-style: normal; }
+    .screenshot-caption a:hover { text-decoration: underline; }
 
     /* ── Pipeline steps ── */
     .pipeline {
       display: flex; flex-direction: column; gap: 0; margin: 1.5rem 0 2rem;
     }
     .pipe-step {
-      display: flex; gap: 1.2rem; position: relative; padding-bottom: 1.5rem;
+      display: flex; gap: 1.2rem; position: relative; padding-bottom: 1.8rem;
     }
     .pipe-step:last-child { padding-bottom: 0; }
     .pipe-left { display: flex; flex-direction: column; align-items: center; }
@@ -253,13 +251,16 @@
     .pipe-title {
       font-weight: 700; color: #0f172a; font-size: 0.97rem;
       display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.35rem;
+      flex-wrap: wrap;
     }
     .pipe-time {
       font-size: 0.72rem; font-weight: 600; color: #10b981;
       background: #f0fdf4; border: 1px solid #bbf7d0;
       padding: 0.1rem 0.5rem; border-radius: 100px;
     }
-    .pipe-body p { font-size: 0.93rem; color: #475569; margin: 0; }
+    .pipe-body p { font-size: 0.93rem; color: #475569; margin: 0 0 0.5rem; }
+    .pipe-body ul { padding-left: 1.2rem; margin: 0.4rem 0 0; }
+    .pipe-body li { font-size: 0.9rem; color: #475569; margin-bottom: 0.3rem; }
 
     /* ── Knowledge base grid ── */
     .kb-grid {
@@ -304,7 +305,8 @@
       border: 1px solid rgba(16,185,129,0.2);
     }
     .insight-box h3 { color: #34d399; margin-bottom: 0.8rem; font-size: 1rem; }
-    .insight-box p { color: #94a3b8; font-size: 0.95rem; margin: 0; line-height: 1.7; }
+    .insight-box p { color: #94a3b8; font-size: 0.95rem; margin: 0 0 0.6rem; line-height: 1.7; }
+    .insight-box p:last-child { margin-bottom: 0; }
     .insight-box strong { color: #e2e8f0; }
 
     /* ── Article CTA ── */
@@ -318,7 +320,7 @@
     .cta-buttons { display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center; }
     .btn {
       display: inline-flex; align-items: center; gap: 0.45rem;
-      padding: 0.65rem 1.4rem; border-radius: 8px;
+      padding: 0.65rem 1.2rem; border-radius: 8px;
       font-size: 0.88rem; font-weight: 600; transition: all 0.2s; cursor: pointer;
       text-decoration: none;
     }
@@ -332,7 +334,7 @@
 
     /* ── TOC Sidebar ── */
     .toc-sidebar {
-      position: sticky; top: 118px;
+      position: sticky; top: 116px;
       background: #f8fafc; border: 1px solid #e2e8f0;
       border-radius: 10px; padding: 1.4rem; font-size: 0.83rem;
     }
@@ -456,7 +458,7 @@
   <div class="hero-grid"></div>
   <div class="hero-content">
     <div class="article-tag">📋 Feature 1 of 6</div>
-    <h1>Turn Requirements into Test Cases in <span class="grad-text">About a Minute</span></h1>
+    <h1>The Test Design Agent: <span class="grad-text">Turn Requirements into Test Cases in About a Minute</span></h1>
     <div class="article-meta">
       <span class="meta-item">
         <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
@@ -487,6 +489,9 @@
       <p>Paste your requirements (or upload PDF or Word files, or point to Confluence pages), and the AI generates complete, structured test cases in about a minute. But the real trick is what happens before the first test case is written: the system cross-references your entire existing TestRail coverage and only generates tests for requirements that are not already covered.</p>
     </div>
 
+    <!-- THE PROBLEM -->
+    <h2 id="problem">The Problem</h2>
+
     <p>Every QA team has the same problem: requirements keep coming, and writing test cases is slow. Not because it's difficult, but because it's repetitive, detail-heavy work that needs to be done consistently across every feature, every sprint, every release. And even when you write the tests, you're not always sure whether you've duplicated something that already exists in TestRail from six months ago.</p>
 
     <p>The Test Design Agent solves both problems simultaneously. It generates the tests, and it knows what you already have.</p>
@@ -506,15 +511,15 @@
 
     <div class="screenshot-block">
       <img src="images/design-agent.png" alt="The Requirements → Tests page in AI Test Studio" onclick="openModal(this)" />
-      <p class="screenshot-caption">Requirements → Tests: three input modes, a checkbox to generate only for uncovered requirements, and a History of past runs with their result, time and cost.</p>
+      <div class="screenshot-caption">Requirements → Tests: three input modes, a checkbox to generate only for uncovered requirements, and a History of past runs with their result, time and cost.</div>
     </div>
 
     <p>The result is a coverage-aware generation pipeline. Not just "generate test cases from this text", but "generate test cases for the parts of this text that we haven't already tested."</p>
 
-    <!-- WHAT THE AI ACTUALLY DOES -->
-    <h2 id="what-the-ai-does">What the AI Actually Does</h2>
+    <!-- THE 6-STEP PIPELINE -->
+    <h2 id="what-the-ai-does">The 6-Step Pipeline</h2>
 
-    <p>Each run executes in the background as six phases (extract requirements, derive acceptance criteria, find related tests, check coverage, write missing tests, build end-to-end tests), streamed live to a <strong>Live Run</strong> card, so you watch the work happen rather than staring at a spinner. A run can be cancelled, survives a page refresh, and can be replayed later from History.</p>
+    <p>Each run executes in the background as six steps, streamed live to a <strong>Live Run</strong> card, so you watch the work happen rather than staring at a spinner. A run can be cancelled, survives a page refresh, and can be replayed later from History.</p>
 
     <div class="pipeline">
       <div class="pipe-step">
@@ -523,8 +528,8 @@
           <div class="pipe-line"></div>
         </div>
         <div class="pipe-body">
-          <div class="pipe-title">Understanding Requirements <span class="pipe-time">+ acceptance criteria</span></div>
-          <p>The LLM parses the input into discrete, atomic requirements. If a file was uploaded, it first extracts the requirement statements from the raw document content, pulling them out of prose, tables, bullet lists, or whatever structure the document uses. Each requirement is treated as an independent unit, which is what allows the system to track coverage at the individual-requirement level rather than the document level. Each one then gets explicit <strong>acceptance criteria</strong> (taken from the spec where it has them, derived where it doesn't), and the number of criteria sets the minimum number of tests the requirement needs.</p>
+          <div class="pipe-title">Extract Requirements <span class="pipe-time">text, files or Confluence</span></div>
+          <p>The LLM parses the input into discrete, atomic requirements. If a file was uploaded, it first extracts the requirement statements from the raw document content, pulling them out of prose, tables, bullet lists, or whatever structure the document uses. Each requirement is treated as an independent unit, which is what allows the system to track coverage at the individual-requirement level rather than the document level.</p>
         </div>
       </div>
       <div class="pipe-step">
@@ -533,8 +538,8 @@
           <div class="pipe-line"></div>
         </div>
         <div class="pipe-body">
-          <div class="pipe-title">Surfacing Existing Tests You Can Use Right Now <span class="pipe-time">No rework</span></div>
-          <p>Before writing a single new test, the system queries ChromaDB and returns the <strong>existing TestRail test cases that already cover your requirements</strong>, displayed directly in the UI. These aren't just signals to skip generation; they're actionable results. An engineer can see "we already have 4 tests for this login requirement" and confirm them as covered without writing anything new. You get the value of the existing test suite surfaced to you, requirement by requirement, without opening TestRail and searching manually.</p>
+          <div class="pipe-title">Derive Acceptance Criteria <span class="pipe-time">from the spec, or derived</span></div>
+          <p>Each requirement gets explicit <strong>acceptance criteria</strong>: taken from the spec where it has them, derived where it doesn't. The number of criteria sets the minimum number of tests the requirement needs.</p>
         </div>
       </div>
       <div class="pipe-step">
@@ -543,8 +548,8 @@
           <div class="pipe-line"></div>
         </div>
         <div class="pipe-body">
-          <div class="pipe-title">Identifying Coverage Gaps</div>
-          <p>Each requirement is scored by coverage depth. Requirements with strong semantic matches in TestRail are marked as already-covered. Requirements with partial matches are flagged as needing updates: the AI suggests exactly what to change in the existing case. Requirements with no matches are queued for generation. This three-way classification means you always know what exists, what needs updating, and what's genuinely missing.</p>
+          <div class="pipe-title">Find Related Tests <span class="pipe-time">No rework</span></div>
+          <p>Before writing a single new test, the system queries ChromaDB and returns the <strong>existing TestRail test cases that already cover your requirements</strong>, displayed directly in the UI. These aren't just signals to skip generation; they're actionable results. An engineer can see "we already have 4 tests for this login requirement" and confirm them as covered without writing anything new. You get the value of the existing test suite surfaced to you, requirement by requirement, without opening TestRail and searching manually.</p>
         </div>
       </div>
       <div class="pipe-step">
@@ -553,8 +558,29 @@
           <div class="pipe-line"></div>
         </div>
         <div class="pipe-body">
-          <div class="pipe-title">Generating Tests for Gaps and End-to-End Flows</div>
-          <p>For each uncovered requirement, the LLM generates a fully structured test case: <strong>test type</strong> (API, Functional, or End-to-End Flow), <strong>preconditions</strong> that must be true before execution, <strong>numbered steps</strong> with clear, unambiguous actions, <strong>expected results</strong> for each step, and a <strong>priority</strong>: P0–P1 by default, P2–P3 on request. Each requirement is processed individually so results appear progressively. A final phase builds <strong>end-to-end tests</strong> across the requirements, with the regression impact on the product areas they touch.</p>
+          <div class="pipe-title">Check Coverage <span class="pipe-time">covered · update · missing</span></div>
+          <p>Each requirement is scored by coverage depth. Requirements with strong semantic matches in TestRail are marked as already-covered. Requirements with partial matches are flagged as needing updates: the AI suggests exactly what to change in the existing case. Requirements with no matches are queued for generation. This three-way classification means you always know what exists, what needs updating, and what's genuinely missing.</p>
+          <p>Matches are also checked against the acceptance criteria and the priorities the requirement needs, so a requirement whose existing tests leave a criterion untested still gets new tests.</p>
+        </div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-left">
+          <div class="pipe-num">05</div>
+          <div class="pipe-line"></div>
+        </div>
+        <div class="pipe-body">
+          <div class="pipe-title">Write Missing Tests <span class="pipe-time">P0–P1 by default</span></div>
+          <p>For each requirement with a coverage gap, the LLM generates a fully structured test case: <strong>test type</strong> (API, Functional, or End-to-End Flow), <strong>preconditions</strong> that must be true before execution, <strong>numbered steps</strong> with clear, unambiguous actions, <strong>expected results</strong> for each step, and a <strong>priority</strong>: P0–P1 by default, P2–P3 on request. Each requirement is processed individually so results appear progressively.</p>
+        </div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-left">
+          <div class="pipe-num">06</div>
+          <div class="pipe-line"></div>
+        </div>
+        <div class="pipe-body">
+          <div class="pipe-title">Build E2E Tests <span class="pipe-time">across requirements</span></div>
+          <p>Looks across all the requirements for the <strong>end-to-end workflows</strong> they affect and writes a test for each, with the regression impact on the product areas involved.</p>
           <p>Results land in three tabs: <strong>Related Tests</strong> (existing cases), <strong>User Story Tests</strong> (new, per requirement) and <strong>E2E Tests</strong>.</p>
         </div>
       </div>
@@ -562,17 +588,17 @@
 
     <div class="screenshot-block">
       <img src="images/design-agent-run.png" alt="A Requirements → Tests live run in AI Test Studio" onclick="openModal(this)" />
-      <p class="screenshot-caption">The Live Run card: six phases with live progress, plus the run's cost, tokens and LLM calls. The final phase identifies the end-to-end workflows the requirements touch and generates a test for each.</p>
+      <div class="screenshot-caption">A run from one pasted requirement, with new tests for uncovered requirements and P2/P3 tests both switched on. The Live Run card tracks the six steps with the run's cost, tokens and LLM calls. Here Check Coverage has found acceptance criteria the existing tests miss, and decided to write new P1–P3 tests.</div>
     </div>
 
     <div class="screenshot-block">
       <img src="images/design-agent-existing-tests.png" alt="Existing TestRail tests surfaced for the requirements" onclick="openModal(this)" />
-      <p class="screenshot-caption">Related Tests: existing TestRail cases that already cover the requirement (those at or above the configured similarity threshold), shown beside its acceptance criteria and the Confluence spec pages it came from.</p>
+      <div class="screenshot-caption">Related Tests: existing TestRail cases that match the requirement (those at or above the configured similarity threshold, each with its score), shown beside its acceptance criteria and the Confluence spec pages it came from.</div>
     </div>
 
     <div class="screenshot-block">
       <img src="images/design-agent-new-tests.png" alt="Newly generated test cases for coverage gaps" onclick="openModal(this)" />
-      <p class="screenshot-caption">User Story Tests: newly generated cases with priority, preconditions, numbered steps and expected results, ready to push to TestRail individually or in bulk.</p>
+      <div class="screenshot-caption">User Story Tests: the new cases written for the gaps, listed after the requirement's existing matches, each with priority, preconditions, numbered steps and expected results. Each one can be modified and pushed to TestRail on its own, or ticked and pushed in bulk.</div>
     </div>
 
     <p>A typical requirement goes from Generate to fully formed tests in about a minute. For larger uploads, the Live Run keeps you informed as the pipeline works through each requirement in sequence.</p>
@@ -604,14 +630,14 @@
 
     <div class="screenshot-block">
       <img src="images/admin-knowledge-base.png" alt="Admin dashboard showing ChromaDB stats" onclick="openModal(this)" />
-      <p class="screenshot-caption">The admin portal's Knowledge Base: the chunks ingested into ChromaDB and their sources. This knowledge base is what powers the coverage gap detection and prevents duplicating existing tests.</p>
+      <div class="screenshot-caption">The admin portal's Knowledge Base: the chunks ingested into ChromaDB and their sources. This knowledge base is what powers the coverage gap detection and prevents duplicating existing tests.</div>
     </div>
 
     <p>The TestRail sync streams its progress in real time. You can watch each test case being pulled, chunked, and embedded into ChromaDB as the sync runs. After a full sync, the entire test suite becomes queryable by semantic similarity, not just keyword search.</p>
 
     <div class="screenshot-block">
       <img src="images/connectors.png" alt="TestRail and Confluence syncs running side by side, each with a live log" onclick="openModal(this)" />
-      <p class="screenshot-caption">TestRail and Confluence syncs in progress, each with a live running log. Every test case and page is fetched, validated and embedded into ChromaDB, making the entire test suite queryable by the AI during generation.</p>
+      <div class="screenshot-caption">TestRail and Confluence syncs in progress, each with a live running log. Every test case and page is fetched, validated and embedded into ChromaDB, making the entire test suite queryable by the AI during generation.</div>
     </div>
 
     <div class="insight-box">
@@ -662,25 +688,27 @@
       <p>A senior QA engineer writing test cases manually for a set of 10 requirements (decomposing them, checking coverage, writing steps and expected results, entering them into TestRail) takes around 30–45 minutes on a good day. The Test Design Agent does the same work in about a minute per requirement, end-to-end tests included, with coverage awareness built in. That's not a marginal improvement. It changes what's feasible in a sprint.</p>
     </div>
 
-    <hr />
-
     <div class="article-cta">
       <h3>Next: The Test Authoring Agent</h3>
-      <p>Test generation creates the test plan. The Test Authoring Agent goes one step further: it writes the automation code, validates it against a real browser, fixes any compilation failures, and raises a GitHub PR. All from plain English.</p>
+      <p>The Test Design Agent creates the test plan. The Test Authoring Agent goes one step further: it writes the automation code, validates it against a real browser, fixes any compilation failures, and raises a GitHub PR. All from plain English.</p>
       <div class="cta-buttons">
         <a href="feature-test-authoring.html" class="btn btn-primary">
-          Feature 2: Test Authoring Agent
-          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+          Feature 2: Test Authoring
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
         </a>
         <a href="ai-agent-network.html" class="btn btn-ghost">
-          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
           Back to Overview
+        </a>
+        <a href="https://github.com/msr5464/AI-Test-Studio" target="_blank" rel="noopener" class="btn btn-ghost">
+          <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
+          GitHub
         </a>
       </div>
     </div>
 
     <div class="article-tags">
-      <span class="tag">#TestGeneration</span>
+      <span class="tag">#TestDesign</span>
       <span class="tag">#RAG</span>
       <span class="tag">#ChromaDB</span>
       <span class="tag">#TestRail</span>
@@ -696,24 +724,13 @@
   <aside class="toc-sidebar">
     <div class="toc-title">On this page</div>
     <ul class="toc-list">
+      <li><a href="#problem">The Problem</a></li>
       <li><a href="#how-it-works">How It Works</a></li>
-      <li><a href="#what-the-ai-does">What the AI Does</a></li>
+      <li><a href="#what-the-ai-does">The 6-Step Pipeline</a></li>
       <li><a href="#the-knowledge-base">The Knowledge Base</a></li>
       <li><a href="#pushing-to-testrail">Pushing to TestRail</a></li>
       <li><a href="#llm-options">LLM Options</a></li>
     </ul>
-    <div class="toc-sep"></div>
-    <div class="toc-nav-links">
-      <div class="toc-nav-link" style="font-size:0.72rem;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;padding:0 0.5rem 0.2rem;">Features</div>
-      <a href="feature-test-authoring.html" class="toc-nav-link next">
-        Feature 2: Authoring Agent
-        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
-      </a>
-      <a href="feature-test-triaging.html" class="toc-nav-link">Feature 3: Triaging Agent</a>
-      <a href="feature-test-healing.html" class="toc-nav-link">Feature 4: Healing Agent</a>
-      <a href="feature-test-adaptation.html" class="toc-nav-link">Feature 5: Adaptation Agent</a>
-      <a href="feature-rag-chat.html" class="toc-nav-link">Feature 6: Talk to Tests</a>
-    </div>
     <div class="toc-sep"></div>
     <div class="toc-author">
       <div>

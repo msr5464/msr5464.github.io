@@ -25,7 +25,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; font-size: 16px; }
+    html { scroll-behavior: smooth; scroll-padding-top: 136px; font-size: 16px; }
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       color: #0f172a;
@@ -180,6 +180,7 @@
       font-size: 1rem; color: #334155; margin-bottom: 0.45rem; line-height: 1.7;
     }
     .article-body strong { color: #0f172a; font-weight: 700; }
+    .article-body code { background: #f1f5f9; padding: 0.1rem 0.35rem; border-radius: 4px; font-size: 0.88em; color: #0f172a; }
     .article-body hr { border: none; border-top: 1px solid #e2e8f0; margin: 2.5rem 0; }
 
     /* ── Intro callout ── */
@@ -208,13 +209,15 @@
       font-size: 0.82rem; color: #94a3b8; margin-top: 0.65rem;
       text-align: center; font-style: italic; line-height: 1.5;
     }
+    .screenshot-caption a { color: #10b981; font-weight: 600; font-style: normal; }
+    .screenshot-caption a:hover { text-decoration: underline; }
 
     /* ── Pipeline steps ── */
     .pipeline {
       display: flex; flex-direction: column; gap: 0; margin: 1.5rem 0 2rem;
     }
     .pipe-step {
-      display: flex; gap: 1.2rem; position: relative; padding-bottom: 1.5rem;
+      display: flex; gap: 1.2rem; position: relative; padding-bottom: 1.8rem;
     }
     .pipe-step:last-child { padding-bottom: 0; }
     .pipe-left { display: flex; flex-direction: column; align-items: center; }
@@ -233,13 +236,16 @@
     .pipe-title {
       font-weight: 700; color: #0f172a; font-size: 0.97rem;
       display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.35rem;
+      flex-wrap: wrap;
     }
     .pipe-time {
       font-size: 0.72rem; font-weight: 600; color: #10b981;
       background: #f0fdf4; border: 1px solid #bbf7d0;
       padding: 0.1rem 0.5rem; border-radius: 100px;
     }
-    .pipe-body p { font-size: 0.93rem; color: #475569; margin: 0; }
+    .pipe-body p { font-size: 0.93rem; color: #475569; margin: 0 0 0.5rem; }
+    .pipe-body ul { padding-left: 1.2rem; margin: 0.4rem 0 0; }
+    .pipe-body li { font-size: 0.9rem; color: #475569; margin-bottom: 0.3rem; }
 
     /* ── Metric cards ── */
     .metrics-grid {
@@ -264,7 +270,8 @@
       border: 1px solid rgba(16,185,129,0.2);
     }
     .insight-box h3 { color: #34d399; margin-bottom: 0.8rem; font-size: 1rem; }
-    .insight-box p { color: #94a3b8; font-size: 0.95rem; margin: 0; line-height: 1.7; }
+    .insight-box p { color: #94a3b8; font-size: 0.95rem; margin: 0 0 0.6rem; line-height: 1.7; }
+    .insight-box p:last-child { margin-bottom: 0; }
     .insight-box strong { color: #e2e8f0; }
 
     /* ── Lessons ── */
@@ -302,7 +309,7 @@
     .cta-buttons { display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center; }
     .btn {
       display: inline-flex; align-items: center; gap: 0.45rem;
-      padding: 0.65rem 1.4rem; border-radius: 8px;
+      padding: 0.65rem 1.2rem; border-radius: 8px;
       font-size: 0.88rem; font-weight: 600; transition: all 0.2s; cursor: pointer;
       text-decoration: none;
     }
@@ -463,8 +470,8 @@
       <p>Finding information about test coverage today means opening TestRail to search cases, digging through Confluence for spec docs, asking teammates who might remember. It's slow and inconsistent. The RAG Chat tab turns your entire QA knowledge base into a single queryable interface, answered in seconds, grounded in your actual documentation.</p>
     </div>
 
-    <!-- THE PROBLEM IT SOLVES -->
-    <h2 id="problem">The Problem It Solves</h2>
+    <!-- THE PROBLEM -->
+    <h2 id="problem">The Problem</h2>
 
     <p>Ask any QA engineer what happens when someone on the team asks "do we have test coverage for the 2FA login flow?" The answer is a combination of: opening TestRail and typing in the search box, opening Confluence and hunting through nested pages, pinging someone in Slack who might know, and hoping the answer is right. This is not a knowledge problem; the documentation exists. It's an access problem. The information is scattered across three systems and a human's memory.</p>
 
@@ -473,11 +480,6 @@
     <!-- THE KNOWLEDGE BASE -->
     <h2 id="knowledge-base">What Powers It: The Knowledge Base</h2>
 
-    <div class="screenshot-block">
-      <img src="images/admin-knowledge-base.png" alt="Admin dashboard showing knowledge base stats" onclick="openModal(this)" />
-      <div class="screenshot-caption">The admin portal's Knowledge Base: the store behind Talk to Tests. Content is ingested, chunked and embedded into ChromaDB; the sidebar shows live document, chunk and user counts.</div>
-    </div>
-
     <p>The knowledge base is built from three sources synced via the Admin panel:</p>
 
     <ul>
@@ -485,6 +487,11 @@
       <li><strong>Confluence sync</strong>: product spec pages, runbooks, onboarding guides, and design docs are all indexed. The AI can reference your actual product documentation when answering.</li>
       <li><strong>Test-case uploads</strong>: CSV or Excel test-case exports, for suites that live outside TestRail. Each upload is validated, chunked and embedded automatically.</li>
     </ul>
+
+    <div class="screenshot-block">
+      <img src="images/admin-knowledge-base.png" alt="Admin dashboard showing knowledge base stats" onclick="openModal(this)" />
+      <div class="screenshot-caption">The admin portal's Knowledge Base: the store behind Talk to Tests. Content is ingested, chunked and embedded into ChromaDB; the sidebar shows live document, chunk and user counts.</div>
+    </div>
 
     <div class="screenshot-block">
       <img src="images/connectors.png" alt="TestRail and Confluence syncs running side by side, each with a live log" onclick="openModal(this)" />
@@ -501,7 +508,7 @@
     <div class="pipeline">
       <div class="pipe-step">
         <div class="pipe-left">
-          <div class="pipe-num">1</div>
+          <div class="pipe-num">01</div>
           <div class="pipe-line"></div>
         </div>
         <div class="pipe-body">
@@ -511,7 +518,7 @@
       </div>
       <div class="pipe-step">
         <div class="pipe-left">
-          <div class="pipe-num">2</div>
+          <div class="pipe-num">02</div>
           <div class="pipe-line"></div>
         </div>
         <div class="pipe-body">
@@ -521,7 +528,7 @@
       </div>
       <div class="pipe-step">
         <div class="pipe-left">
-          <div class="pipe-num">3</div>
+          <div class="pipe-num">03</div>
           <div class="pipe-line"></div>
         </div>
         <div class="pipe-body">
@@ -531,7 +538,7 @@
       </div>
       <div class="pipe-step">
         <div class="pipe-left">
-          <div class="pipe-num">4</div>
+          <div class="pipe-num">04</div>
           <div class="pipe-line"></div>
         </div>
         <div class="pipe-body">
@@ -549,11 +556,6 @@
     <!-- USING THE CHAT -->
     <h2 id="using-the-chat">Using the Chat</h2>
 
-    <div class="screenshot-block">
-      <img src="images/talk-to-tests.png" alt="Talk to Tests chat interface with starter questions" onclick="openModal(this)" />
-      <div class="screenshot-caption">Talk to Tests: the chat interface with suggested starter questions. Engineers can ask anything about test coverage, product flows, or documentation without leaving the portal.</div>
-    </div>
-
     <p>The chat lives on the <strong>Talk to your Tests</strong> page. Engineers can ask questions in plain English; the system handles the retrieval and generation. Common use cases:</p>
 
     <ul>
@@ -563,11 +565,16 @@
       <li><strong>Gap finding</strong>: "What edge cases are missing from our payment flow tests?"</li>
     </ul>
 
+    <div class="screenshot-block">
+      <img src="images/talk-to-tests.png" alt="Talk to Tests chat interface with starter questions" onclick="openModal(this)" />
+      <div class="screenshot-caption">Talk to Tests: the chat interface with suggested starter questions. Engineers can ask anything about test coverage, product flows, or documentation without leaving the portal.</div>
+    </div>
+
     <p>Every answer shows its <strong>sources</strong>, how long it took and what it cost, so the team can see both where an answer came from and what the feature spends. Individual test cases in an answer can be copied straight out.</p>
 
     <div class="screenshot-block">
       <img src="images/talk-to-tests-result.png" alt="Talk to Tests final result" onclick="openModal(this)" />
-      <p class="screenshot-caption">A coverage question answered: the matching TestRail cases with priority, platform, steps and expected results, plus the response time, cost and tokens used.</p>
+      <div class="screenshot-caption">A coverage question answered: the matching TestRail cases with priority, platform, steps and expected results, plus the response time, cost and tokens used.</div>
     </div>
 
     <!-- MULTI-LLM SUPPORT -->
@@ -582,7 +589,7 @@
       <div class="tech-row"><span class="tech-label">Vector DB</span><span class="tech-val">ChromaDB · always local</span></div>
     </div>
 
-    <p>Switch provider with <code style="background:#f1f5f9;padding:0.1rem 0.4rem;border-radius:4px;font-size:0.9rem;color:#0f172a;">LLM_PROVIDER=openai|gemini|ollama</code>, from the admin portal's Studio Settings or the environment config, and restart the app. Switching to or from OpenAI also changes the embedding model, so the knowledge base needs a rebuild. When using Ollama, the LLM runs on your machine; no data leaves your network at any stage of the pipeline. This is important for teams with strict data residency requirements.</p>
+    <p>Switch provider with <code>LLM_PROVIDER=openai|gemini|ollama</code>, from the admin portal's Studio Settings or the environment config, and restart the app. Switching to or from OpenAI also changes the embedding model, so the knowledge base needs a rebuild. When using Ollama, the LLM runs on your machine; no data leaves your network at any stage of the pipeline. This is important for teams with strict data residency requirements.</p>
 
     <div class="insight-box">
       <h3>On-premise option</h3>
@@ -592,7 +599,7 @@
     <!-- CTA -->
     <div class="article-cta">
       <h3>You've seen the full system</h3>
-      <p>Six features, three repositories, one continuous loop: generation, authoring, triaging, healing, adaptation, and now the knowledge layer that ties it all together. Read the full architecture overview or explore another feature.</p>
+      <p>Six features, three repositories, one continuous loop: design, authoring, triaging, healing, adaptation, and now the knowledge layer that ties it all together. Read the full architecture overview or explore another feature.</p>
       <div class="cta-buttons">
         <a href="ai-agent-network.html" class="btn btn-primary">
           Full System Overview
@@ -602,7 +609,8 @@
           <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
           Feature 5: Test Adaptation
         </a>
-        <a href="https://github.com/msr5464" target="_blank" rel="noopener" class="btn btn-ghost">
+        <a href="https://github.com/msr5464/AI-Test-Studio" target="_blank" rel="noopener" class="btn btn-ghost">
+          <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
           GitHub
         </a>
       </div>

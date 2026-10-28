@@ -25,7 +25,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; font-size: 16px; }
+    html { scroll-behavior: smooth; scroll-padding-top: 136px; font-size: 16px; }
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       color: #0f172a;
@@ -212,6 +212,8 @@
       font-size: 0.82rem; color: #94a3b8; margin-top: 0.65rem;
       text-align: center; font-style: italic; line-height: 1.5;
     }
+    .screenshot-caption a { color: #10b981; font-weight: 600; font-style: normal; }
+    .screenshot-caption a:hover { text-decoration: underline; }
 
     /* ── Pipeline steps ── */
     .pipeline {
@@ -344,7 +346,7 @@
     .cta-buttons { display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center; }
     .btn {
       display: inline-flex; align-items: center; gap: 0.45rem;
-      padding: 0.65rem 1.4rem; border-radius: 8px;
+      padding: 0.65rem 1.2rem; border-radius: 8px;
       font-size: 0.88rem; font-weight: 600; transition: all 0.2s; cursor: pointer;
       text-decoration: none;
     }
@@ -556,7 +558,7 @@ Expected outcome unchanged: an order is placed and a confirmation number is show
 
     <div class="screenshot-block">
       <img src="images/adaptation-agent.png" alt="Adapt to Product Changes page in AI Test Studio" onclick="openModal(this)" />
-      <div class="screenshot-caption">Adapt to Product Changes in AI Test Studio, where the change note sits beside what the test proves today: its steps and every check reachable through its helpers. The expected outcome defaults to "same as today".</div>
+      <div class="screenshot-caption">Adapt to Product Changes in AI Test Studio, where the change note sits beside what the test proves today: its steps and every check reachable through its helpers. Here, a saved three-item note for an OrangeHRM test, the same one run below. The expected outcome defaults to "same as today".</div>
     </div>
 
     <!-- THE PIPELINE -->
@@ -620,8 +622,13 @@ Expected outcome unchanged: an order is placed and a confirmation number is show
     </div>
 
     <div class="screenshot-block">
-      <img src="images/adaptation-agent-run.png" alt="An adaptation run in AI Test Studio" onclick="openModal(this)" />
-      <div class="screenshot-caption">A demo run on SauceDemo from a two-item change note: add a second product to the cart, and check the cart for two items. The first Adapt attempt got 4 of the 5 affected tests passing (the edited test needed a product row the test data didn't have yet), so the retry added it, and all 5 passed. The second item turned out to be covered by the first one's edit. Ship opened the PR as NEEDS-REVIEW.</div>
+      <img src="images/adaptation-agent-run.png" alt="An adaptation run in progress in AI Test Studio" onclick="openModal(this)" />
+      <div class="screenshot-caption">A demo run on OrangeHRM from a three-item change note. Each item is applied as its own transaction: here, item 3 replaces the trash-icon delete with ticking the row checkbox and clicking Delete Selected, passes all 14 guards, compiles, and is verified by re-running the affected test.</div>
+    </div>
+
+    <div class="screenshot-block">
+      <img src="images/adaptation-agent-result.png" alt="The result of an adaptation run: change items applied and checks changed" onclick="openModal(this)" />
+      <div class="screenshot-caption">The end of that run, about 17 minutes and $2.68: all three items applied and the tests re-run green (3/3). The Result lists what was edited for each item and flags the one check whose meaning changed: Marital Status should now persist as "Married", not "Single", which exploration confirmed on the live page. Ship opened the PR as NEEDS-REVIEW. <a href="https://github.com/msr5464/Playwright-Automation-Framework/pull/114" target="_blank" rel="noopener">View PR #114 on GitHub ↗</a></div>
     </div>
 
     <!-- SAFETY -->

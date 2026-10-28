@@ -25,7 +25,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; font-size: 16px; }
+    html { scroll-behavior: smooth; scroll-padding-top: 136px; font-size: 16px; }
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       color: #0f172a;
@@ -180,6 +180,7 @@
       font-size: 1rem; color: #334155; margin-bottom: 0.45rem; line-height: 1.7;
     }
     .article-body strong { color: #0f172a; font-weight: 700; }
+    .article-body code { background: #f1f5f9; padding: 0.1rem 0.35rem; border-radius: 4px; font-size: 0.88em; color: #0f172a; }
     .article-body hr { border: none; border-top: 1px solid #e2e8f0; margin: 2.5rem 0; }
 
     /* ── Intro callout ── */
@@ -208,6 +209,8 @@
       font-size: 0.82rem; color: #94a3b8; margin-top: 0.65rem;
       text-align: center; font-style: italic; line-height: 1.5;
     }
+    .screenshot-caption a { color: #10b981; font-weight: 600; font-style: normal; }
+    .screenshot-caption a:hover { text-decoration: underline; }
 
     /* ── Pipeline steps ── */
     .pipeline {
@@ -233,6 +236,7 @@
     .pipe-title {
       font-weight: 700; color: #0f172a; font-size: 0.97rem;
       display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.35rem;
+      flex-wrap: wrap;
     }
     .pipe-time {
       font-size: 0.72rem; font-weight: 600; color: #10b981;
@@ -279,7 +283,8 @@
       border: 1px solid rgba(16,185,129,0.2);
     }
     .insight-box h3 { color: #34d399; margin-bottom: 0.8rem; font-size: 1rem; }
-    .insight-box p { color: #94a3b8; font-size: 0.95rem; margin: 0; line-height: 1.7; }
+    .insight-box p { color: #94a3b8; font-size: 0.95rem; margin: 0 0 0.6rem; line-height: 1.7; }
+    .insight-box p:last-child { margin-bottom: 0; }
     .insight-box strong { color: #e2e8f0; }
 
     /* ── Qualifies table ── */
@@ -331,7 +336,7 @@
     .cta-buttons { display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center; }
     .btn {
       display: inline-flex; align-items: center; gap: 0.45rem;
-      padding: 0.65rem 1.4rem; border-radius: 8px;
+      padding: 0.65rem 1.2rem; border-radius: 8px;
       font-size: 0.88rem; font-weight: 600; transition: all 0.2s; cursor: pointer;
       text-decoration: none;
     }
@@ -530,7 +535,7 @@
         </div>
         <div class="pipe-body">
           <div class="pipe-title">Scout <span class="pipe-time">01_scout.py</span></div>
-          <p><code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">01_scout.py</code> queries MySQL for build tags that have failures not yet analysed. It scores each candidate by <strong>failure count × recency</strong> and picks the highest-priority unanalysed build. This step is lightweight: pure database queries, no AI. The agent only moves to the next step when it finds a build worth analysing.</p>
+          <p><code>01_scout.py</code> queries MySQL for build tags that have failures not yet analysed. It scores each candidate by <strong>failure count × recency</strong> and picks the highest-priority unanalysed build. This step is lightweight: pure database queries, no AI. The agent only moves to the next step when it finds a build worth analysing.</p>
         </div>
       </div>
 
@@ -541,7 +546,7 @@
         </div>
         <div class="pipe-body">
           <div class="pipe-title">Collect <span class="pipe-time">02_collect.py</span></div>
-          <p><code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">02_collect.py</code> pulls all test failures for the selected build. For each failure it:</p>
+          <p><code>02_collect.py</code> pulls all test failures for the selected build. For each failure it:</p>
           <ul>
             <li>Fetches the complete stack trace and error message from MySQL</li>
             <li>Parses the HTML test report (BeautifulSoup) for screenshots and additional context</li>
@@ -560,7 +565,7 @@
         <div class="pipe-body">
           <div class="pipe-title">Diagnose + Classify · Claude <span class="pipe-time">03_classify.py</span></div>
           <p>First, a <strong>failure diagnosis</strong> reads the evidence on disk (DOM snapshot, trace, baselines) and decides <em>why</em> an element was missing: a stale or ambiguous locator, or something no locator edit can fix (wrong page, an earlier step failed, environment unreachable, not ready yet…). A HIGH-confidence diagnosis is authoritative.</p>
-          <p><code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">03_classify.py</code> then batches the remaining failures in groups of 10 and calls Claude for each batch. The prompt includes the test name, full stack trace, error message, flakiness data, and trend history. Claude classifies each failure as one of two types, or <strong>UNKNOWN</strong> when the evidence doesn't support either:</p>
+          <p><code>03_classify.py</code> then batches the remaining failures in groups of 10 and calls Claude for each batch. The prompt includes the test name, full stack trace, error message, flakiness data, and trend history. Claude classifies each failure as one of two types, or <strong>UNKNOWN</strong> when the evidence doesn't support either:</p>
 
           <div class="class-pills">
             <span class="class-pill pill-bug">PRODUCT_BUG</span>
@@ -576,7 +581,7 @@
             <span class="class-pill pill-low">LOW</span>
           </div>
 
-          <p style="margin-top:0.75rem;">And a <strong>root cause category</strong>: <code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">ELEMENT_NOT_FOUND</code>, <code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">TIMEOUT</code>, <code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">ASSERTION_FAILURE</code>, <code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">ENVIRONMENT_ISSUE</code>, <code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">CODE_ISSUE</code>, <code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">OTHER</code>, or the diagnosis verdict itself, such as <code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">LOCATOR_STALE</code> or <code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">WRONG_PAGE</code>.</p>
+          <p style="margin-top:0.75rem;">And a <strong>root cause category</strong>: <code>ELEMENT_NOT_FOUND</code>, <code>TIMEOUT</code>, <code>ASSERTION_FAILURE</code>, <code>ENVIRONMENT_ISSUE</code>, <code>CODE_ISSUE</code>, <code>OTHER</code>, or the diagnosis verdict itself, such as <code>LOCATOR_STALE</code> or <code>WRONG_PAGE</code>.</p>
         </div>
       </div>
 
@@ -587,8 +592,8 @@
         </div>
         <div class="pipe-body">
           <div class="pipe-title">Adversarial Review · independent Claude pass <span class="pipe-time">04_review.py</span></div>
-          <p>This is the key quality gate. <code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">04_review.py</code> sends the classifier's output to a second, separate Claude call (no shared context with the classifier), acting as an independent reviewer. It uses the same model: the independence comes from the separate call, not a different model.</p>
-          <p>The reviewer challenges each classification it disagrees with and provides alternative reasoning. The classifier can rebut or concede. Up to <strong>2 debate rounds</strong> by default (<code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">TRIAGING_MAX_REVIEW_ROUNDS</code>). The outcome is written to a <code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">.verdict</code> file: <strong>APPROVED</strong>, or <strong>NEEDS-HUMAN</strong> when the two passes can't settle it. When they disagree, that's a signal. Low-confidence disagreements are escalated to humans in the final report.</p>
+          <p>This is the key quality gate. <code>04_review.py</code> sends the classifier's output to a second, separate Claude call (no shared context with the classifier), acting as an independent reviewer. It uses the same model: the independence comes from the separate call, not a different model.</p>
+          <p>The reviewer challenges each classification it disagrees with and provides alternative reasoning. The classifier can rebut or concede. Up to <strong>2 debate rounds</strong> by default (<code>TRIAGING_MAX_REVIEW_ROUNDS</code>). The outcome is written to a <code>.verdict</code> file: <strong>APPROVED</strong>, or <strong>NEEDS-HUMAN</strong> when the two passes can't settle it. When they disagree, that's a signal. Low-confidence disagreements are escalated to humans in the final report.</p>
         </div>
       </div>
 
@@ -599,7 +604,7 @@
         </div>
         <div class="pipe-body">
           <div class="pipe-title">Ship <span class="pipe-time">05_ship.py</span></div>
-          <p><code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">05_ship.py</code> generates the HTML report (<code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">AI-Generated-Report_&lt;build-tag&gt;.html</code>). An <strong>APPROVED</strong> review posts it to Slack (<code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">#qa-reports</code>) and writes handoff JSON to <code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">agents/test-healing-agent/queue/</code> for failures that qualify for auto-healing. A <strong>NEEDS-HUMAN</strong> review escalates to the alert channel (<code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">#qa-critical</code>) instead, and nothing is queued for healing.</p>
+          <p><code>05_ship.py</code> generates the HTML report (<code>AI-Generated-Report_&lt;build-tag&gt;.html</code>). An <strong>APPROVED</strong> review posts it to Slack (<code>#qa-reports</code>) and writes handoff JSON to <code>agents/test-healing-agent/queue/</code> for failures that qualify for auto-healing. A <strong>NEEDS-HUMAN</strong> review escalates to the alert channel (<code>#qa-critical</code>) instead, and nothing is queued for healing.</p>
         </div>
       </div>
     </div>
@@ -612,12 +617,7 @@
     <!-- THE REPORT -->
     <h2 id="report">The Report</h2>
 
-    <div class="screenshot-block">
-      <img src="images/triaging-agent-report.png" alt="AI-Generated Automation Report" onclick="openModal(this)" />
-      <div class="screenshot-caption">An AI-Generated Automation Report: executive summary with pass rate, failure breakdown by category (product bug vs automation issue), failures by root cause, all flaky tests with historical run patterns, and known failures. Each section is AI-generated from the classified data.</div>
-    </div>
-
-    <p>The HTML report is generated by <code style="background:#f1f5f9;padding:0.1rem 0.35rem;border-radius:4px;font-size:0.85rem;color:#0f172a;">05_ship.py</code> and includes every section an engineer needs to act on a CI run without looking at raw logs:</p>
+    <p>The HTML report is generated by <code>05_ship.py</code> and includes every section an engineer needs to act on a CI run without looking at raw logs:</p>
 
     <ul>
       <li><strong>Executive summary</strong>: overall pass rate, total failures, breakdown into automation issues vs product bugs. The top-line numbers a manager can read in 10 seconds.</li>
@@ -626,6 +626,11 @@
       <li><strong>Flaky test matrix</strong>: test name plus pass/fail pattern across the last 10 runs, visualised as coloured dots. Instant visibility into which tests can't be trusted.</li>
       <li><strong>Known failures</strong>: tests tagged in the results with a known issue and its linked Jira ticket, listed separately so they aren't mistaken for new regressions.</li>
     </ul>
+
+    <div class="screenshot-block">
+      <img src="images/triaging-agent-report.png" alt="AI-Generated Automation Report" onclick="openModal(this)" />
+      <div class="screenshot-caption">An AI-Generated Automation Report: executive summary with pass rate, failure breakdown by category (product bug vs automation issue), failures by root cause, all flaky tests with historical run patterns, and known failures. Each section is AI-generated from the classified data.</div>
+    </div>
 
     <!-- WHAT QUALIFIES FOR AUTO-HEALING -->
     <h2 id="auto-healing">What Qualifies for Auto-Healing</h2>
@@ -667,8 +672,9 @@
           <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
           Feature 2: Test Authoring
         </a>
-        <a href="ai-agent-network.html" class="btn btn-ghost">
-          Back to Overview
+        <a href="https://github.com/msr5464/AI-Agent-Network" target="_blank" rel="noopener" class="btn btn-ghost">
+          <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
+          GitHub
         </a>
       </div>
     </div>

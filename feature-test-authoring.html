@@ -25,7 +25,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; font-size: 16px; }
+    html { scroll-behavior: smooth; scroll-padding-top: 136px; font-size: 16px; }
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       color: #0f172a;
@@ -64,7 +64,7 @@
     /* ── Hero ── */
     .article-hero {
       background: linear-gradient(135deg, #0f172a 0%, #1e293b 55%, #0f2027 100%);
-      padding: 8rem 2rem 5rem;
+      padding: 5rem 2rem 5rem;
       position: relative; overflow: hidden;
     }
     .hero-orb {
@@ -185,11 +185,7 @@
     }
     .article-body strong { color: #0f172a; font-weight: 700; }
     .article-body hr { border: none; border-top: 1px solid #e2e8f0; margin: 2.5rem 0; }
-    .article-body code {
-      font-family: 'Courier New', Courier, monospace;
-      font-size: 0.88em; background: #f1f5f9; color: #475569;
-      padding: 0.1em 0.4em; border-radius: 4px;
-    }
+    .article-body code { background: #f1f5f9; padding: 0.1rem 0.35rem; border-radius: 4px; font-size: 0.88em; color: #0f172a; }
 
     /* ── Intro callout ── */
     .intro-callout {
@@ -217,32 +213,33 @@
       font-size: 0.82rem; color: #94a3b8; margin-top: 0.65rem;
       text-align: center; font-style: italic; line-height: 1.5;
     }
+    .screenshot-caption a { color: #10b981; font-weight: 600; font-style: normal; }
+    .screenshot-caption a:hover { text-decoration: underline; }
 
     /* ── Pipeline steps ── */
     .pipeline {
       display: flex; flex-direction: column; gap: 0; margin: 1.5rem 0 2rem;
     }
     .pipe-step {
-      display: flex; gap: 1.2rem; position: relative; padding-bottom: 2rem;
+      display: flex; gap: 1.2rem; position: relative; padding-bottom: 1.8rem;
     }
     .pipe-step:last-child { padding-bottom: 0; }
     .pipe-left { display: flex; flex-direction: column; align-items: center; }
     .pipe-num {
-      width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;
+      width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
       background: linear-gradient(135deg, #10b981, #059669);
-      color: #fff; font-size: 0.75rem; font-weight: 800;
+      color: #fff; font-size: 0.78rem; font-weight: 800;
       display: flex; align-items: center; justify-content: center;
-      letter-spacing: 0.02em;
     }
     .pipe-line {
       flex: 1; width: 2px; background: linear-gradient(to bottom, #d1fae5, transparent);
       margin-top: 4px;
     }
     .pipe-step:last-child .pipe-line { display: none; }
-    .pipe-body { flex: 1; padding-top: 0.3rem; padding-bottom: 0.5rem; }
+    .pipe-body { flex: 1; padding-top: 0.2rem; }
     .pipe-title {
-      font-weight: 800; color: #0f172a; font-size: 1rem;
-      display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.5rem;
+      font-weight: 700; color: #0f172a; font-size: 0.97rem;
+      display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.35rem;
       flex-wrap: wrap;
     }
     .pipe-time {
@@ -250,10 +247,9 @@
       background: #f0fdf4; border: 1px solid #bbf7d0;
       padding: 0.1rem 0.5rem; border-radius: 100px;
     }
-    .pipe-body p { font-size: 0.95rem; color: #475569; margin-bottom: 0.8rem; line-height: 1.75; }
-    .pipe-body p:last-child { margin-bottom: 0; }
-    .pipe-body ul { padding-left: 1.2rem; margin: 0.5rem 0 0; }
-    .pipe-body li { font-size: 0.93rem; color: #475569; margin-bottom: 0.3rem; line-height: 1.65; }
+    .pipe-body p { font-size: 0.93rem; color: #475569; margin: 0 0 0.5rem; }
+    .pipe-body ul { padding-left: 1.2rem; margin: 0.4rem 0 0; }
+    .pipe-body li { font-size: 0.9rem; color: #475569; margin-bottom: 0.3rem; }
 
     /* ── Code block ── */
     .code-block {
@@ -318,16 +314,11 @@
       border: 1px solid rgba(16,185,129,0.2);
     }
     .insight-box h3 { color: #34d399; margin-bottom: 0.8rem; font-size: 1rem; }
-    .insight-box p { color: #94a3b8; font-size: 0.95rem; margin: 0 0 0.7rem; line-height: 1.7; }
+    .insight-box p { color: #94a3b8; font-size: 0.95rem; margin: 0 0 0.6rem; line-height: 1.7; }
     .insight-box p:last-child { margin-bottom: 0; }
     .insight-box strong { color: #e2e8f0; }
 
     /* ── Purple insight box variant ── */
-    .insight-box.purple {
-      border-color: rgba(99,102,241,0.25);
-    }
-    .insight-box.purple h3 { color: #a5b4fc; }
-
     /* ── Timeline summary ── */
     .timeline-summary {
       background: #f8fafc; border: 1px solid #e2e8f0;
@@ -358,7 +349,7 @@
     .cta-buttons { display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center; }
     .btn {
       display: inline-flex; align-items: center; gap: 0.45rem;
-      padding: 0.65rem 1.4rem; border-radius: 8px;
+      padding: 0.65rem 1.2rem; border-radius: 8px;
       font-size: 0.88rem; font-weight: 600; transition: all 0.2s; cursor: pointer;
       text-decoration: none;
     }
@@ -372,7 +363,7 @@
 
     /* ── TOC Sidebar ── */
     .toc-sidebar {
-      position: sticky; top: 118px;
+      position: sticky; top: 116px;
       background: #f8fafc; border: 1px solid #e2e8f0;
       border-radius: 10px; padding: 1.4rem; font-size: 0.83rem;
     }
@@ -528,12 +519,15 @@
       <p>The Test Authoring Agent takes plain-English test steps and turns them into a framework-compliant GitHub PR, complete with real browser validation, compilable Java code, and Maven-verified test execution. Engineers describe what they want to test. The agent handles everything else.</p>
     </div>
 
+    <!-- THE PROBLEM -->
+    <h2 id="problem">The Problem</h2>
+
     <p>Writing automation code is one of the most time-consuming things a QA engineer does. Not because it's intellectually difficult; the logic is usually straightforward. It's slow because of the overhead: understanding the framework conventions, looking up the right class patterns, getting the right selectors, wiring everything together correctly, debugging compilation errors, running Maven, fixing test failures.</p>
 
     <p>The Test Authoring Agent saves about 70% of the time spent on automation effort: a run takes about 15 minutes, and the engineer never touches Java.</p>
 
-    <!-- THE BIG IDEA -->
-    <h2 id="the-big-idea">The Big Idea</h2>
+    <!-- TWO WAYS IN -->
+    <h2 id="the-big-idea">Two Ways In</h2>
 
     <p>The agent is triggered in one of two ways: from AI Test Studio's <strong>Tests → Automation Code</strong> page, or from the CLI by putting a <code>.txt</code> file in the agent's queue and running <code>./scripts/run-authoring-agent.sh &lt;module&gt;</code>. Either way, the input is the same: a module name, a platform type (Web, API, or Both), and plain-English test steps describing the scenario.</p>
 
@@ -543,7 +537,7 @@
 
     <div class="screenshot-block">
       <img src="images/authoring-agent.png" alt="The Test Authoring Agent interface" onclick="openModal(this)" />
-      <p class="screenshot-caption">The Test Authoring Agent in AI Test Studio: write plain-English steps with a module and platform (Web / API / Both), reuse a saved draft, or pull cases marked "Pending Automation" straight from TestRail.</p>
+      <div class="screenshot-caption">The Test Authoring Agent in AI Test Studio: write plain-English steps with a module and platform (Web / API / Both), reuse a saved draft, or pull cases marked "Pending Automation" straight from TestRail.</div>
     </div>
 
     <!-- THE 5-STEP PIPELINE -->
@@ -653,8 +647,13 @@
     </div>
 
     <div class="screenshot-block">
-      <img src="images/authoring-agent-run.png" alt="Agent pipeline streaming output" onclick="openModal(this)" />
-      <p class="screenshot-caption">The Live Run console: every step streams in real time, with the session's cost, tokens and model calls on top, and a History of past runs you can replay.</p>
+      <img src="images/authoring-agent-run.png" alt="Starting an authoring run and the Live Run card in AI Test Studio" onclick="openModal(this)" />
+      <div class="screenshot-caption">Starting a run: a module name, a platform type and plain-English steps go in (here, a payment checkout on the Midtrans demo site). The Live Run card then tracks the five steps, with the session's cost, tokens and model calls on top, and streams each step's output as it happens.</div>
+    </div>
+
+    <div class="screenshot-block">
+      <img src="images/authoring-agent-result.png" alt="The end of an authoring run: PR opened with an APPROVED verdict" onclick="openModal(this)" />
+      <div class="screenshot-caption">The same run at Ship: the code is committed step by step, the PR is opened, and the run closes with a breakdown of time and spend per step, about 15 minutes and $2.34 in total. The tests went green on the second fix attempt, so the verdict is APPROVED. <a href="https://github.com/msr5464/Playwright-Automation-Framework/pull/103" target="_blank" rel="noopener">View PR #103 on GitHub ↗</a></div>
     </div>
 
     <!-- THE SECRET: CLAUDE.MD -->
@@ -675,7 +674,7 @@
       <li><strong>Explicit DO NOT rules</strong>: do not use <code>Thread.sleep</code>, do not hardcode URLs, do not create new helper methods when existing ones serve the purpose</li>
     </ul>
 
-    <div class="insight-box purple">
+    <div class="insight-box">
       <h3>The key leverage point</h3>
       <p>When the framework changes (a new base class is introduced, a helper method is renamed, a new annotation becomes required), updating <strong>CLAUDE.md</strong> automatically teaches all agents the new pattern on the next run. <strong>No prompt changes are needed. No Python code is updated.</strong> The conventions live in the Jarvis repository alongside the Java code, version-controlled and reviewable by the whole team as part of normal code review.</p>
       <p>This means the framework itself controls the agent's output. The team that owns the Java framework owns the agent's behaviour, directly, through the same files they already maintain.</p>
@@ -748,19 +747,21 @@ CACHE_STEPS=<span class="a">false</span> <span class="w">./scripts/run-authoring
 
     <p>It pays off most while iterating: build the agent, run it, see what it generates, update CLAUDE.md or the input, run it again, fast. Because the cache is only reused while the input is unchanged, an edited scenario always gets a fresh parse and a fresh browser check; <code>CACHE_STEPS=false</code> forces one regardless.</p>
 
-    <hr />
-
     <div class="article-cta">
       <h3>Next: The Test Triaging Agent</h3>
       <p>The Authoring Agent writes the code. The Triaging Agent keeps your CI signal clean, classifying every failure as a product bug or automation issue automatically, with an adversarial review step to catch misclassifications.</p>
       <div class="cta-buttons">
         <a href="feature-test-triaging.html" class="btn btn-primary">
           Feature 3: Test Triaging
-          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
         </a>
         <a href="feature-test-design.html" class="btn btn-ghost">
-          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
           Feature 1: Test Design
+        </a>
+        <a href="https://github.com/msr5464/AI-Agent-Network" target="_blank" rel="noopener" class="btn btn-ghost">
+          <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
+          GitHub
         </a>
       </div>
     </div>
@@ -783,27 +784,13 @@ CACHE_STEPS=<span class="a">false</span> <span class="w">./scripts/run-authoring
   <aside class="toc-sidebar">
     <div class="toc-title">On this page</div>
     <ul class="toc-list">
-      <li><a href="#the-big-idea">The Big Idea</a></li>
+      <li><a href="#problem">The Problem</a></li>
+      <li><a href="#the-big-idea">Two Ways In</a></li>
       <li><a href="#the-5-step-pipeline">The 5-Step Pipeline</a></li>
       <li><a href="#the-secret-claude-md">The Secret: CLAUDE.md</a></li>
       <li><a href="#audit-trail">Audit Trail</a></li>
       <li><a href="#testing-mode">Step Cache</a></li>
     </ul>
-    <div class="toc-sep"></div>
-    <div class="toc-nav-links">
-      <div class="toc-nav-link" style="font-size:0.72rem;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;padding:0 0.5rem 0.2rem;">Features</div>
-      <a href="feature-test-design.html" class="toc-nav-link prev">
-        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-        Feature 1: Test Design
-      </a>
-      <a href="feature-test-triaging.html" class="toc-nav-link next">
-        Feature 3: Test Triaging
-        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
-      </a>
-      <a href="feature-test-healing.html" class="toc-nav-link">Feature 4: Healing Agent</a>
-      <a href="feature-test-adaptation.html" class="toc-nav-link">Feature 5: Adaptation Agent</a>
-      <a href="feature-rag-chat.html" class="toc-nav-link">Feature 6: Talk to Tests</a>
-    </div>
     <div class="toc-sep"></div>
     <div class="toc-author">
       <div>

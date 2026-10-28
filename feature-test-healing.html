@@ -25,7 +25,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; font-size: 16px; }
+    html { scroll-behavior: smooth; scroll-padding-top: 136px; font-size: 16px; }
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       color: #0f172a;
@@ -211,6 +211,8 @@
       font-size: 0.82rem; color: #94a3b8; margin-top: 0.65rem;
       text-align: center; font-style: italic; line-height: 1.5;
     }
+    .screenshot-caption a { color: #10b981; font-weight: 600; font-style: normal; }
+    .screenshot-caption a:hover { text-decoration: underline; }
 
     /* ── Pipeline steps ── */
     .pipeline {
@@ -341,7 +343,7 @@
     .cta-buttons { display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center; }
     .btn {
       display: inline-flex; align-items: center; gap: 0.45rem;
-      padding: 0.65rem 1.4rem; border-radius: 8px;
+      padding: 0.65rem 1.2rem; border-radius: 8px;
       font-size: 0.88rem; font-weight: 600; transition: all 0.2s; cursor: pointer;
       text-decoration: none;
     }
@@ -568,13 +570,13 @@
       <p>A green re-run proves the test passes. It does not prove the fix was right. <strong>A fix built on a wrong diagnosis goes green</strong> (by pointing at a different element, or by loosening a check), and ships a permanently broken test with a passing run as its alibi. Deciding the cause before editing is the only place that mistake can be caught.</p>
     </div>
 
-    <!-- THE FIX PIPELINE -->
-    <h2 id="fix-pipeline">The Pipeline</h2>
+    <!-- THE 4-STEP PIPELINE -->
+    <h2 id="fix-pipeline">The 4-Step Pipeline</h2>
 
     <div class="pipeline">
       <div class="pipe-step">
         <div class="pipe-left">
-          <div class="pipe-num">1</div>
+          <div class="pipe-num">01</div>
           <div class="pipe-line"></div>
         </div>
         <div class="pipe-body">
@@ -585,7 +587,7 @@
 
       <div class="pipe-step">
         <div class="pipe-left">
-          <div class="pipe-num">2</div>
+          <div class="pipe-num">02</div>
           <div class="pipe-line"></div>
         </div>
         <div class="pipe-body">
@@ -596,7 +598,7 @@
 
       <div class="pipe-step">
         <div class="pipe-left">
-          <div class="pipe-num">3</div>
+          <div class="pipe-num">03</div>
           <div class="pipe-line"></div>
         </div>
         <div class="pipe-body">
@@ -608,7 +610,7 @@
 
       <div class="pipe-step">
         <div class="pipe-left">
-          <div class="pipe-num">4</div>
+          <div class="pipe-num">04</div>
           <div class="pipe-line"></div>
         </div>
         <div class="pipe-body">
@@ -619,8 +621,13 @@
     </div>
 
     <div class="screenshot-block">
-      <img src="images/healing-agent-run.png" alt="A healing run in AI Test Studio" onclick="openModal(this)" />
-      <p class="screenshot-caption">A demo run on SauceDemo, with two locators broken on purpose. Locate proposed both selectors deterministically (each scored against the fingerprint from the last green run), so the run made zero model calls and cost $0. The first fix got the test past the login button to a second broken locator; the loop kept that edit and fixed the next one too.</p>
+      <img src="images/healing-agent-run.png" alt="Starting a healing run and the Live Run card in AI Test Studio" onclick="openModal(this)" />
+      <div class="screenshot-caption">A run on the payment checkout test written by the authoring agent, read straight from its PR branch, with three locators broken on purpose. Pick a module, a class and a test (or the whole class), and the Live Run card tracks the four steps with the run's cost, tokens and model calls.</div>
+    </div>
+
+    <div class="screenshot-block">
+      <img src="images/healing-agent-result.png" alt="The end of a healing run: changes attempted and the test green" onclick="openModal(this)" />
+      <div class="screenshot-caption">How it got there: three broken locators in three page objects, each reachable only once the one before was fixed. Every kept fix took the test further, until attempt 4 turned it green. Locate's one deterministic proposal (the CVV field) failed and was rolled back, and Claude found the real id in the live DOM on the next attempt. Three fixes, one green test, $1.11. <a href="https://github.com/msr5464/Playwright-Automation-Framework/pull/104" target="_blank" rel="noopener">View PR #104 on GitHub ↗</a></div>
     </div>
 
     <!-- BY DEFECT -->
@@ -746,7 +753,7 @@
           <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
           Feature 3: Test Triaging
         </a>
-        <a href="https://github.com/msr5464" target="_blank" rel="noopener" class="btn btn-ghost">
+        <a href="https://github.com/msr5464/AI-Agent-Network" target="_blank" rel="noopener" class="btn btn-ghost">
           <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
           GitHub
         </a>
@@ -773,7 +780,7 @@
       <li><a href="#problem">The Problem</a></li>
       <li><a href="#triggered">Two Ways In</a></li>
       <li><a href="#diagnosis">Diagnose Before Editing</a></li>
-      <li><a href="#fix-pipeline">The Pipeline</a></li>
+      <li><a href="#fix-pipeline">The 4-Step Pipeline</a></li>
       <li><a href="#defects">Fixing by Defect</a></li>
       <li><a href="#github-pr">The GitHub PR</a></li>
       <li><a href="#closed-loop">The Closed Loop</a></li>

@@ -3,7 +3,7 @@
 
 /* overflow-anchor: none, so opening a case study grows downward from the row that was clicked
    (with anchoring on, the browser pins content further down and the row jumps up off-screen) */
-html { scroll-behavior: smooth; font-size: 16px; overflow-anchor: none; }
+html { scroll-behavior: smooth; scroll-padding-top: 80px; font-size: 16px; overflow-anchor: none; }
 
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -119,7 +119,8 @@ nav.scrolled .nav-links a.active { color: #0f172a; }
   background: none;
   border: none;
   cursor: pointer;
-  padding: 4px;
+  padding: 14px 11px;
+  margin: -10px -7px;
 }
 
 .nav-toggle span {
@@ -513,7 +514,7 @@ section { padding: 6rem 0; }
 }
 
 .stat-context {
-  font-size: 0.65rem;
+  font-size: 0.75rem;
   color: #475569;
   margin-top: 0.2rem;
   font-style: italic;
