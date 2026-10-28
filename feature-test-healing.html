@@ -404,9 +404,21 @@
       align-items: center; justify-content: center; padding: 2rem;
     }
     .img-modal.open { display: flex; }
+    .img-modal-figure {
+      margin: 0; display: flex; flex-direction: column; align-items: center; gap: 0.9rem;
+    }
     .img-modal img {
-      max-width: 90vw; max-height: 88vh; border-radius: 10px;
+      max-width: calc(100vw - 9rem); max-height: 76vh; border-radius: 10px;
       box-shadow: 0 24px 80px rgba(0,0,0,0.5);
+    }
+    .img-modal-caption {
+      max-width: 860px; color: #cbd5e1; font-size: 0.85rem; line-height: 1.55; text-align: center;
+    }
+    .img-modal-caption a { color: #34d399; font-weight: 600; }
+    .img-modal-caption a:hover { text-decoration: underline; }
+    .img-modal-count {
+      display: block; color: #64748b; font-size: 0.72rem; font-weight: 700;
+      letter-spacing: 0.08em; margin-bottom: 0.3rem;
     }
     .img-modal-close {
       position: fixed; top: 1.5rem; right: 1.5rem;
@@ -416,6 +428,26 @@
       cursor: pointer; font-size: 1.1rem; transition: background 0.2s;
     }
     .img-modal-close:hover { background: rgba(255,255,255,0.2); }
+    .img-modal-nav {
+      position: fixed; top: 50%; transform: translateY(-50%);
+      background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15);
+      color: #fff; width: 46px; height: 46px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: background 0.2s;
+    }
+    .img-modal-nav:hover { background: rgba(255,255,255,0.2); }
+    .img-modal-nav:focus-visible { outline: 2px solid #34d399; outline-offset: 2px; }
+    .img-modal-nav.prev { left: 1.5rem; }
+    .img-modal-nav.next { right: 1.5rem; }
+    .img-modal-nav[hidden], .img-modal.single .img-modal-count { display: none; }
+    @media (max-width: 600px) {
+      .img-modal { padding: 4rem 0.75rem 5.5rem; }
+      .img-modal img { max-width: 100%; max-height: 62vh; }
+      .img-modal-caption { font-size: 0.8rem; }
+      .img-modal-nav { top: auto; bottom: 1.25rem; transform: none; }
+      .img-modal-nav.prev { left: calc(50% - 58px); }
+      .img-modal-nav.next { right: calc(50% - 58px); }
+    }
       /* A long setting name in one <code>/<strong> must not widen the page on phones. */
     .article-body code, .article-body strong { overflow-wrap: anywhere; }
   </style>
@@ -800,8 +832,13 @@
 
 <!-- IMAGE MODAL -->
 <div class="img-modal" id="imgModal" onclick="closeModal()">
-  <div class="img-modal-close" onclick="closeModal()">✕</div>
-  <img id="modalImg" src="" alt="" onclick="event.stopPropagation()" />
+  <div class="img-modal-close" onclick="closeModal()">&#x2715;</div>
+  <button class="img-modal-nav prev" aria-label="Previous screenshot" onclick="event.stopPropagation(); stepModal(-1)"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+  <figure class="img-modal-figure" onclick="event.stopPropagation()">
+    <img id="modalImg" src="" alt="" />
+    <figcaption class="img-modal-caption"><span class="img-modal-count" id="modalCount"></span><span id="modalCaption"></span></figcaption>
+  </figure>
+  <button class="img-modal-nav next" aria-label="Next screenshot" onclick="event.stopPropagation(); stepModal(1)"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
 </div>
 
 <footer>
@@ -823,17 +860,46 @@
   }, { rootMargin: '-20% 0px -70% 0px' });
   sections.forEach(s => obs.observe(s));
 
-  // Image modal
-  function openModal(img) {
+  // Image modal: a gallery of every screenshot on the page, in reading order.
+  const modalImgs = [...document.querySelectorAll('img[onclick="openModal(this)"]')];
+  let modalIndex = 0;
+  function showModal(i) {
+    modalIndex = Math.max(0, Math.min(i, modalImgs.length - 1));
+    const img = modalImgs[modalIndex];
+    const caption = img.closest('.screenshot-block')?.querySelector('.screenshot-caption');
     document.getElementById('modalImg').src = img.src;
+    document.getElementById('modalImg').alt = img.alt;
+    document.getElementById('modalCount').textContent = `${modalIndex + 1} / ${modalImgs.length}`;
+    document.getElementById('modalCaption').innerHTML = caption ? caption.innerHTML : '';
+    document.querySelector('.img-modal-nav.prev').hidden = modalIndex === 0;
+    document.querySelector('.img-modal-nav.next').hidden = modalIndex === modalImgs.length - 1;
+  }
+  function openModal(img) {
+    showModal(modalImgs.indexOf(img));
+    document.getElementById('imgModal').classList.toggle('single', modalImgs.length < 2);
     document.getElementById('imgModal').classList.add('open');
     document.body.style.overflow = 'hidden';
   }
+  function stepModal(step) { showModal(modalIndex + step); }
   function closeModal() {
     document.getElementById('imgModal').classList.remove('open');
     document.body.style.overflow = '';
   }
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+  document.addEventListener('keydown', e => {
+    if (!document.getElementById('imgModal').classList.contains('open')) return;
+    if (e.key === 'Escape') closeModal();
+    if (e.key === 'ArrowRight') stepModal(1);
+    if (e.key === 'ArrowLeft') stepModal(-1);
+  });
+  // Swipe left or right on touch screens.
+  let touchX = null;
+  document.getElementById('imgModal').addEventListener('touchstart', e => { touchX = e.touches[0].clientX; }, { passive: true });
+  document.getElementById('imgModal').addEventListener('touchend', e => {
+    if (touchX === null) return;
+    const dx = e.changedTouches[0].clientX - touchX;
+    touchX = null;
+    if (Math.abs(dx) > 50) stepModal(dx < 0 ? 1 : -1);
+  });
 </script>
 <script>
   // On narrow screens the feature strip scrolls sideways; start it on this page's pill.
