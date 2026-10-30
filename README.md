@@ -1,4 +1,4 @@
-# Mukesh Rajput | Portfolio
+# <a href="https://www.linkedin.com/in/mukesh-rajput/"><img align="right" src="https://raw.githubusercontent.com/msr5464/Selenium-Automation-Framework/refs/heads/master/Logo-full.png" alt="Mukesh" height="40"></a> Mukesh Rajput | Portfolio
 
 🌐 **Live site: [msr5464.github.io](https://msr5464.github.io/)**
 
